@@ -1,6 +1,7 @@
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import AITutorDrawer from "./AITutorDrawer.jsx";
 import PdfSlideViewer from "./PdfSlideViewer.jsx";
+import MindmapSideView from "./MindmapSideView.jsx";
 
 const INITIAL_TOOLBAR = { visible: false, x: 0, y: 0, text: "", codes: [] };
 
@@ -12,62 +13,119 @@ export default function TranscriptReader({
   onBack,
 }) {
   const containerRef = useRef(null);
+  const isDraggingRef = useRef(false);
   const [toolbar, setToolbar] = useState(INITIAL_TOOLBAR);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [rightPanelMode, setRightPanelMode] = useState("none"); // "none" | "chat" | "mindmap"
+  const [rightPanelWidth, setRightPanelWidth] = useState(420); // Resizable width in px
   const [selectedPassageForDrawer, setSelectedPassageForDrawer] = useState(null);
-  const [activeTab, setActiveTab] = useState("read"); // read | pen | highlight
   const [currentPageIndex, setCurrentPageIndex] = useState(1);
   const [numPdfPages, setNumPdfPages] = useState(55);
 
-  const handlePrevSlide = () => {
+  const handlePrevSlide = useCallback(() => {
     setCurrentPageIndex((prev) => Math.max(1, prev - 1));
     setToolbar(INITIAL_TOOLBAR);
-  };
+  }, []);
 
-  const handleNextSlide = () => {
+  const handleNextSlide = useCallback(() => {
     setCurrentPageIndex((prev) => Math.min(numPdfPages, prev + 1));
     setToolbar(INITIAL_TOOLBAR);
+  }, [numPdfPages]);
+
+  // Keyboard Arrow Left & Right listener for automatic slide switching
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (
+        document.activeElement.tagName === "INPUT" ||
+        document.activeElement.tagName === "TEXTAREA"
+      ) {
+        return;
+      }
+
+      if (e.key === "ArrowLeft" || e.key === "PageUp") {
+        handlePrevSlide();
+      } else if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") {
+        handleNextSlide();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handlePrevSlide, handleNextSlide]);
+
+  // Mouse Drag Handle Resizer logic for expanding/collapsing right panel width
+  const handleMouseDownResize = (e) => {
+    e.preventDefault();
+    isDraggingRef.current = true;
+    document.body.style.cursor = "col-resize";
+
+    const handleMouseMove = (event) => {
+      if (!isDraggingRef.current) return;
+      const newWidth = window.innerWidth - event.clientX;
+      if (newWidth >= 280 && newWidth <= 850) {
+        setRightPanelWidth(newWidth);
+      }
+    };
+
+    const handleMouseUpResize = () => {
+      isDraggingRef.current = false;
+      document.body.style.cursor = "default";
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUpResize);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUpResize);
   };
 
   const handleMouseUp = useCallback(() => {
-    const selection = window.getSelection();
-    const text = selection?.toString().trim() ?? "";
-    const container = containerRef.current;
+    setTimeout(() => {
+      const selection = window.getSelection();
+      const text = selection?.toString().trim() ?? "";
+      const container = containerRef.current;
 
-    if (!text || !container || selection.rangeCount === 0) {
-      setToolbar(INITIAL_TOOLBAR);
-      return;
-    }
+      if (!text || text.length < 2 || !container || selection.rangeCount === 0) {
+        setToolbar(INITIAL_TOOLBAR);
+        return;
+      }
 
-    const range = selection.getRangeAt(0);
-    if (!container.contains(range.commonAncestorContainer)) {
-      setToolbar(INITIAL_TOOLBAR);
-      return;
-    }
+      const range = selection.getRangeAt(0);
+      if (!container.contains(range.commonAncestorContainer)) {
+        setToolbar(INITIAL_TOOLBAR);
+        return;
+      }
 
-    const currentCode = currentLesson?.segments[currentPageIndex - 1]?.code || `T01-${String(currentPageIndex).padStart(3, "0")}`;
-    const codes = [currentCode];
+      const currentCode = currentLesson?.segments[currentPageIndex - 1]?.code || `T01-${String(currentPageIndex).padStart(3, "0")}`;
+      const codes = [currentCode];
 
-    const rect = range.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
-    setToolbar({
-      visible: true,
-      x: rect.left - containerRect.left + rect.width / 2,
-      y: rect.top - containerRect.top,
-      text,
-      codes,
-    });
+      const rect = range.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      setToolbar({
+        visible: true,
+        x: Math.max(80, rect.left - containerRect.left + rect.width / 2),
+        y: Math.max(30, rect.top - containerRect.top),
+        text,
+        codes,
+      });
+    }, 10);
   }, [currentLesson, currentPageIndex]);
 
-  const handleCheckClick = () => {
+  const handleCheckClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
     onCheckComprehension({ passageText: toolbar.text, segmentCodes: toolbar.codes });
     setToolbar(INITIAL_TOOLBAR);
     window.getSelection()?.removeAllRanges();
   };
 
-  const handleAskTutorClick = () => {
-    setSelectedPassageForDrawer({ text: toolbar.text, codes: toolbar.codes });
-    setIsDrawerOpen(true);
+  const handleAskTutorClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setSelectedPassageForDrawer({
+      text: toolbar.text,
+      codes: toolbar.codes,
+      ts: Date.now(),
+    });
+    setRightPanelMode("chat");
     setToolbar(INITIAL_TOOLBAR);
     window.getSelection()?.removeAllRanges();
   };
@@ -91,84 +149,36 @@ export default function TranscriptReader({
           </div>
         </div>
 
+        {/* Topbar Right Controls (Cleaned: removed Đóng AI Tutor, VI, 🌙) */}
         <div className="reader-topbar__right">
-          <span className="lang-picker">VI</span>
-          <button type="button" className="icon-btn">🌙</button>
+          <button
+            type="button"
+            className={`btn-mode-topbar ${rightPanelMode === "mindmap" ? "is-active" : ""}`}
+            onClick={() => setRightPanelMode(rightPanelMode === "mindmap" ? "none" : "mindmap")}
+          >
+            🗺️ Sơ đồ Mindmap
+          </button>
+
+          <button
+            type="button"
+            className={`btn-mode-topbar btn-mode-topbar--red ${rightPanelMode === "chat" ? "is-active" : ""}`}
+            onClick={() => setRightPanelMode(rightPanelMode === "chat" ? "none" : "chat")}
+          >
+            🤖 AI Tutor
+          </button>
         </div>
       </div>
 
-      {/* Main Two-Column Reader Layout */}
+      {/* Reader Body with Resizable Side Panel Layout */}
       <div className="reader-body">
-        {/* Left Sidebar: Học liệu môn học */}
-        <aside className="reader-sidebar">
-          <div className="reader-sidebar__header">
-            <h3>📖 Học liệu môn học</h3>
-            <p>Chương, slide và tài liệu đã upload</p>
-          </div>
-
-          <div className="reader-sidebar__list">
-            {lessons.map((item, idx) => {
-              const isSelected = item.id === currentLesson.id;
-              return (
-                <div
-                  key={item.id}
-                  className={`sidebar-day-item ${isSelected ? "is-selected" : ""}`}
-                  onClick={() => {
-                    onSelectLesson(item.id);
-                    setCurrentPageIndex(1);
-                  }}
-                >
-                  <div className="sidebar-day-item__title-row">
-                    <span className="play-icon">▶</span>
-                    <div>
-                      <strong>Day{String(idx + 1).padStart(2, "0")}</strong>
-                      <span className="doc-count">
-                        1 TÀI LIỆU PDF · PUBLISHED
-                      </span>
-                    </div>
-                  </div>
-
-                  {isSelected && (
-                    <div className="sidebar-doc-active">
-                      <span className="badge-studying">STUDYING</span>
-                      <div className="sidebar-doc-link">
-                        📘 AI Research to AI Products.pdf
-                        <span className="page-count">{numPdfPages} trang slide PDF</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </aside>
-
         {/* Center Main Workspace Canvas */}
         <main className="reader-canvas">
-          {/* Reader Top Controls Toolbar with Slide Page Navigation */}
+          {/* Reader Top Controls Toolbar with Keyboard Hints */}
           <div className="canvas-toolbar">
             <div className="canvas-toolbar__tools">
-              <button
-                type="button"
-                className={`tool-btn ${activeTab === "read" ? "is-active" : ""}`}
-                onClick={() => setActiveTab("read")}
-              >
-                👁 Đọc
-              </button>
-              <button
-                type="button"
-                className={`tool-btn ${activeTab === "pen" ? "is-active" : ""}`}
-                onClick={() => setActiveTab("pen")}
-              >
-                ✏️ Bút
-              </button>
-              <button
-                type="button"
-                className={`tool-btn ${activeTab === "highlight" ? "is-active" : ""}`}
-                onClick={() => setActiveTab("highlight")}
-              >
-                🖍 Highlight
-              </button>
+              <span className="keyboard-hint-badge">
+                ⌨️ Phím <strong>←</strong> <strong>→</strong> để chuyển slide mượt mà
+              </span>
             </div>
 
             <div className="canvas-toolbar__page-info">
@@ -225,6 +235,7 @@ export default function TranscriptReader({
                 <button
                   type="button"
                   className="action-btn action-btn--check"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={handleCheckClick}
                 >
                   ⚡ Kiểm tra hiểu thật
@@ -232,6 +243,7 @@ export default function TranscriptReader({
                 <button
                   type="button"
                   className="action-btn action-btn--tutor"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={handleAskTutorClick}
                 >
                   💬 Hỏi VLearn Tutor
@@ -265,28 +277,80 @@ export default function TranscriptReader({
             </div>
           </div>
         </main>
+
+        {/* Resizable Split Handle & Right Side Panel (Inline replacing Chatbot with Mindmap) */}
+        {rightPanelMode !== "none" && (
+          <>
+            {/* Drag Handle to Resize Right Panel Width */}
+            <div
+              className="panel-resizer"
+              onMouseDown={handleMouseDownResize}
+              title="Kéo thả để mở rộng / thu nhỏ panel"
+            >
+              <div className="resizer-bar"></div>
+            </div>
+
+            <div className="reader-right-panel" style={{ width: `${rightPanelWidth}px` }}>
+              {/* Top Mode Tabs inside Right Panel */}
+              <div className="right-panel-tabs">
+                <button
+                  type="button"
+                  className={`panel-tab ${rightPanelMode === "chat" ? "is-active" : ""}`}
+                  onClick={() => setRightPanelMode("chat")}
+                >
+                  💬 VLearn AI Tutor
+                </button>
+                <button
+                  type="button"
+                  className={`panel-tab ${rightPanelMode === "mindmap" ? "is-active" : ""}`}
+                  onClick={() => setRightPanelMode("mindmap")}
+                >
+                  🗺️ Sơ đồ Mindmap
+                </button>
+                <button
+                  type="button"
+                  className="btn-close-panel"
+                  onClick={() => setRightPanelMode("none")}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Panel Body Switching */}
+              <div className="right-panel-content">
+                {rightPanelMode === "chat" && (
+                  <AITutorDrawer
+                    lesson={currentLesson}
+                    selectedPassage={selectedPassageForDrawer}
+                    onClose={() => setRightPanelMode("none")}
+                    onOpenMindmap={() => setRightPanelMode("mindmap")}
+                  />
+                )}
+
+                {rightPanelMode === "mindmap" && (
+                  <MindmapSideView
+                    onSelectSlide={(code) => {
+                      const idx = currentLesson.segments.findIndex((s) => s.code === code);
+                      if (idx >= 0) setCurrentPageIndex(idx + 1);
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Floating AI Tutor Icon on Right Margin */}
-      <button
-        type="button"
-        className="floating-ai-tutor-trigger"
-        onClick={() => {
-          setSelectedPassageForDrawer(null);
-          setIsDrawerOpen(!isDrawerOpen);
-        }}
-        title="Mở VLearn Tutor AI"
-      >
-        🤖
-      </button>
-
-      {/* AI Tutor Side Drawer */}
-      {isDrawerOpen && (
-        <AITutorDrawer
-          lesson={currentLesson}
-          selectedPassage={selectedPassageForDrawer}
-          onClose={() => setIsDrawerOpen(false)}
-        />
+      {/* Floating AI Tutor Icon Trigger at Bottom Right */}
+      {rightPanelMode === "none" && (
+        <button
+          type="button"
+          className="floating-ai-tutor-trigger"
+          onClick={() => setRightPanelMode("chat")}
+          title="Mở VLearn Tutor AI"
+        >
+          🤖
+        </button>
       )}
     </div>
   );

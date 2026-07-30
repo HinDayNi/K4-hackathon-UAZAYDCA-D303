@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
 import { explainPassage } from "../services/aiService.js";
 
-export default function AITutorDrawer({ lesson, selectedPassage, onClose }) {
+export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpenMindmap }) {
   const [messages, setMessages] = useState([
     {
       sender: "ai",
-      text: `Xin chào! Tôi là VLearn AI Tutor đồng hành cùng khóa học ${lesson?.title ?? ""}. Bạn có thể bôi đen bất kỳ đoạn bài giảng nào và bấm "Hỏi VLearn Tutor" để tôi giải thích chi tiết nhé!`,
+      text: `Xin chào! Tôi là VLearn AI Tutor đồng hành cùng khóa học ${lesson?.title ?? ""}. Bạn có thể bôi đen bất kỳ đoạn chữ nào trên Slide bài giảng và bấm "Hỏi VLearn Tutor" hoặc chọn các gợi ý bên dưới để tôi hỗ trợ nhé!`,
       citation: null,
     },
   ]);
   const [inputText, setInputText] = useState("");
   const [isThinking, setIsThinking] = useState(false);
 
-  // Trigger AI explanation automatically when student highlights text and clicks "Hỏi VLearn Tutor"
+  // Trigger AI explanation automatically when student highlights text on PDF slide and clicks "Hỏi VLearn Tutor"
   useEffect(() => {
     if (selectedPassage && selectedPassage.text) {
       const { text, codes } = selectedPassage;
-      const userMsg = `[Bôi đen đoạn ${codes.join(", ")}]: "${text}"`;
+      const userMsg = `[Bôi đen trên Slide]: "${text}"`;
 
       setMessages((prev) => [...prev, { sender: "user", text: userMsg }]);
       setIsThinking(true);
@@ -24,8 +24,8 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose }) {
       explainPassage({
         passageText: text,
         segmentCodes: codes,
-        lessonTitle: lesson?.title ?? "Bài giảng VLearn",
-        queryText: "Giải thích giúp mình đoạn này",
+        lessonTitle: lesson?.title ?? "Bài giảng VLearn VinUniversity",
+        queryText: `Giải thích giúp mình đoạn này trên slide: "${text}"`,
       }).then((res) => {
         setMessages((prev) => [
           ...prev,
@@ -39,26 +39,23 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose }) {
         setIsThinking(false);
       });
     }
-  }, [selectedPassage, lesson]);
+  }, [selectedPassage]);
 
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!inputText.trim() || isThinking) return;
+  const sendQuery = async (queryText) => {
+    if (isThinking) return;
 
-    const userMsg = inputText.trim();
-    setMessages((prev) => [...prev, { sender: "user", text: userMsg }]);
-    setInputText("");
+    setMessages((prev) => [...prev, { sender: "user", text: queryText }]);
     setIsThinking(true);
 
     try {
       const firstSegmentCode = lesson?.segments[0]?.code ?? "T01-001";
-      const sampleText = lesson?.segments[0]?.text ?? "Nội dung bài giảng VLearn";
+      const sampleText = lesson?.segments[0]?.text ?? "Nội dung bài giảng VLearn VinUniversity";
 
       const res = await explainPassage({
         passageText: sampleText,
         segmentCodes: [firstSegmentCode],
-        lessonTitle: lesson?.title ?? "Bài giảng VLearn",
-        queryText: userMsg,
+        lessonTitle: lesson?.title ?? "Bài giảng VLearn VinUniversity",
+        queryText: queryText,
       });
 
       setMessages((prev) => [
@@ -67,12 +64,31 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose }) {
           sender: "ai",
           text: res.answer,
           citation: res.citation || firstSegmentCode,
-          confidence: res.confidence || 92,
+          confidence: res.confidence || 93,
         },
       ]);
       setIsThinking(false);
     } catch (err) {
       setIsThinking(false);
+    }
+  };
+
+  const handleSend = (e) => {
+    e.preventDefault();
+    if (!inputText.trim()) return;
+    const text = inputText.trim();
+    setInputText("");
+    sendQuery(text);
+  };
+
+  const handleSuggestionClick = (type) => {
+    if (type === "mindmap") {
+      sendQuery("Hãy tạo cho mình sơ đồ tư duy Mindmap tổng quan và bản đồ lỗ hổng kiến thức cho khóa học này.");
+      if (onOpenMindmap) onOpenMindmap();
+    } else if (type === "explain") {
+      sendQuery("Giải thích giúp mình tổng quan nội dung kiến thức cốt lõi của bài học này.");
+    } else if (type === "quiz") {
+      sendQuery("Hãy cho mình 1 câu hỏi tình huống thực tế để kiểm tra hiểu thật bài học này.");
     }
   };
 
@@ -107,9 +123,34 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose }) {
         ))}
         {isThinking && (
           <div className="chat-bubble chat-bubble--ai thinking">
-            <span className="dot-flashing">VLearn Tutor đang phân tích bài giảng…</span>
+            <span className="dot-flashing">VLearn Tutor đang phân tích slide bài giảng…</span>
           </div>
         )}
+      </div>
+
+      {/* Quick Suggestions Chips Bar */}
+      <div className="suggestion-chips-bar">
+        <button
+          type="button"
+          className="chip-btn chip-btn--gold"
+          onClick={() => handleSuggestionClick("mindmap")}
+        >
+          🗺️ Tạo Sơ đồ Mindmap
+        </button>
+        <button
+          type="button"
+          className="chip-btn"
+          onClick={() => handleSuggestionClick("explain")}
+        >
+          💡 Giải thích cốt lõi
+        </button>
+        <button
+          type="button"
+          className="chip-btn"
+          onClick={() => handleSuggestionClick("quiz")}
+        >
+          ⚡ Kiểm tra hiểu thật
+        </button>
       </div>
 
       <form className="ai-tutor-drawer__footer" onSubmit={handleSend}>

@@ -6,7 +6,6 @@ import CourseDetailView from "./components/CourseDetailView.jsx";
 import TranscriptReader from "./components/TranscriptReader.jsx";
 import ComprehensionModal from "./components/ComprehensionModal.jsx";
 import { lessons } from "./data/lessons.js";
-import { downloadAiLog } from "./utils/aiLog.js";
 
 export default function App() {
   // activeTab: "dashboard" | "courses" | "course-detail" | "reader"
@@ -67,16 +66,6 @@ export default function App() {
           onClose={() => setActivePassage(null)}
         />
       )}
-
-      {/* Global Hackathon Evidence Export Bar */}
-      <footer className="vlearn-global-footer">
-        <div className="footer-container">
-          <span>🎯 VLearn AI Product Hackathon — Prototype CP2/CP3 Ready</span>
-          <button type="button" className="btn-log-download" onClick={downloadAiLog}>
-            📥 Tải log lời gọi AI (JSON Minh Chứng R5)
-          </button>
-        </div>
-      </footer>
     </div>
   );
 }

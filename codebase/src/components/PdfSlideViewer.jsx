@@ -4,6 +4,9 @@ import * as pdfjsLib from "pdfjs-dist";
 // Configure PDF.js Worker using official CDN for reliable cross-browser execution
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
+let cachedPdfDoc = null;
+let cachedPdfPromise = null;
+
 export default function PdfSlideViewer({
   pdfUrl = "/lecture.pdf",
   pageNumber = 1,
@@ -14,17 +17,26 @@ export default function PdfSlideViewer({
 }) {
   const canvasRef = useRef(null);
   const textLayerRef = useRef(null);
-  const [pdfDoc, setPdfDoc] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [pdfDoc, setPdfDoc] = useState(cachedPdfDoc);
+  const [loading, setLoading] = useState(!cachedPdfDoc);
 
-  // Load PDF document on mount or pdfUrl change
+  // Load PDF document ONCE and cache it to prevent slide reloading/flashing
   useEffect(() => {
-    let isCancelled = false;
-    setLoading(true);
+    if (cachedPdfDoc) {
+      setPdfDoc(cachedPdfDoc);
+      setLoading(false);
+      if (onNumPages) onNumPages(cachedPdfDoc.numPages);
+      return;
+    }
 
-    pdfjsLib
-      .getDocument(pdfUrl)
-      .promise.then((doc) => {
+    let isCancelled = false;
+    if (!cachedPdfPromise) {
+      cachedPdfPromise = pdfjsLib.getDocument(pdfUrl).promise;
+    }
+
+    cachedPdfPromise
+      .then((doc) => {
+        cachedPdfDoc = doc;
         if (!isCancelled) {
           setPdfDoc(doc);
           setLoading(false);
@@ -33,15 +45,15 @@ export default function PdfSlideViewer({
       })
       .catch((err) => {
         console.error("Error loading PDF:", err);
-        setLoading(false);
+        if (!isCancelled) setLoading(false);
       });
 
     return () => {
       isCancelled = true;
     };
-  }, [pdfUrl, onNumPages]);
+  }, [pdfUrl]);
 
-  // Render target PDF Page + Text Selection Overlay Layer
+  // Render target PDF Page + Text Selection Overlay Layer smoothly
   useEffect(() => {
     if (!pdfDoc || !canvasRef.current || !textLayerRef.current) return;
 
@@ -95,12 +107,15 @@ export default function PdfSlideViewer({
     };
   }, [pdfDoc, pageNumber]);
 
-  // Fallback segment text for active slide page
   const currentSegment = segments[pageNumber - 1] ?? segments[0];
 
   return (
     <div className="pdf-slide-container" ref={containerRef} onMouseUp={onMouseUp}>
-      {loading && <div className="pdf-loading-spinner">⏳ Đang tải Slide PDF bài giảng VinUniversity...</div>}
+      {loading && (
+        <div className="pdf-loading-spinner">
+          ⏳ Đang tải Slide PDF bài giảng VinUniversity...
+        </div>
+      )}
 
       <div
         className="pdf-page-wrapper"
@@ -109,16 +124,6 @@ export default function PdfSlideViewer({
         <canvas ref={canvasRef} className="pdf-canvas" />
         <div ref={textLayerRef} className="pdf-text-layer textLayer" />
       </div>
-
-      {/* Invisible Segment Code Metadata Anchor for Selection Toolbar */}
-      {currentSegment && (
-        <div
-          data-segment-code={currentSegment.code}
-          style={{ position: "absolute", opacity: 0, pointerEvents: "none" }}
-        >
-          [{currentSegment.code}] {currentSegment.text}
-        </div>
-      )}
     </div>
   );
 }
