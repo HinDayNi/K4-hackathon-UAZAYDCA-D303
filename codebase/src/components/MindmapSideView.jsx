@@ -136,16 +136,20 @@ function BranchNode({ data }) {
 }
 
 function ChipNode({ data }) {
+  const slideNum = data.code ? parseInt(data.code.split('-')[1] || '1', 10) : 1;
+  const slideTag = `Slide ${String(slideNum).padStart(2, '0')}`;
+
   return (
     <div
       className={`rf-chip-node ${data.status === "gap" ? "is-gap" : ""}`}
       style={{ borderColor: data.color }}
       onClick={data.onSelect}
+      title={`Bấm để trượt đến ${slideTag}`}
     >
       <QuadHandles roles={["tgt"]} />
       {data.status === "gap" && <span className="chip-gap-icon">⚠️</span>}
       <span className="chip-label">{data.label}</span>
-      {data.code && <span className="chip-code">{data.code}</span>}
+      {data.code && <span className="chip-code">{slideTag}</span>}
     </div>
   );
 }
@@ -328,7 +332,7 @@ export default function MindmapSideView({ onSelectSlide }) {
       {selectedNode && (
         <div className="mindmap-node-banner">
           <div className="banner-info">
-            <strong>{selectedNode.label}</strong> [{selectedNode.code}]
+            <strong>{selectedNode.label}</strong> [Slide {selectedNode.code ? parseInt(selectedNode.code.split('-')[1] || '1', 10) : 1}]
             {selectedNode.text && <p className="gap-text">{selectedNode.text}</p>}
           </div>
           <button
@@ -336,7 +340,7 @@ export default function MindmapSideView({ onSelectSlide }) {
             className="btn-jump-slide"
             onClick={() => onSelectSlide && onSelectSlide(selectedNode.code)}
           >
-            🎯 Chuyển đến Slide này
+            Trượt đến Slide này →
           </button>
         </div>
       )}

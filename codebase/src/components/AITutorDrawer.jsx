@@ -5,14 +5,13 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpen
   const [messages, setMessages] = useState([
     {
       sender: "ai",
-      text: `Xin chào! Tôi là VLearn AI Tutor đồng hành cùng khóa học ${lesson?.title ?? ""}. Bạn có thể bôi đen bất kỳ đoạn chữ nào trên Slide bài giảng và bấm "Hỏi VLearn Tutor" hoặc chọn các gợi ý bên dưới để tôi hỗ trợ nhé!`,
+      text: `Xin chào! Tôi là Trợ lý Học tập VLearn đồng hành cùng bài học ${lesson?.title ?? ""}. Bạn có thể bôi đen đoạn chữ bất kỳ trên slide bài giảng hoặc chọn các nút trợ giúp bên dưới để tôi hỗ trợ nhé!`,
       citation: null,
     },
   ]);
   const [inputText, setInputText] = useState("");
   const [isThinking, setIsThinking] = useState(false);
 
-  // Trigger AI explanation automatically when student highlights text on PDF slide and clicks "Hỏi VLearn Tutor"
   useEffect(() => {
     if (selectedPassage && selectedPassage.text) {
       const { text, codes } = selectedPassage;
@@ -96,10 +95,9 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpen
     <aside className="ai-tutor-drawer">
       <div className="ai-tutor-drawer__header">
         <div className="ai-tutor-drawer__title">
-          <span className="robot-icon">🤖</span>
           <div>
-            <h3>VLearn Tutor AI</h3>
-            <span className="status-online">● Đang hoạt động (Gemini 2.5)</span>
+            <h3>Trợ lý Học tập VLearn</h3>
+            <span className="status-online">● Đang kết nối bài giảng</span>
           </div>
         </div>
         <button type="button" className="close-btn" onClick={onClose}>
@@ -123,7 +121,7 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpen
         ))}
         {isThinking && (
           <div className="chat-bubble chat-bubble--ai thinking">
-            <span className="dot-flashing">VLearn Tutor đang phân tích slide bài giảng…</span>
+            <span className="dot-flashing">Hệ thống đang phân tích slide bài giảng…</span>
           </div>
         )}
       </div>
@@ -135,28 +133,28 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpen
           className="chip-btn chip-btn--gold"
           onClick={() => handleSuggestionClick("mindmap")}
         >
-          🗺️ Tạo Sơ đồ Mindmap
+          Sơ đồ Mindmap
         </button>
         <button
           type="button"
           className="chip-btn"
           onClick={() => handleSuggestionClick("explain")}
         >
-          💡 Giải thích cốt lõi
+          Giải thích cốt lõi
         </button>
         <button
           type="button"
           className="chip-btn"
           onClick={() => handleSuggestionClick("quiz")}
         >
-          ⚡ Kiểm tra hiểu thật
+          Kiểm tra bài học
         </button>
       </div>
 
       <form className="ai-tutor-drawer__footer" onSubmit={handleSend}>
         <input
           type="text"
-          placeholder="Hỏi VLearn Tutor về bài học…"
+          placeholder="Nhập câu hỏi thảo luận về bài học…"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
         />
