@@ -1,8 +1,8 @@
-import { useRef, useState, useCallback, useMemo } from "react";
+import { useRef, useState, useCallback } from "react";
 import AITutorDrawer from "./AITutorDrawer.jsx";
+import PdfSlideViewer from "./PdfSlideViewer.jsx";
 
 const INITIAL_TOOLBAR = { visible: false, x: 0, y: 0, text: "", codes: [] };
-const SEGMENTS_PER_SLIDE = 5; // Group segments into discrete slide pages matching real PDF slides
 
 export default function TranscriptReader({
   lessons,
@@ -16,28 +16,16 @@ export default function TranscriptReader({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedPassageForDrawer, setSelectedPassageForDrawer] = useState(null);
   const [activeTab, setActiveTab] = useState("read"); // read | pen | highlight
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-
-  // Group all transcript segments of current lesson into Slide Pages (5 segments per slide)
-  const slides = useMemo(() => {
-    if (!currentLesson || !currentLesson.segments) return [];
-    const chunks = [];
-    for (let i = 0; i < currentLesson.segments.length; i += SEGMENTS_PER_SLIDE) {
-      chunks.push(currentLesson.segments.slice(i, i + SEGMENTS_PER_SLIDE));
-    }
-    return chunks;
-  }, [currentLesson]);
-
-  const activeSlideSegments = slides[currentSlideIndex] ?? [];
-  const totalSlides = slides.length || 1;
+  const [currentPageIndex, setCurrentPageIndex] = useState(1);
+  const [numPdfPages, setNumPdfPages] = useState(55);
 
   const handlePrevSlide = () => {
-    setCurrentSlideIndex((prev) => Math.max(0, prev - 1));
+    setCurrentPageIndex((prev) => Math.max(1, prev - 1));
     setToolbar(INITIAL_TOOLBAR);
   };
 
   const handleNextSlide = () => {
-    setCurrentSlideIndex((prev) => Math.min(totalSlides - 1, prev + 1));
+    setCurrentPageIndex((prev) => Math.min(numPdfPages, prev + 1));
     setToolbar(INITIAL_TOOLBAR);
   };
 
@@ -57,14 +45,8 @@ export default function TranscriptReader({
       return;
     }
 
-    const codes = [...container.querySelectorAll("[data-segment-code]")]
-      .filter((node) => range.intersectsNode(node))
-      .map((node) => node.dataset.segmentCode);
-
-    if (codes.length === 0) {
-      setToolbar(INITIAL_TOOLBAR);
-      return;
-    }
+    const currentCode = currentLesson?.segments[currentPageIndex - 1]?.code || `T01-${String(currentPageIndex).padStart(3, "0")}`;
+    const codes = [currentCode];
 
     const rect = range.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
@@ -75,7 +57,7 @@ export default function TranscriptReader({
       text,
       codes,
     });
-  }, []);
+  }, [currentLesson, currentPageIndex]);
 
   const handleCheckClick = () => {
     onCheckComprehension({ passageText: toolbar.text, segmentCodes: toolbar.codes });
@@ -104,8 +86,8 @@ export default function TranscriptReader({
             <img src="/vinuni_logo.png" alt="VinUniversity VLearn" className="vinuni-logo-img-sm" />
           </div>
           <div className="doc-title-badge">
-            📘 {currentLesson.id.toLowerCase()}-ai-product-thinking.pdf
-            <span className="doc-meta">COMP2010 · Lecture_material_ms204v3b</span>
+            📘 AI Research to AI Products.pdf
+            <span className="doc-meta">COMP2010 · VinUniversity Lecture Material</span>
           </div>
         </div>
 
@@ -133,7 +115,7 @@ export default function TranscriptReader({
                   className={`sidebar-day-item ${isSelected ? "is-selected" : ""}`}
                   onClick={() => {
                     onSelectLesson(item.id);
-                    setCurrentSlideIndex(0);
+                    setCurrentPageIndex(1);
                   }}
                 >
                   <div className="sidebar-day-item__title-row">
@@ -141,7 +123,7 @@ export default function TranscriptReader({
                     <div>
                       <strong>Day{String(idx + 1).padStart(2, "0")}</strong>
                       <span className="doc-count">
-                        {item.segments.length > 0 ? "1 TÀI LIỆU" : "0 TÀI LIỆU"} · PUBLISHED
+                        1 TÀI LIỆU PDF · PUBLISHED
                       </span>
                     </div>
                   </div>
@@ -150,8 +132,8 @@ export default function TranscriptReader({
                     <div className="sidebar-doc-active">
                       <span className="badge-studying">STUDYING</span>
                       <div className="sidebar-doc-link">
-                        📘 {item.id.toLowerCase()}-lecture-slides.pdf
-                        <span className="page-count">{item.segments.length} đoạn kiến thức</span>
+                        📘 AI Research to AI Products.pdf
+                        <span className="page-count">{numPdfPages} trang slide PDF</span>
                       </div>
                     </div>
                   )}
@@ -196,20 +178,20 @@ export default function TranscriptReader({
                   type="button"
                   className="btn-page-nav"
                   onClick={handlePrevSlide}
-                  disabled={currentSlideIndex === 0}
+                  disabled={currentPageIndex === 1}
                 >
                   ‹
                 </button>
 
                 <span className="slide-page-badge">
-                  Slide {currentSlideIndex + 1} / {totalSlides}
+                  Slide {currentPageIndex} / {numPdfPages}
                 </span>
 
                 <button
                   type="button"
                   className="btn-page-nav"
                   onClick={handleNextSlide}
-                  disabled={currentSlideIndex === totalSlides - 1}
+                  disabled={currentPageIndex === numPdfPages}
                 >
                   ›
                 </button>
@@ -223,49 +205,16 @@ export default function TranscriptReader({
             </div>
           </div>
 
-          {/* Slide Document Card View (Dạng Slide Trình Chiếu PDF) */}
+          {/* Real PDF Slide Rendering Workspace Canvas */}
           <div className="document-paper-container">
-            <div className="slide-card" ref={containerRef} onMouseUp={handleMouseUp}>
-              {/* Slide Top Header Banner */}
-              <div className="slide-card__header-banner">
-                <div className="slide-header-top-row">
-                  <div className="vinuni-brand">
-                    <img src="/vinuni_logo.png" alt="VinUniversity" className="vinuni-slide-logo" />
-                    <span>COMP2010</span>
-                  </div>
-                  <span className="slide-number-tag">SLIDE {currentSlideIndex + 1} OF {totalSlides}</span>
-                </div>
-
-                <h2>AI Product Thinking & Requirements</h2>
-                <p className="slide-subtitle">
-                  {currentLesson.id} — {currentLesson.title}
-                </p>
-              </div>
-
-              {/* HAX Rule Banner */}
-              <div className="hax-scope-banner">
-                💡 <strong>Bôi đen đoạn văn bản:</strong> Chọn một đoạn bất kỳ bên dưới để kích hoạt menu <strong>⚡ Kiểm tra hiểu thật</strong> hoặc <strong>💬 Hỏi VLearn Tutor</strong>.
-              </div>
-
-              {/* Segments Text Content of Current Slide */}
-              <div className="slide-card__body">
-                {activeSlideSegments.map((segment) => (
-                  <p
-                    key={segment.code}
-                    data-segment-code={segment.code}
-                    className="segment-paragraph"
-                  >
-                    <span className="segment-code">[{segment.code}]</span> {segment.text}
-                  </p>
-                ))}
-              </div>
-
-              {/* Slide Card Bottom Footer */}
-              <div className="slide-card__footer">
-                <span>VinUniversity Phase 1 · Tuần 1 · Bài giảng VLearn</span>
-                <span>Trang {currentSlideIndex + 1}</span>
-              </div>
-            </div>
+            <PdfSlideViewer
+              pdfUrl="/lecture.pdf"
+              pageNumber={currentPageIndex}
+              onNumPages={(num) => setNumPdfPages(num)}
+              containerRef={containerRef}
+              onMouseUp={handleMouseUp}
+              segments={currentLesson.segments}
+            />
 
             {/* Selection Floating Action Popover Toolbar */}
             {toolbar.visible && (
@@ -296,20 +245,20 @@ export default function TranscriptReader({
                 type="button"
                 className="btn-page-nav-large"
                 onClick={handlePrevSlide}
-                disabled={currentSlideIndex === 0}
+                disabled={currentPageIndex === 1}
               >
                 ‹ Slide trước
               </button>
 
               <span>
-                Slide <strong>{currentSlideIndex + 1}</strong> / {totalSlides}
+                Slide <strong>{currentPageIndex}</strong> / {numPdfPages}
               </span>
 
               <button
                 type="button"
                 className="btn-page-nav-large"
                 onClick={handleNextSlide}
-                disabled={currentSlideIndex === totalSlides - 1}
+                disabled={currentPageIndex === numPdfPages}
               >
                 Slide tiếp ›
               </button>

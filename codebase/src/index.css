@@ -1,4 +1,4 @@
-/* VLearn Compact Desktop Design System with Official VinUniversity Logo */
+/* VLearn Compact Desktop Design System & PDF.js Text Layer Styling */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 :root {
@@ -74,13 +74,6 @@ body {
   height: 26px;
   width: auto;
   object-fit: contain;
-}
-
-.vinuni-slide-logo {
-  height: 24px;
-  width: auto;
-  object-fit: contain;
-  margin-right: 0.4rem;
 }
 
 .vlearn-nav {
@@ -189,14 +182,13 @@ body {
   font-weight: 800;
 }
 
-/* Page Layout & Background Image Overlay */
+/* Page Layout & Background Image Overlays */
 .vlearn-main-content {
   flex: 1;
   width: 100%;
   position: relative;
 }
 
-/* Dashboard Page: Single Desktop Viewport Fit (100vh) */
 .vlearn-page {
   position: relative;
   min-height: calc(100vh - 52px - 36px);
@@ -214,7 +206,7 @@ body {
   padding-top: 1.25rem;
 }
 
-/* Crisp Architectural Campus Background Image Overlay */
+/* Home Background Overlay */
 .vlearn-bg-image-overlay {
   position: fixed;
   inset: 0;
@@ -222,7 +214,6 @@ body {
   z-index: -2;
 }
 
-/* Light gradient overlay ensuring text readability while keeping campus image 100% sharp and visible */
 .vlearn-bg-image-overlay::after {
   content: '';
   position: absolute;
@@ -235,7 +226,27 @@ body {
   );
 }
 
-/* Hero Section (Compact Fonts & Spacing) */
+/* Specific Background Overlay for Courses Pages (LF_07127-1-scaled.jpg) */
+.vlearn-bg-image-overlay--courses {
+  position: fixed;
+  inset: 0;
+  background: url('/LF_07127-1-scaled.jpg') no-repeat center center / cover;
+  z-index: -2;
+}
+
+.vlearn-bg-image-overlay--courses::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 32, 40, 0.45) 0%,
+    rgba(10, 45, 55, 0.55) 50%,
+    rgba(15, 23, 42, 0.85) 100%
+  );
+}
+
+/* Hero Section */
 .vlearn-hero-sec {
   position: relative;
   z-index: 2;
@@ -316,31 +327,9 @@ body {
   box-shadow: 0 0 8px #22c55e;
 }
 
-/* Không gian học tập VLearn Section (Compact Layout) */
-.vlearn-academic-sec {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.sec-header__meta {
-  color: var(--vlearn-red);
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-
-.sec-header__title {
-  font-size: 1.35rem;
-  font-weight: 900;
-  color: #ffffff;
-  margin-top: 0.1rem;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-/* Glassmorphic Cards (Clear & Semi-transparent) */
+/* Glassmorphic Cards */
 .glass-card {
-  background: rgba(15, 23, 42, 0.65);
+  background: rgba(15, 23, 42, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 14px;
   padding: 0.85rem 1.1rem;
@@ -360,369 +349,66 @@ body {
   gap: 0.85rem;
 }
 
-.stat-item {
+/* Real PDF Slide Rendering Styles */
+.pdf-slide-container {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.85rem;
-  cursor: pointer;
+  position: relative;
+  width: 100%;
 }
 
-.stat-item__icon {
-  width: 42px;
-  height: 42px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
+.pdf-loading-spinner {
+  background: #ffffff;
+  padding: 1.5rem 2.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  color: #0f4c81;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
 }
 
-.stat-item__label {
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: rgba(255, 255, 255, 0.7);
-  letter-spacing: 0.05em;
+.pdf-page-wrapper {
+  position: relative;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+  border: 1px solid #cbd5e1;
+  overflow: hidden;
+}
+
+.pdf-canvas {
   display: block;
+  max-width: 100%;
+  height: auto;
 }
 
-.stat-item__val {
-  font-size: 1.15rem;
-  font-weight: 900;
-  color: #ffffff;
-}
-
-/* Feature Showcase Grid */
-.feature-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 0.5rem;
-  cursor: pointer;
-  border-left: 4px solid var(--vlearn-red);
-}
-
-.feature-card--mindmap {
-  border-left-color: var(--vlearn-gold);
-}
-
-.feature-card__badge {
-  display: inline-block;
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: #93c5fd;
-  background: rgba(59, 130, 246, 0.25);
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-  align-self: flex-start;
-}
-
-.feature-card__badge--gold {
-  color: #fde047;
-  background: rgba(234, 179, 8, 0.25);
-}
-
-.feature-card h3 {
-  font-size: 1rem;
-  font-weight: 800;
-  color: #ffffff;
-}
-
-.feature-card p {
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.4;
-}
-
-.btn-feature-link {
-  background: none;
-  border: none;
-  color: #60a5fa;
-  font-weight: 700;
-  font-size: 0.82rem;
-  cursor: pointer;
-  align-self: flex-start;
-}
-
-.btn-feature-link--gold {
-  color: #fbbf24;
-}
-
-/* Course Main Banner */
-.course-main-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  cursor: pointer;
-  padding: 0.75rem 1.25rem;
-}
-
-.course-main-banner__left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.course-icon {
-  width: 44px;
-  height: 44px;
-  background: rgba(254, 243, 199, 0.25);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.35rem;
-}
-
-.course-main-banner h3 {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: #ffffff;
-}
-
-.course-main-banner p {
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.8);
-  margin-top: 0.15rem;
-}
-
-.btn-red-pill {
-  background: var(--vlearn-red);
-  color: white;
-  border: none;
-  padding: 0.5rem 1.35rem;
-  border-radius: 999px;
-  font-weight: 800;
-  font-size: 0.85rem;
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: 0 4px 15px rgba(217, 45, 32, 0.4);
-  transition: background 0.15s;
-}
-
-.btn-red-pill:hover {
-  background: var(--vlearn-red-hover);
-}
-
-/* My Courses & Course Detail Page Styling */
-.my-courses-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.25rem;
-}
-
-.course-card {
-  background: rgba(15, 23, 42, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  color: white;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.course-card__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.course-card__icon {
-  width: 42px;
-  height: 42px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-}
-
-.badge-progress {
-  background: #ecfdf5;
-  color: #059669;
-  border: 1px solid #a7f3d0;
-  font-size: 0.75rem;
-  font-weight: 800;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-}
-
-.course-card__code {
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: #94a3b8;
-}
-
-.course-card__title {
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: #ffffff;
-}
-
-.course-card__desc {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.course-card__status {
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  padding-top: 0.75rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #2dd4bf;
-}
-
-.course-card__actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 0.5rem;
-}
-
-.btn-secondary {
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.45rem 0.9rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: white;
-  cursor: pointer;
-}
-
-.btn-primary-link {
-  border: none;
-  background: none;
-  color: #f87171;
-  font-weight: 800;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.notebook-banner {
-  background: rgba(15, 23, 42, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 14px;
-  padding: 1.25rem 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: white;
-  cursor: pointer;
-}
-
-.notebook-banner__left {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.notebook-banner h4 {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: white;
-}
-
-.notebook-banner p {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.days-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.day-accordion-card {
-  background: rgba(15, 23, 42, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 14px;
-  padding: 1.1rem 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  cursor: pointer;
-  color: white;
-  transition: border-color 0.15s;
-}
-
-.day-accordion-card:hover {
-  border-color: #60a5fa;
-}
-
-.day-badge {
-  width: 48px;
-  height: 48px;
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* PDF.js Text Selection Layer (Cho phép bôi đen chữ trên hình slide PDF thực) */
+.pdf-text-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  opacity: 0.25;
   line-height: 1;
 }
 
-.day-badge__label {
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: #94a3b8;
+.pdf-text-layer > span {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
 }
 
-.day-badge__num {
-  font-size: 1.1rem;
-  font-weight: 900;
-  color: #ffffff;
+.pdf-text-layer ::selection {
+  background: rgba(37, 99, 235, 0.5);
+  color: transparent;
 }
 
-.day-info {
-  flex: 1;
-}
-
-.day-title {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: #ffffff;
-}
-
-.day-subtext {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.btn-start-reading {
-  background: var(--vlearn-red);
-  color: white;
-  border: none;
-  padding: 0.55rem 1.35rem;
-  border-radius: 999px;
-  font-weight: 800;
-  font-size: 0.88rem;
-  cursor: pointer;
-}
-
-.page-header__meta {
-  color: var(--vlearn-red);
-  font-size: 0.75rem;
-  font-weight: 800;
-}
-
-.page-header__title {
-  font-size: 1.6rem;
-  font-weight: 900;
-  color: white;
-}
-
-.page-header__subtitle {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
-}
-
-/* Document Reader Workspace Styling (Crisp Clean Light Reader Workspace) */
+/* Document Reader Workspace Styling */
 .reader-workspace {
   position: fixed;
   inset: 0;
@@ -982,117 +668,12 @@ body {
   font-weight: 700;
 }
 
-/* Document Slide Card Paper (Khu vực Trang Slide Trình Chiếu) */
 .document-paper-container {
   padding: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-}
-
-.slide-card {
-  background: #ffffff;
-  width: 100%;
-  max-width: 840px;
-  border-radius: 14px;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e2e8f0;
-  padding: 2.5rem;
-  position: relative;
-  min-height: 480px;
-  user-select: text;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  color: #0f172a;
-}
-
-.slide-header-top-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-}
-
-.slide-number-tag {
-  font-size: 0.7rem;
-  font-weight: 800;
-  background: #f1f5f9;
-  color: #0f4c81;
-  padding: 0.2rem 0.6rem;
-  border-radius: 4px;
-}
-
-.slide-card__header-banner {
-  border-bottom: 2px solid var(--vlearn-red);
-  padding-bottom: 1rem;
-  margin-bottom: 1.25rem;
-}
-
-.vinuni-brand {
-  font-size: 0.75rem;
-  font-weight: 900;
-  color: #0f4c81;
-  letter-spacing: 0.05em;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.slide-card__header-banner h2 {
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: #0f172a;
-  margin-top: 0.25rem;
-}
-
-.slide-subtitle {
-  font-size: 0.95rem;
-  color: var(--vlearn-red);
-  font-weight: 700;
-}
-
-.hax-scope-banner {
-  background: #eef2ff;
-  border-left: 3px solid #6366f1;
-  padding: 0.65rem 1rem;
-  font-size: 0.85rem;
-  border-radius: 6px;
-  margin-bottom: 1.25rem;
-  color: #3730a3;
-}
-
-.slide-card__body {
-  flex: 1;
-}
-
-.segment-paragraph {
-  margin-bottom: 1.25rem;
-  font-size: 1rem;
-  line-height: 1.75;
-  color: #1e293b;
-}
-
-.segment-code {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #6366f1;
-  background: #f5f3ff;
-  padding: 0.15rem 0.4rem;
-  border-radius: 4px;
-  margin-right: 0.4rem;
-}
-
-.slide-card__footer {
-  border-top: 1px solid #e2e8f0;
-  padding-top: 0.85rem;
-  margin-top: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: #94a3b8;
-  font-weight: 600;
 }
 
 /* Floating Action Selection Popover Toolbar */
