@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VLearn Mindmap Navigation — Slide Thuyết Trình Demo Hackathon</title>
+  
+  <!-- High Contrast Modern Vietnamese Fonts: Plus Jakarta Sans & Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700;1,800&family=Plus+Jakarta+Sans:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===========================================
+       ULTRA-CLEAR HIGH CONTRAST MODERN DESIGN SYSTEM
+       =========================================== */
+    
+    :root {
+      /* High Contrast Color Tokens */
+      --bg-paper: #F8FAFC;        /* Clean Off-white */
+      --text-dark: #0F172A;       /* Ultra Deep Slate Black for Maximum Sharpness */
+      --text-muted: #334155;      /* Crisp Dark Slate for Descriptions */
+      --text-sub: #475569;        /* Medium Dark Slate */
+      
+      /* Vibrant Solid Pastel Fill Cards */
+      --card-white: #FFFFFF;
+      --card-lemon: #FEF08A;      /* Bright Yellow Pastel */
+      --card-pink: #FBCFE8;       /* Bright Pink Pastel */
+      --card-blush: #FFEDD5;      /* Warm Peach Pastel */
+      --card-sage: #DCFCE7;       /* Refreshing Green Pastel */
+      --card-lilac: #E9D5FF;      /* Vivid Purple Pastel */
+      --card-blue: #E0F2FE;       /* Sky Blue Pastel */
+
+      --border-strong: #0F172A;   /* 2px Solid Dark Border for Sharp Lines */
+      --border-subtle: #CBD5E1;   /* 1.5px Border */
+
+      /* Typography Tokens */
+      --font-heading: 'Plus Jakarta Sans', 'Be Vietnam Pro', system-ui, sans-serif;
+      --font-body: 'Be Vietnam Pro', system-ui, sans-serif;
+
+      /* Viewport Stage Tokens */
+      --stage-bg: #0F172A;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--stage-bg);
+      font-family: var(--font-body);
+      color: var(--text-dark);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .deck-viewport {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      background: var(--stage-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .deck-stage {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      transform-origin: 0 0;
+      background: var(--bg-paper);
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 45px 80px 40px 80px;
+      background-color: var(--bg-paper);
+      color: var(--text-dark);
+    }
+
+    .slide.active {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 1;
+    }
+
+    /* ===========================================
+       ULTRA-BOLD TYPOGRAPHY & CHROME
+       =========================================== */
+
+    h1, h2, h3, h4, .heading {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      color: var(--text-dark);
+      letter-spacing: -0.02em;
+    }
+
+    /* Mega Font Sizes for 100% Sharpness */
+    .slide-title-hero {
+      font-size: 104px;
+      line-height: 1.0;
+      font-weight: 800;
+    }
+
+    .slide-title-large {
+      font-size: 68px;
+      line-height: 1.08;
+      font-weight: 800;
+    }
+
+    .slide-title-medium {
+      font-size: 52px;
+      line-height: 1.12;
+      font-weight: 800;
+    }
+
+    .text-highlight {
+      color: #0284C7; /* Bold Sky Blue Accent */
+      font-weight: 800;
+    }
+
+    .eyebrow {
+      font-family: var(--font-heading);
+      font-size: 26px;
+      font-weight: 700;
+      color: #0F172A;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .page-marker {
+      font-family: var(--font-heading);
+      font-size: 32px;
+      font-weight: 800;
+      color: #0284C7;
+    }
+
+    .chrome-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 3px solid var(--text-dark);
+    }
+
+    .foot-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 3px solid var(--text-dark);
+      font-family: var(--font-body);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    /* High Contrast Crisp Cards */
+    .card-solid {
+      background: var(--card-white);
+      border-radius: 24px;
+      padding: 32px;
+      border: 3px solid var(--text-dark);
+      box-shadow: 6px 6px 0px var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-pastel {
+      border-radius: 24px;
+      padding: 32px;
+      color: var(--text-dark);
+      border: 3px solid var(--text-dark);
+      box-shadow: 6px 6px 0px var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-pastel.lemon { background-color: var(--card-lemon); }
+    .card-pastel.pink { background-color: var(--card-pink); }
+    .card-pastel.blush { background-color: var(--card-blush); }
+    .card-pastel.sage { background-color: var(--card-sage); }
+    .card-pastel.lilac { background-color: var(--card-lilac); }
+    .card-pastel.blue { background-color: var(--card-blue); }
+
+    /* Stat Numerals */
+    .numeral-hero {
+      font-family: var(--font-heading);
+      font-size: 110px;
+      font-weight: 800;
+      line-height: 0.9;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-family: var(--font-body);
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--text-dark);
+    }
+
+    .stat-note {
+      font-family: var(--font-body);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    /* High-contrast Table */
+    .crisp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 22px;
+    }
+
+    .crisp-table th {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-dark);
+      text-align: left;
+      padding: 16px 20px;
+      border-bottom: 3px solid var(--text-dark);
+      background: #F1F5F9;
+    }
+
+    .crisp-table td {
+      padding: 18px 20px;
+      border-bottom: 2px solid var(--border-subtle);
+      vertical-align: middle;
+      font-family: var(--font-body);
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--text-dark);
+    }
+
+    .crisp-table tr.selected {
+      background-color: var(--card-lemon);
+    }
+
+    .crisp-table tr.selected td {
+      font-weight: 800;
+    }
+
+    /* High-contrast Pills */
+    .pill {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 8px 24px;
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      margin-bottom: 12px;
+      background: var(--text-dark);
+      color: #FFFFFF;
+      border: 2px solid var(--text-dark);
+    }
+
+    .pill.lemon { background-color: var(--card-lemon); color: var(--text-dark); }
+    .pill.pink { background-color: var(--card-pink); color: var(--text-dark); }
+    .pill.sage { background-color: var(--card-sage); color: var(--text-dark); }
+    .pill.blue { background-color: #0284C7; color: #FFFFFF; }
+
+    /* Crisp Bullet Lists */
+    .crisp-list {
+      list-style: none;
+    }
+
+    .crisp-list li {
+      position: relative;
+      padding-left: 32px;
+      margin-bottom: 18px;
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--text-dark);
+    }
+
+    .crisp-list li::before {
+      content: '✔';
+      position: absolute;
+      left: 0;
+      color: #0284C7;
+      font-weight: 800;
+      font-size: 24px;
+    }
+
+    /* Layout Helpers */
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 24px 0;
+    }
+
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+
+    .grid-3col {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 32px;
+    }
+
+    .grid-1-2col {
+      display: grid;
+      grid-template-columns: 1fr 1.45fr;
+      gap: 48px;
+    }
+
+    .mapping-row {
+      display: grid;
+      grid-template-columns: 1fr 40px 1.25fr;
+      align-items: center;
+      gap: 20px;
+      padding: 18px 28px;
+      border-radius: 20px;
+      background: #FFFFFF;
+      margin-bottom: 14px;
+      border: 3px solid var(--text-dark);
+      box-shadow: 4px 4px 0px var(--text-dark);
+    }
+
+    .arrow-icon {
+      font-family: var(--font-heading);
+      font-size: 32px;
+      font-weight: 800;
+      text-align: center;
+      color: #0284C7;
+    }
+
+
+  </style>
+</head>
+<body>
+
+  <div class="deck-viewport">
+    <div class="deck-stage" id="stage">
+
+      <!-- ===================================================================
+           SLIDE 1: BỐI CẢNH & PHÂN TÍCH KHẢO SÁT HỌC VIÊN
+           =================================================================== -->
+      <section class="slide active" data-slide="1">
+        <div class="chrome-bar">
+          <span class="eyebrow">Dự án Sản phẩm AI Nội bộ</span>
+          <span class="page-marker">SLIDE 01</span>
+        </div>
+
+        <div class="slide-body grid-1-2col" style="align-items: center;">
+          <!-- Left: Title -->
+          <div>
+            <span class="pill blue">BÁO CÁO DEMO HACKATHON</span>
+            <h1 class="slide-title-hero" style="margin-top: 10px;">
+              VLearn <br>
+              <span class="text-highlight">Mindmap Navigation</span>
+            </h1>
+            
+            <p style="font-size: 26px; line-height: 1.45; color: var(--text-muted); margin-top: 24px; font-weight: 600;">
+              Tự động tóm tắt bài giảng thành sơ đồ tư duy trực quan, cho phép học viên bấm vào từng nhánh để trượt ngay tới trang slide tương ứng.
+            </p>
+            
+            <div class="card-solid" style="margin-top: 28px; padding: 26px; border-left: 8px solid #0284C7;">
+              <span style="font-family: var(--font-heading); font-size: 20px; color: #0284C7; font-weight: 800;">MỤC TIÊU CỐT LÕI CỦA HỌC VIÊN</span>
+              <p style="font-size: 24px; margin-top: 6px; font-weight: 700; line-height: 1.35;">
+                Nắm bắt nhanh bức tranh tổng quan bài học mà không phải tốn <span style="color: #D97706;">30–45 phút</span> tự lật xem lại từng trang slide dài.
+              </p>
+            </div>
+          </div>
+
+          <!-- Right: Survey Data Cards -->
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div class="grid-2col">
+              <div class="card-pastel lemon">
+                <div class="numeral-hero">54.5%</div>
+                <div class="stat-label">Học viên (12/22) gặp khó khi học slide dài nhiều chữ</div>
+                <div class="stat-note">Khảo sát n = 22 học viên</div>
+              </div>
+              <div class="card-pastel pink">
+                <div class="numeral-hero">36.4%</div>
+                <div class="stat-label">Học viên (8/22) tốn 30–45 phút tự tóm tắt ra vở</div>
+                <div class="stat-note">Tổng 90.9% vướng khó khăn</div>
+              </div>
+            </div>
+
+            <div class="card-solid" style="padding: 28px;">
+              <span class="pill sage">KẾT QUẢ KHẢO SÁT THỰC TẾ (22 HỌC VIÊN)</span>
+              <ul class="crisp-list" style="margin-top: 14px;">
+                <li><strong>95.0% Học viên (19/20 người):</strong> Mong muốn <em>Bấm vào 1 nút trên sơ đồ → Màn hình tự nhảy đến đúng trang slide đó</em>.</li>
+                <li><strong>50.0% Học viên (10/20 người):</strong> Muốn bài học được tóm tắt dạng <em>Cây thư mục kiến thức</em> (Chương → Bài → Ý chính).</li>
+              </ul>
+              
+              <div style="margin-top: 16px; padding-top: 14px; border-top: 2px solid var(--border-subtle); font-size: 22px; font-weight: 700; color: #0369A1; line-height: 1.35;">
+                "Slide quá nhiều chữ... Mình muốn bấm vào 1 nút trên Mindmap → Giao diện tự nhảy đến đúng trang Slide đó."
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="foot-bar">
+          <span>HỒ SƠ BÀI TOÁN §1 · DỮ LIỆU & NHU CẦU</span>
+          <span>KHOÁ HỌC AI THỰC CHIẾN — NHÓM UADAYDCA</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 2: PHÂN TÍCH NỖI ĐAU & MA TRẬN CHỌN BÀI TOÁN
+           =================================================================== -->
+      <section class="slide" data-slide="2">
+        <div class="chrome-bar">
+          <span class="eyebrow">Phân tích Nỗi đau & Lựa chọn Giải pháp</span>
+          <span class="page-marker">SLIDE 02</span>
+        </div>
+
+        <div class="slide-body">
+          <div style="margin-bottom: 22px;">
+            <h2 class="slide-title-large">
+              Ba nỗi đau lớn nhất & <span class="text-highlight">Quyết định chọn bài toán</span>
+            </h2>
+          </div>
+
+          <!-- 3 Pastel Cards for Pains -->
+          <div class="grid-3col" style="margin-bottom: 24px;">
+            <div class="card-pastel pink">
+              <span class="pill" style="background: #0F172A; color: #fff;">NỖI ĐAU 1 (54.5% HỌC VIÊN)</span>
+              <h3 style="font-size: 28px; margin-top: 8px; margin-bottom: 6px; font-weight: 800;">Slide quá nhiều chữ</h3>
+              <p style="font-size: 20px; color: var(--text-muted); font-weight: 600; line-height: 1.4;">
+                Khó nhìn ra bức tranh tổng quan và mối liên hệ giữa các phần kiến thức trong bài.
+              </p>
+            </div>
+
+            <div class="card-pastel blush">
+              <span class="pill" style="background: #0F172A; color: #fff;">NỖI ĐAU 2 (36.4% HỌC VIÊN)</span>
+              <h3 style="font-size: 28px; margin-top: 8px; margin-bottom: 6px; font-weight: 800;">Tốn 30–45 phút tóm tắt</h3>
+              <p style="font-size: 20px; color: var(--text-muted); font-weight: 600; line-height: 1.4;">
+                Lãng phí nhiều thời gian tự ghi chép lại nội dung ra vở hoặc file cá nhân sau buổi.
+              </p>
+            </div>
+
+            <div class="card-pastel sage">
+              <span class="pill" style="background: #0F172A; color: #fff;">NỖI ĐAU 3 (90.9% KỲ VỌNG)</span>
+              <h3 style="font-size: 28px; margin-top: 8px; margin-bottom: 6px; font-weight: 800;">Nội dung bị chia nhỏ</h3>
+              <p style="font-size: 20px; color: var(--text-muted); font-weight: 600; line-height: 1.4;">
+                Slide chia quá nhiều trang gây manh mún, làm học viên bị mất dấu khi tìm lại thông tin.
+              </p>
+            </div>
+          </div>
+
+          <!-- Impact Table -->
+          <div class="card-solid" style="padding: 24px;">
+            <table class="crisp-table">
+              <thead>
+                <tr>
+                  <th>Ý tưởng Giải pháp</th>
+                  <th>Số người gặp</th>
+                  <th>Tần suất</th>
+                  <th>Thời gian tốn</th>
+                  <th>Khả thi trong 1.5 ngày</th>
+                  <th>Quyết định nhóm</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="selected">
+                  <td>
+                    <strong style="font-size: 22px; color: #0F172A;">1. Sơ đồ Mindmap liên kết trực tiếp Slide gốc</strong><br>
+                    <span style="font-size: 18px; color: #334155; font-weight: 600;">Tự động tóm tắt & bấm nút trượt slide</span>
+                  </td>
+                  <td><strong style="font-size: 24px; color: #0284C7;">90.9%</strong> (20/22 người)</td>
+                  <td>2–3 lần/buổi học</td>
+                  <td>30–45 phút</td>
+                  <td>Rất cao</td>
+                  <td><span class="pill blue" style="margin:0; font-size: 16px;">CHỌN BÀI TOÁN</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong style="font-size: 20px;">2. AI tự động tạo bài ôn tập Quiz cuối buổi</strong><br>
+                    <span style="font-size: 16px; color: var(--text-sub); font-weight: 500;">Sinh câu hỏi trắc nghiệm thử sức</span>
+                  </td>
+                  <td>50.0% (11/22 người)</td>
+                  <td>1 lần/buổi học</td>
+                  <td>15 phút</td>
+                  <td>Cao</td>
+                  <td><span style="font-size: 18px; font-weight: 700; color: #64748B;">LOẠI (Nhu cầu thấp)</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong style="font-size: 20px;">3. Tóm tắt bài giảng thành file nghe Podcast</strong><br>
+                    <span style="font-size: 16px; color: var(--text-sub); font-weight: 500;">Chuyển bài giảng thành giọng đọc audio</span>
+                  </td>
+                  <td>18.2% (4/22 người)</td>
+                  <td>1 lần/tuần</td>
+                  <td>20 phút</td>
+                  <td>Thấp</td>
+                  <td><span style="font-size: 18px; font-weight: 700; color: #64748B;">LOẠI (Rủi ro kỹ thuật)</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="foot-bar">
+          <span>HỒ SƠ BÀI TOÁN §2 · PHÂN TÍCH NỖI ĐAU & CHỌN GIẢI PHÁP</span>
+          <span>KHOÁ HỌC AI THỰC CHIẾN — NHÓM UADAYDCA</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 3: TỪ NỖI ĐAU HỌC VIÊN ĐẾN TÍNH NĂNG SẢN PHẨM & DEMO KỊCH BẢN
+           =================================================================== -->
+      <section class="slide" data-slide="3">
+        <div class="chrome-bar">
+          <span class="eyebrow">Từ Nỗi đau Học viên đến Tính năng Sản phẩm</span>
+          <span class="page-marker">SLIDE 03</span>
+        </div>
+
+        <div class="slide-body">
+          <div style="margin-bottom: 20px;">
+            <h2 class="slide-title-medium">
+              Giải pháp sản phẩm được thiết kế từ <span class="text-highlight">chính nỗi đau thực tế</span>
+            </h2>
+          </div>
+
+          <!-- Mapping Rows -->
+          <div style="margin-bottom: 20px;">
+            <div class="mapping-row">
+              <div>
+                <span style="font-size: 20px; color: #DC2626; font-weight: 800;">Nỗi đau 1: Slide quá nhiều chữ (54.5%)</span>
+                <p style="font-size: 20px; margin-top: 2px; font-weight: 600;">Khó nhìn ra hệ thống kiến thức cốt lõi</p>
+              </div>
+              <div class="arrow-icon">➔</div>
+              <div>
+                <span style="font-size: 20px; color: #16A34A; font-weight: 800;">Tính năng 1: Giao diện Sơ đồ cây (Dual-View)</span>
+                <p style="font-size: 20px; margin-top: 2px; font-weight: 600;">Hiển thị khung sơ đồ tư duy tổng quan ngay bên cạnh bài học</p>
+              </div>
+            </div>
+
+            <div class="mapping-row">
+              <div>
+                <span style="font-size: 20px; color: #DC2626; font-weight: 800;">Nỗi đau 2: Tốn 30-45' tóm tắt (36.4%)</span>
+                <p style="font-size: 20px; margin-top: 2px; font-weight: 600;">Tự ghi chép thủ công tốn thời gian</p>
+              </div>
+              <div class="arrow-icon">➔</div>
+              <div>
+                <span style="font-size: 20px; color: #16A34A; font-weight: 800;">Tính năng 2: AI tự động tóm tắt bài giảng</span>
+                <p style="font-size: 20px; margin-top: 2px; font-weight: 600;">AI tự phân tích nội dung slide và tạo sơ đồ trong dưới 3 giây</p>
+              </div>
+            </div>
+
+            <div class="mapping-row">
+              <div>
+                <span style="font-size: 20px; color: #DC2626; font-weight: 800;">Nỗi đau 3: Khó tìm trang slide (95.0%)</span>
+                <p style="font-size: 20px; margin-top: 2px; font-weight: 600;">Mất thời gian lội lại từng trang bài giảng</p>
+              </div>
+              <div class="arrow-icon">➔</div>
+              <div>
+                <span style="font-size: 20px; color: #16A34A; font-weight: 800;">Tính năng 3: Bấm nút trượt slide thông minh</span>
+                <p style="font-size: 20px; margin-top: 2px; font-weight: 600;">Bấm vào nhánh sơ đồ → Màn hình trượt ngay tới slide & tô sáng chữ</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Demo Cards -->
+          <div class="grid-2col">
+            <div class="card-pastel lemon">
+              <span class="pill" style="background: #0F172A; color: #fff;">TRƯỜNG HỢP 1: BÀI GIẢNG CHUẨN</span>
+              <p style="font-size: 21px; margin-top: 8px; line-height: 1.45; font-weight: 600;">
+                Mở slide bài giảng → AI tự vẽ sơ đồ bên cạnh → Bấm vào nhánh <strong>"Few-shot Prompting"</strong> → Màn hình trượt mượt tới <strong>Trang 14</strong> & tô sáng định nghĩa.
+              </p>
+            </div>
+
+            <div class="card-pastel blush">
+              <span class="pill" style="background: #0F172A; color: #fff;">TRƯỜNG HỢP 2: SLIDE TOÀN HÌNH ÁNH (XỬ LÝ LỖI)</span>
+              <p style="font-size: 21px; margin-top: 8px; line-height: 1.45; font-weight: 600;">
+                Slide chỉ có sơ đồ/hình ảnh không có chữ → AI phát hiện thiếu text, chủ động thông báo: <em>"Bài giảng dạng hình ảnh, sơ đồ được tạo từ Lời giảng của thầy cô"</em> (Đường lui an toàn).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="foot-bar">
+          <span>HỒ SƠ BÀI TOÁN §3 · GIẢI PHÁP & KỊCH BẢN DEMO</span>
+          <span>KHOÁ HỌC AI THỰC CHIẾN — NHÓM UADAYDCA</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 4: KẾT QUẢ KIỂM THỬ THỰC TẾ TRÊN 20 BÀI GIẢNG
+           =================================================================== -->
+      <section class="slide" data-slide="4">
+        <div class="chrome-bar">
+          <span class="eyebrow">Kết quả Kiểm thử Thực tế trên Golden Set</span>
+          <span class="page-marker">SLIDE 04</span>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-1-2col" style="align-items: center; margin-bottom: 22px;">
+            <div>
+              <h2 class="slide-title-large">
+                Kết quả đo trên <span class="text-highlight">20 bộ bài giảng thực tế</span>
+              </h2>
+            </div>
+            
+            <div class="card-pastel blue" style="padding: 26px;">
+              <span class="pill" style="background: #0F172A; color: #fff;">MỤC TIÊU CAM KẾT VỚI BAN GIÁM KHẢO</span>
+              <p style="font-size: 22px; margin-top: 6px; font-weight: 700; line-height: 1.4;">
+                "Đạt khi <strong style="color: #0284C7;">≥ 85% trường hợp chính xác</strong> trên bộ 20 bài kiểm thử, 100% trích dẫn đúng số trang slide thật, và thời gian tạo sơ đồ dưới 3.5 giây."
+              </p>
+            </div>
+          </div>
+
+          <!-- Benchmark Table -->
+          <div class="card-solid" style="margin-bottom: 20px; padding: 24px;">
+            <table class="crisp-table">
+              <thead>
+                <tr>
+                  <th>Lượt thử nghiệm</th>
+                  <th>Thời gian</th>
+                  <th>Số bài test</th>
+                  <th>Kết quả Đạt / Chưa đạt</th>
+                  <th>Tỷ lệ Chính xác</th>
+                  <th>Nguyên nhân chưa đạt & Cách khắc phục</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong style="font-size: 22px;">Lượt 1</strong></td>
+                  <td>30/07 18:00</td>
+                  <td>20 bài test</td>
+                  <td>14 Đạt / 6 Chưa đạt</td>
+                  <td><strong style="color: #DC2626; font-size: 28px;">70.0%</strong></td>
+                  <td>
+                    <span style="font-size: 18px; font-weight: 600;">AI trích dẫn lệch trang khi slide có trang bìa và trang mục lục.</span><br>
+                    <span style="font-size: 17px; color: #0284C7; font-weight: 700;">➔ Đã khắc phục: Cấu hình lại hệ thống để tự động bỏ qua trang bìa.</span>
+                  </td>
+                </tr>
+                <tr class="selected">
+                  <td><strong style="font-size: 22px;">Lượt 2</strong></td>
+                  <td>31/07 10:00</td>
+                  <td>20 bài test</td>
+                  <td>18 Đạt / 2 Chưa đạt</td>
+                  <td><strong style="color: #16A34A; font-size: 32px;">90.0%</strong></td>
+                  <td>
+                    <span style="font-size: 18px; font-weight: 800;">ĐÃ VƯỢT MỤC TIÊU 85%! Chỉ còn 2 slide dạng hình ảnh chưa quét được chữ.</span><br>
+                    <span style="font-size: 17px; color: #0284C7; font-weight: 700;">➔ Đã khắc phục: Thêm phương án dự phòng dùng Lời giảng của thầy cô.</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Failure Deep Dive Card -->
+          <div class="card-pastel sage" style="padding: 24px;">
+            <span class="pill" style="background: #0F172A; color: #fff;">PHÂN TÍCH MỘT LỖI QUAN TRỌNG VÀ CÁCH XỬ LÝ CHÍN CHẮN</span>
+            <div class="grid-2col" style="margin-top: 8px; gap: 20px;">
+              <div>
+                <strong style="font-size: 20px; color: #0F172A;">Vấn đề phát hiện:</strong>
+                <p style="font-size: 18px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; font-weight: 600;">
+                  Khi bài giảng chứa slide dạng hình chụp không có chữ, AI bị lúng túng làm các nhánh sơ đồ bị mờ hoặc trỏ không chính xác.
+                </p>
+              </div>
+              <div>
+                <strong style="font-size: 20px; color: #0F172A;">Cách xử lý của nhóm:</strong>
+                <p style="font-size: 18px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; font-weight: 600;">
+                  Không cố tình để AI đoán bừa, mà chủ động chuyển sang lấy dữ liệu từ <strong>Lời giảng của thầy cô</strong> kèm thông báo minh bạch.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="foot-bar">
+          <span>HỒ SƠ BÀI TOÁN §7 · KẾT QUẢ KIỂM THỬ THỰC TẾ</span>
+          <span>KHOÁ HỌC AI THỰC CHIẾN — NHÓM UADAYDCA</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 5: Ý KIẾN ĐÁNH GIÁ TỪ HỌC VIÊN TRẢI NGHIỆM
+           =================================================================== -->
+      <section class="slide" data-slide="5">
+        <div class="chrome-bar">
+          <span class="eyebrow">Đánh giá Thực tế từ Học viên Trải nghiệm</span>
+          <span class="page-marker">SLIDE 05</span>
+        </div>
+
+        <div class="slide-body">
+          <div style="margin-bottom: 20px;">
+            <h2 class="slide-title-large">
+              Học viên trải nghiệm thật <span class="text-highlight">nói gì về sản phẩm?</span>
+            </h2>
+          </div>
+
+          <div class="grid-2col" style="margin-bottom: 22px;">
+            <!-- Quote 1 -->
+            <div class="card-pastel pink" style="padding: 32px;">
+              <span class="pill" style="background: #0F172A; color: #fff;">HỌC VIÊN TRẢI NGHIỆM #1</span>
+              <div style="margin-top: 14px; margin-bottom: 14px; border-left: 6px solid #0F172A; padding-left: 20px;">
+                <p style="font-size: 28px; line-height: 1.35; font-weight: 800; color: #0F172A;">
+                  "Bấm vào sơ đồ slide nhảy chuẩn đét, tiết kiệm hẳn 30 phút lội lại bài giảng cũ để tìm ý chính."
+                </p>
+                <div style="font-size: 19px; font-weight: 700; color: #475569; margin-top: 12px;">— NGUYỄN VĂN HÙNG (@HUNG_K4) · HỌC VIÊN KHOÁ 4</div>
+              </div>
+              <div class="stat-note">✔ Nhiệm vụ: Tìm khái niệm Few-shot & Trượt slide gốc</div>
+            </div>
+
+            <!-- Quote 2 -->
+            <div class="card-pastel lilac" style="padding: 32px;">
+              <span class="pill" style="background: #0F172A; color: #fff;">HỌC VIÊN TRẢI NGHIỆM #2</span>
+              <div style="margin-top: 14px; margin-bottom: 14px; border-left: 6px solid #0F172A; padding-left: 20px;">
+                <p style="font-size: 28px; line-height: 1.35; font-weight: 800; color: #0F172A;">
+                  "Thích nhất là AI tự động tô sáng dòng chữ cần đọc trên slide gốc, nhìn vào là thấy đáp án ngay."
+                </p>
+                <div style="font-size: 19px; font-weight: 700; color: #475569; margin-top: 12px;">— LÊ THỊ MAI (@MAI_LE) · HỌC VIÊN KHOÁ 4</div>
+              </div>
+              <div class="stat-note">✔ Nhiệm vụ: Ôn tập lại slide bài giảng nhiều chữ</div>
+            </div>
+          </div>
+
+          <!-- Product Improvements Card -->
+          <div class="card-solid" style="padding: 28px;">
+            <span class="pill sage">CẢI TIẾN SẢN PHẨM DỰA TRÊN PHẢN HỒI CỦA HỌC VIÊN</span>
+            <ul class="crisp-list" style="margin-top: 12px;">
+              <li><strong>Hiển thị cảnh báo khi AI không chắc chắn:</strong> Khi mối liên hệ giữa các phần chưa rõ ràng, sơ đồ sẽ đổi sang nét đứt kèm nút <em>"Hỏi AI làm rõ thêm"</em>.</li>
+              <li><strong>Thêm nút "Báo sai trích dẫn":</strong> Giúp học viên góp ý ngay nếu phát hiện trang slide bị nhảy chưa chuẩn để nhóm cập nhật lại.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="foot-bar">
+          <span>HỒ SƠ BÀI TOÁN §8 & §9 · Ý KIẾN HỌC VIÊN & CẢI TIẾN</span>
+          <span>KHOÁ HỌC AI THỰC CHIẾN — NHÓM UADAYDCA</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 6: HƯỚNG PHÁT TRIỂN TIẾP THEO & BÀI HỌC RÚT RA
+           =================================================================== -->
+      <section class="slide" data-slide="6">
+        <div class="chrome-bar">
+          <span class="eyebrow">Hướng Phát triển Tương lai & Bài học Cốt lõi</span>
+          <span class="page-marker">SLIDE 06</span>
+        </div>
+
+        <div class="slide-body">
+          <div style="margin-bottom: 20px;">
+            <h2 class="slide-title-large">
+              Nếu nhóm có thêm <span class="text-highlight">1 tuần phát triển...</span>
+            </h2>
+          </div>
+
+          <div class="grid-2col" style="margin-bottom: 22px;">
+            <!-- Priority Backlog -->
+            <div class="card-solid" style="padding: 30px;">
+              <span class="pill sage">HAI VIỆC ƯU TIÊN HÀNG ĐẦU TRONG KẾ HOẠCH</span>
+              
+              <div style="margin-top: 16px;">
+                <span class="pill pink" style="font-size: 15px;">ƯU TIÊN 1</span>
+                <h3 style="font-size: 24px; margin-bottom: 4px; font-weight: 800;">Cho phép kéo thả & chỉnh sửa sơ đồ thủ công</h3>
+                <p style="font-size: 19px; color: var(--text-muted); line-height: 1.45; font-weight: 600;">
+                  Cho phép học viên tự thêm bớt nhánh sơ đồ hoặc ghi chú thêm theo ý muốn cá nhân.
+                </p>
+              </div>
+
+              <div style="margin-top: 18px;">
+                <span class="pill blush" style="font-size: 15px;">ƯU TIÊN 2</span>
+                <h3 style="font-size: 24px; margin-bottom: 4px; font-weight: 800;">Tự động gom nhóm bài giảng dài (>100 trang)</h3>
+                <p style="font-size: 19px; color: var(--text-muted); line-height: 1.45; font-weight: 600;">
+                  Tự động nhóm các bài giảng dài thành các cụm chủ đề lớn hơn để học viên dễ theo dõi.
+                </p>
+              </div>
+            </div>
+
+            <!-- Big Lesson Learned -->
+            <div class="card-pastel lemon" style="padding: 32px; display: flex; flex-direction: column; justify-content: center;">
+              <span class="pill" style="background: #0F172A; color: #fff;">BÀI HỌC LỚN NHẤT CỦA CẢ NHÓM</span>
+              
+              <div style="margin-top: 16px; margin-bottom: 16px; border-left: 6px solid #0F172A; padding-left: 20px;">
+                <p style="font-size: 28px; color: #0F172A; line-height: 1.35; font-weight: 800;">
+                  "Thiết kế phương án dự phòng an toàn và minh bạch với người dùng quan trọng hơn nhiều so với việc cố gắng ép AI trả lời đúng 100%."
+                </p>
+              </div>
+
+              <p style="font-size: 19px; color: var(--text-muted); line-height: 1.45; font-weight: 600;">
+                Việc có kịch bản xử lý khi AI gặp giới hạn kỹ thuật giúp sản phẩm luôn giữ vững niềm tin của học viên trong suốt quá trình sử dụng.
+              </p>
+            </div>
+          </div>
+
+          <!-- Team Attribution Footer -->
+          <div style="border-top: 3px solid var(--text-dark); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; color: var(--text-dark); font-weight: 700;">
+            <span>XIN CẢM ƠN BAN GIÁM KHẢO VÀ CÁC THẦY CÔ! — NHÓM UADAYDCA</span>
+            <span>THÀNH VIÊN: THANH HIỀN · THỊ HƯỜNG · NGỌC HÙNG · THÀNH ĐẠT · VIỆT QUANG</span>
+          </div>
+        </div>
+
+        <div class="foot-bar">
+          <span>HỒ SƠ BÀI TOÁN §9 · KẾ HOẠCH NÂNG CẤP & BÀI HỌC</span>
+          <span>KHOÁ HỌC AI THỰC CHIẾN — NHÓM UADAYDCA</span>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Javascript Stage Scaler & Presentation Engine -->
+  <script>
+    (function () {
+      const stage = document.getElementById('stage');
+      const slides = document.querySelectorAll('.slide');
+      let currentSlide = 1;
+      const totalSlides = slides.length;
+
+      // 1. Uniform 16:9 Stage Scaling (Fixed 1920x1080)
+      function updateStageScale() {
+        const targetWidth = 1920;
+        const targetHeight = 1080;
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        const scale = Math.min(windowWidth / targetWidth, windowHeight / targetHeight);
+        const left = (windowWidth - targetWidth * scale) / 2;
+        const top = (windowHeight - targetHeight * scale) / 2;
+
+        stage.style.transform = `translate(${left}px, ${top}px) scale(${scale})`;
+      }
+
+      window.addEventListener('resize', updateStageScale);
+      updateStageScale();
+
+      // 2. Slide Navigation Controller
+      function goToSlide(n) {
+        if (n < 1) n = 1;
+        if (n > totalSlides) n = totalSlides;
+
+        currentSlide = n;
+
+        slides.forEach((slide) => {
+          const slideNum = parseInt(slide.getAttribute('data-slide'), 10);
+          if (slideNum === currentSlide) {
+            slide.classList.add('active');
+          } else {
+            slide.classList.remove('active');
+          }
+        });
+      }
+
+      // Keyboard & Click Listeners
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'Space' || e.key === 'PageDown') {
+          goToSlide(currentSlide + 1);
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+          goToSlide(currentSlide - 1);
+        } else if (e.key === 'Home') {
+          goToSlide(1);
+        } else if (e.key === 'End') {
+          goToSlide(totalSlides);
+        }
+      });
+
+      // Click to advance
+      window.addEventListener('click', (e) => {
+        if (e.clientX > window.innerWidth / 2) {
+          goToSlide(currentSlide + 1);
+        } else {
+          goToSlide(currentSlide - 1);
+        }
+      });
+
+      // Initial Call
+      goToSlide(1);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "batch03-k4-ai-product-hackathon",
+  "version": "1.0.0",
+  "description": "**SPEC → Prototype → Demo.** Đây không phải cuộc thi code — đây là cuộc thi **tư duy sản phẩm AI**.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HinDayNi/Batch03-K4-AI-Product-Hackathon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/HinDayNi/Batch03-K4-AI-Product-Hackathon/issues"
+  },
+  "homepage": "https://github.com/HinDayNi/Batch03-K4-AI-Product-Hackathon#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.62.0"
+  }
+}
