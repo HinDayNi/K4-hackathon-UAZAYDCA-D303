@@ -10,4 +10,4 @@ def get_lesson_repository() -> LessonRepository:
 
 
 def get_tutor_service() -> TutorService:
-    return TutorService(get_lesson_repository())
+    return TutorService()
