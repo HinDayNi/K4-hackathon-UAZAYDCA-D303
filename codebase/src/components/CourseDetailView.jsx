@@ -1,42 +1,44 @@
 export default function CourseDetailView({ lessons, onOpenLesson }) {
   return (
     <div className="vlearn-page">
-      {/* Background Overlay specifically using LF_07127-1-scaled.jpg for Courses */}
-      <div className="vlearn-bg-image-overlay--courses"></div>
-
-      <div className="page-header">
-        <div className="page-header__meta">VLEARN · VINUNI ACADEMIC COURSE DETAIL</div>
-        <div className="page-header__title-row">
-          <h1 className="page-header__title">COMP2010 — AI Product Thinking & Requirements</h1>
-          <div className="page-header__actions">
-            <span className="reading-progress">
-              ✓ Đã đọc 0/6 ngày <div className="progress-bar-inline"><div className="progress-fill" style={{ width: '0%' }}></div></div> 0%
-            </span>
-          </div>
+      {/* Sub-Header Section */}
+      <div className="vlearn-sec-header" style={{ alignItems: 'flex-start' }}>
+        <div>
+          <span className="vlearn-kicker">VLEARN · VINUNI AI THỰC CHIẾN</span>
+          <h1 className="vlearn-page-title" style={{ fontSize: '2rem' }}>COMP2010 - Khoá 3 + 4 Phase 1</h1>
+          <p className="vlearn-page-sub">1074 học viên cùng lớp</p>
         </div>
-        <p className="page-header__subtitle">1074 học viên cùng lớp · Giảng viên: Dr. Lê Duy Dũng (VinUniversity)</p>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          <button
+            type="button"
+            className="btn-start-reading"
+            onClick={() => onOpenLesson(lessons[0]?.id)}
+          >
+            Bắt đầu đọc
+          </button>
+        </div>
       </div>
 
-      <div className="days-list">
+      {/* Days Accordion List */}
+      <div className="days-accordion-list">
         {lessons.map((lesson, idx) => (
           <div
             key={lesson.id}
-            className="day-accordion-card glass-card"
+            className="day-accordion-card"
             onClick={() => onOpenLesson(lesson.id)}
           >
-            <div className="day-badge">
-              <span className="day-badge__label">DAY</span>
-              <span className="day-badge__num">{String(idx + 1).padStart(2, "0")}</span>
+            <div className="day-circle-badge">
+              <span className="badge-tag">DAY</span>
+              <span className="badge-num">{String(idx + 1).padStart(2, "0")}</span>
             </div>
 
-            <div className="day-info">
-              <h3 className="day-title">{lesson.id} — {lesson.title}</h3>
-              <p className="day-subtext">Slide PDF bài giảng VinUniversity · {lesson.segments.length} trang slide & đoạn trích dẫn</p>
+            <div className="day-accordion-info">
+              <h3>Day{String(idx + 1).padStart(2, "0")} — {lesson.title}</h3>
+              <p>VinUniversity Slide Deck bài giảng dài • AI tự phân tích sơ đồ Mindmap có trích dẫn số trang slide</p>
             </div>
 
-            <div className="day-arrow">
-              <span>➔</span>
-            </div>
+            <div className="day-chevron">›</div>
           </div>
         ))}
       </div>
