@@ -40,9 +40,6 @@ export default function Header({ activeTab, onTabChange, selectedLessonTitle }) 
 
         <div className="vlearn-navbar__right">
           <span className="lang-picker">VI</span>
-          <button type="button" className="icon-btn" aria-label="Toggle theme">
-            🌙
-          </button>
           <div className="user-profile-pill">
             <span>User profile</span>
             <span className="user-avatar">A</span>
