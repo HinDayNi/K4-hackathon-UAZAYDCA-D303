@@ -148,73 +148,12 @@ export default function TranscriptReader({
             <span className="doc-meta">COMP2010 · VinUniversity Lecture Material</span>
           </div>
         </div>
-
-        {/* Topbar Right Controls (Cleaned: removed Đóng AI Tutor, VI, 🌙) */}
-        <div className="reader-topbar__right">
-          <button
-            type="button"
-            className={`btn-mode-topbar ${rightPanelMode === "mindmap" ? "is-active" : ""}`}
-            onClick={() => setRightPanelMode(rightPanelMode === "mindmap" ? "none" : "mindmap")}
-          >
-            🗺️ Sơ đồ Mindmap
-          </button>
-
-          <button
-            type="button"
-            className={`btn-mode-topbar btn-mode-topbar--red ${rightPanelMode === "chat" ? "is-active" : ""}`}
-            onClick={() => setRightPanelMode(rightPanelMode === "chat" ? "none" : "chat")}
-          >
-            🤖 AI Tutor
-          </button>
-        </div>
       </div>
 
       {/* Reader Body with Resizable Side Panel Layout */}
       <div className="reader-body">
         {/* Center Main Workspace Canvas */}
         <main className="reader-canvas">
-          {/* Reader Top Controls Toolbar with Keyboard Hints */}
-          <div className="canvas-toolbar">
-            <div className="canvas-toolbar__tools">
-              <span className="keyboard-hint-badge">
-                ⌨️ Phím <strong>←</strong> <strong>→</strong> để chuyển slide mượt mà
-              </span>
-            </div>
-
-            <div className="canvas-toolbar__page-info">
-              {/* Slide Pagination Toolbar Controls */}
-              <div className="slide-top-nav">
-                <button
-                  type="button"
-                  className="btn-page-nav"
-                  onClick={handlePrevSlide}
-                  disabled={currentPageIndex === 1}
-                >
-                  ‹
-                </button>
-
-                <span className="slide-page-badge">
-                  Slide {currentPageIndex} / {numPdfPages}
-                </span>
-
-                <button
-                  type="button"
-                  className="btn-page-nav"
-                  onClick={handleNextSlide}
-                  disabled={currentPageIndex === numPdfPages}
-                >
-                  ›
-                </button>
-              </div>
-
-              <div className="zoom-controls">
-                <button type="button">-</button>
-                <span>100%</span>
-                <button type="button">+</button>
-              </div>
-            </div>
-          </div>
-
           {/* Real PDF Slide Rendering Workspace Canvas */}
           <div className="document-paper-container">
             <PdfSlideViewer
