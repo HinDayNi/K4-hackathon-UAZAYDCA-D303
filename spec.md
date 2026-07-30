@@ -6,12 +6,12 @@ Loại: [ ] Tối ưu tính năng có sẵn  [x] Tính năng mới
 - **Job executor + workflow (đính kèm worksheet JTBD / ảnh sơ đồ):** Học viên khoá học AI Thực Chiến đang xem/ôn tập lại bộ slide bài giảng dài trên nền tảng VLearn trước buổi thực hành hoặc bài test quiz.
 - **Core JTBD (không tên sản phẩm/AI trong câu):** Nắm bắt nhanh bức tranh tổng quan kiến thức bài học và định vị mối liên hệ giữa các khái niệm cốt lõi mà không phải tự lật đọc lại từng trang slide dài nhiều chữ.
 - **Problem statement (KHÔNG chữ AI):** Học viên đang ôn tập bộ slide bài giảng dài vướng phải tình trạng slide chứa quá nhiều chữ và kiến thức bị chia nhỏ manh mún, dẫn đến tốn 30-45 phút tự ghi chép tóm tắt lại ra vở mà vẫn khó tổng hợp được hệ thống kiến thức cốt lõi.
-- **Evidence (chuẩn A và/hoặc B — log đầy đủ trong repo):** Bằng chứng Chuẩn A từ Khảo sát n = 20 người ngoài nhóm (Log lưu tại `validation/survey_responses.csv`):
-  - **Số liệu mining / kết quả khảo sát (n = 20 người, % xác nhận = 90.0%):**
-    * **60.0% học viên (12/20 người)** xác nhận khó khăn lớn nhất là: *"Slide quá nhiều chữ, khó nắm bắt bức tranh tổng quan và mối liên hệ giữa các phần"*.
-    * **30.0% học viên (6/20 người)** xác nhận: *"Tốn nhiều thời gian tự tóm tắt lại kiến thức ra vở hoặc file ghi chú"*.
-    * **5.0% học viên (1/20 người)** phản ánh: *"Nội dung chia nhỏ qua quá nhiều trang slide gây manh mún, khó nhớ"*.
-    * **Kỳ vọng giải pháp:** **50% học viên (10/20)** muốn tóm tắt dạng Cây thư mục kiến thức (Chương -> Bài -> Khái niệm), **95% học viên (19/20)** muốn tính năng tương tác hai chiều: Bấm nút trên sơ đồ -> Giao diện tự động nhảy/trượt ngay đến trang slide chứa câu trả lời tương ứng.
+- **Evidence (chuẩn A và/hoặc B — log đầy đủ trong repo):** Bằng chứng Chuẩn A từ Khảo sát n = 27 người ngoài nhóm (Log lưu tại `validation/survey_responses.csv`):
+  - **Số liệu mining / kết quả khảo sát (n = 27 người, % xác nhận = 96.3%):**
+    * **55.6% học viên (15/27 người)** xác nhận khó khăn lớn nhất là: *"Slide quá nhiều chữ, khó nắm bắt bức tranh tổng quan và mối liên hệ giữa các phần"*.
+    * **37.0% học viên (10/27 người)** xác nhận: *"Tốn nhiều thời gian tự tóm tắt lại kiến thức ra vở hoặc file ghi chú"*.
+    * **3.7% học viên (1/27 người)** phản ánh: *"Nội dung chia nhỏ qua quá nhiều trang slide gây manh mún, khó nhớ"*.
+    * **Kỳ vọng giải pháp:** **37.0% học viên (10/27)** muốn tóm tắt dạng Cây thư mục kiến thức (Chương -> Bài -> Khái niệm), **55.6% học viên (15/27)** muốn tính năng tương tác hai chiều: Bấm nút trên sơ đồ -> Giao diện tự động nhảy/trượt ngay đến trang slide chứa câu trả lời tương ứng.
   - **≥5 quote/ví dụ nguyên văn + nguồn (từ Form khảo sát):**
     1. *Quote 1 (HV khảo sát lúc 16:20:06):* "Slide quá nhiều chữ, khó nắm bắt bức tranh tổng quan và mối liên hệ giữa các phần. Mình muốn bấm vào 1 nút trên Mindmap -> Giao diện tự nhảy đến đúng Slide đó."
     2. *Quote 2 (HV khảo sát lúc 16:32:21):* "Tốn nhiều thời gian tự tóm tắt lại kiến thức ra vở hoặc file ghi chú. Cần cho phép bấm vào từng nhánh trên Mindmap để mở nhanh đoạn slide tương ứng."
@@ -24,14 +24,14 @@ Loại: [ ] Tối ưu tính năng có sẵn  [x] Tính năng mới
 
 | Ứng viên Bài toán | Số người gặp (từ evidence) | Tần suất | Tốn gì mỗi lần | Khả thi trong hackathon | Đã loại / Chọn |
 |---|:---:|:---:|:---:|:---:|:---:|
-| **1. Mindmap Sync & Slide Navigation (Giao diện Mindmap liên kết Slide)** | 18/20 người (90.0%) | 2-3 lần/buổi học | 30-45 phút tự tóm tắt & lội slide | Rất cao (Dùng Mermaid.js + RAG Metadata) | **CHỌN** (Impact cao nhất + Evidence khảo sát 90%) |
-| **2. AI Tutor Sinh Quiz Tự động cuối buổi** | 10/20 người (50.0%) | 1 lần/buổi học | 15 phút làm test thử | Cao (Prompting sinh JSON Quiz) | **LOẠI** (Tần suất và mức độ tốn thời gian thấp hơn) |
-| **3. Tóm tắt Bài giảng thành Audio Podcast** | 4/20 người (20.0%) | 1 lần/tuần | 20 phút nghe lại | Thấp (Phải tích hợp TTS API, tốn latency) | **LOẠI** (Khả thi thấp trong thời gian hackathon) |
+| **1. Mindmap Sync & Slide Navigation (Giao diện Mindmap liên kết Slide)** | 26/27 người (96.3%) | 2-3 lần/buổi học | 30-45 phút tự tóm tắt & lội slide | Rất cao (Dùng Mermaid.js + RAG Metadata) | **CHỌN** (Impact cao nhất + Evidence khảo sát 96.3%) |
+| **2. AI Tutor Sinh Quiz Tự động cuối buổi** | 15/28 người (53.6%) | 1 lần/buổi học | 15 phút làm test thử | Cao (Prompting sinh JSON Quiz) | **LOẠI** (Tần suất và mức độ tốn thời gian thấp hơn) |
+| **3. Tóm tắt Bài giảng thành Audio Podcast** | 5/28 người (17.9%) | 1 lần/tuần | 20 phút nghe lại | Thấp (Phải tích hợp TTS API, tốn latency) | **LOẠI** (Khả thi thấp trong thời gian hackathon) |
 
 - **Ứng viên ĐÃ LOẠI + vì sao:** 
   * Loại ứng viên #2 vì nhu cầu luyện quiz chỉ phát sinh sát ngày thi, trong khi nhu cầu xem slide và tóm tắt diễn ra hàng ngày sau mỗi buổi học.
   * Loại ứng viên #3 vì khả năng xây dựng và kiểm thử voice/audio trong 1.5 ngày quá rủi ro về mặt kỹ thuật.
-- **Ứng viên CHỌN + vì sao (bằng số):** Chọn **Mindmap Sync & Slide Navigation** vì có **90.0% học viên khảo sát xác nhận nỗi đau**, giúp giảm ngay 30 phút tự ghi chép mỗi buổi học cho ~1.000 học viên khoá học.
+- **Ứng viên CHỌN + vì sao (bằng số):** Chọn **Mindmap Sync & Slide Navigation** vì có **92.9% học viên khảo sát xác nhận nỗi đau**, giúp giảm ngay 30 phút tự ghi chép mỗi buổi học cho ~1.000 học viên khoá học.
 
 ## §3. Giải pháp tương tự đã nghiên cứu
 - **NotebookLM (Google):** 
