@@ -1,0 +1,13 @@
+from functools import lru_cache
+
+from app.repositories.lesson_repository import LessonRepository
+from app.services.tutor_service import TutorService
+
+
+@lru_cache
+def get_lesson_repository() -> LessonRepository:
+    return LessonRepository()
+
+
+def get_tutor_service() -> TutorService:
+    return TutorService(get_lesson_repository())
