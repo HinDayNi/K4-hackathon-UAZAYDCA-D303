@@ -1,4 +1,3 @@
-import json
 import logging
 from collections import defaultdict
 from time import perf_counter
@@ -6,6 +5,12 @@ from typing import Any
 
 from openai import OpenAI
 
+from app.core.ai_profiles import (
+    AITaskPurpose,
+    completion_usage,
+    get_ai_profile,
+    parse_completion_json,
+)
 from app.core.config import get_settings
 from app.prompts.deck_tutor import (
     ANSWER_SYSTEM,
@@ -139,6 +144,8 @@ class TutorService:
             "rerank": RERANK_SYSTEM,
         }
         try:
+            purpose_name: AITaskPurpose = purpose  # type: ignore[assignment]
+            profile = get_ai_profile(purpose_name, get_settings())
             response = self.client.chat.completions.create(
                 model=get_settings().deepseek_model,
                 messages=[
@@ -146,19 +153,21 @@ class TutorService:
                     {"role": "user", "content": user_prompt},
                 ],
                 response_format={"type": "json_object"},
-                extra_body={"thinking": {"type": "disabled"}},
-                max_tokens=1200,
+                extra_body=profile.extra_body,
+                max_tokens=profile.max_tokens,
+                timeout=profile.timeout_seconds,
             )
-            content = response.choices[0].message.content
-            if not content:
-                raise ValueError("empty response")
-            payload = json.loads(content)
-            if not isinstance(payload, dict):
-                raise ValueError("response is not an object")
+            payload = parse_completion_json(response, purpose_name)
+            prompt_tokens, completion_tokens, total_tokens = completion_usage(response)
             logger.info(
-                "deepseek_call purpose=%s latency_ms=%s",
+                "deepseek_call purpose=%s latency_ms=%s finish_reason=%s "
+                "prompt_tokens=%s completion_tokens=%s total_tokens=%s",
                 purpose,
                 round((perf_counter() - started) * 1000),
+                response.choices[0].finish_reason,
+                prompt_tokens,
+                completion_tokens,
+                total_tokens,
             )
             return payload
         except Exception as exc:
@@ -176,6 +185,7 @@ class TutorService:
             for item in context
         )
         try:
+            profile = get_ai_profile("tutor_answer", get_settings())
             response = self.client.chat.completions.create(
                 model=get_settings().deepseek_model,
                 messages=[
@@ -186,18 +196,20 @@ class TutorService:
                     },
                 ],
                 response_format={"type": "json_object"},
-                extra_body={"thinking": {"type": "disabled"}},
-                max_tokens=1600,
+                extra_body=profile.extra_body,
+                max_tokens=profile.max_tokens,
+                timeout=profile.timeout_seconds,
             )
-            content = response.choices[0].message.content
-            if not content:
-                raise ValueError("empty response")
-            payload = json.loads(content)
-            if not isinstance(payload, dict):
-                raise ValueError("response is not an object")
+            payload = parse_completion_json(response, "tutor_answer")
+            prompt_tokens, completion_tokens, total_tokens = completion_usage(response)
             logger.info(
-                "deepseek_call purpose=answer latency_ms=%s",
+                "deepseek_call purpose=tutor_answer latency_ms=%s finish_reason=%s "
+                "prompt_tokens=%s completion_tokens=%s total_tokens=%s",
                 round((perf_counter() - started) * 1000),
+                response.choices[0].finish_reason,
+                prompt_tokens,
+                completion_tokens,
+                total_tokens,
             )
             return payload
         except Exception as exc:

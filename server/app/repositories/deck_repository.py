@@ -211,6 +211,32 @@ def update_slide_summary(slide_id: str, *, summary: str | None, block_ids: list[
         )
 
 
+def mindmap_input(deck_id: str) -> list[dict[str, Any]]:
+    with get_connection() as db:
+        slides = db.execute(
+            """SELECT id, slide_index, title, summary, summary_block_ids
+               FROM slides WHERE deck_id = ? ORDER BY slide_index""",
+            (deck_id,),
+        ).fetchall()
+        blocks = db.execute(
+            """SELECT b.id, b.slide_id, b.summary, b.normalized_text
+               FROM slide_blocks b JOIN slides s ON s.id = b.slide_id
+               WHERE s.deck_id = ? AND b.included_in_ai_context = 1
+               ORDER BY s.slide_index, b.reading_order""",
+            (deck_id,),
+        ).fetchall()
+    by_slide: dict[str, list[dict[str, Any]]] = {}
+    for block in blocks:
+        by_slide.setdefault(block["slide_id"], []).append(dict(block))
+    result = []
+    for row in slides:
+        item = dict(row)
+        item["summary_block_ids"] = json.loads(item["summary_block_ids"])
+        item["blocks"] = by_slide.get(item["id"], [])
+        result.append(item)
+    return result
+
+
 def _decode_slide(row: dict[str, Any]) -> dict[str, Any]:
     row["warnings"] = json.loads(row["warnings"])
     row["summary_block_ids"] = json.loads(row["summary_block_ids"])

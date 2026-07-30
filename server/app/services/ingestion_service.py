@@ -3,6 +3,7 @@ from pathlib import Path
 from app.repositories import deck_repository as repo
 from app.services.pptx_extractor import extract_pptx
 from app.services.summary_service import summarize_block, summarize_slide
+from app.services.mindmap_service import MindmapService
 
 
 def process_deck(deck_id: str, job_id: str, file_path: str) -> None:
@@ -48,8 +49,19 @@ def process_deck(deck_id: str, job_id: str, file_path: str) -> None:
                 progress=65 + int(25 * index / max(1, len(slides))), current_slide=index,
             )
 
-        repo.update_job(job_id, status="validating", progress=95)
+        repo.update_job(job_id, status="validating", progress=90)
         repo.rebuild_search_index(deck_id)
+        repo.update_deck(deck_id, status="generating_mindmap")
+        repo.update_job(job_id, status="generating_mindmap", progress=94)
+        try:
+            MindmapService().generate(deck_id)
+            repo.update_job(job_id, status="validating_mindmap", progress=98)
+        except Exception as exc:
+            warnings += 1
+            mindmap_error = f"mindmap_failed:{type(exc).__name__}"
+            repo.update_job(
+                job_id, status="validating_mindmap", progress=98, error=mindmap_error
+            )
         final_status = "ready_with_warnings" if warnings else "ready"
         repo.update_deck(deck_id, status=final_status, slide_count=len(slides))
         repo.update_job(job_id, status=final_status, progress=100)

@@ -1,12 +1,20 @@
-import json
+import logging
+from time import perf_counter
 from typing import Any
 
 from openai import OpenAI
 
+from app.core.ai_profiles import (
+    AITaskPurpose,
+    completion_usage,
+    get_ai_profile,
+    parse_completion_json,
+)
 from app.core.config import get_settings
 
 
 MIN_BLOCK_WORDS = 8
+logger = logging.getLogger(__name__)
 
 
 def _fallback_summary(text: str, limit: int = 220) -> str:
@@ -18,12 +26,22 @@ def _structured(prompt: str, name: str, schema: dict[str, Any]) -> dict[str, Any
     settings = get_settings()
     if not settings.deepseek_api_key:
         return None
+    purpose_by_name: dict[str, AITaskPurpose] = {
+        "block_summary": "block_summary",
+        "slide_summary": "slide_summary",
+    }
+    if name not in purpose_by_name:
+        raise ValueError(f"Unknown summary purpose: {name}")
+    purpose = purpose_by_name[name]
+    profile = get_ai_profile(purpose, settings)
     client = OpenAI(
         api_key=settings.deepseek_api_key,
         base_url=settings.deepseek_base_url,
+        timeout=profile.timeout_seconds,
     )
     required = ", ".join(schema["required"])
     properties = ", ".join(schema["properties"])
+    started = perf_counter()
     response = client.chat.completions.create(
         model=settings.deepseek_model,
         messages=[
@@ -38,12 +56,21 @@ def _structured(prompt: str, name: str, schema: dict[str, Any]) -> dict[str, Any
             {"role": "user", "content": prompt},
         ],
         response_format={"type": "json_object"},
-        max_tokens=1200,
+        extra_body=profile.extra_body,
+        max_tokens=profile.max_tokens,
     )
-    content = response.choices[0].message.content
-    if not content:
-        raise ValueError(f"DeepSeek returned empty JSON for {name}")
-    result = json.loads(content)
+    result = parse_completion_json(response, purpose)
+    prompt_tokens, completion_tokens, total_tokens = completion_usage(response)
+    logger.info(
+        "deepseek_call purpose=%s latency_ms=%s finish_reason=%s "
+        "prompt_tokens=%s completion_tokens=%s total_tokens=%s",
+        purpose,
+        round((perf_counter() - started) * 1000),
+        response.choices[0].finish_reason,
+        prompt_tokens,
+        completion_tokens,
+        total_tokens,
+    )
     if not isinstance(result, dict) or any(key not in result for key in schema["required"]):
         raise ValueError(f"DeepSeek returned invalid JSON shape for {name}")
     return result

@@ -79,6 +79,28 @@ CREATE INDEX IF NOT EXISTS idx_jobs_deck ON ingestion_jobs(deck_id);
 CREATE INDEX IF NOT EXISTS idx_slides_deck ON slides(deck_id, slide_index);
 CREATE INDEX IF NOT EXISTS idx_blocks_slide ON slide_blocks(slide_id, reading_order);
 
+CREATE TABLE IF NOT EXISTS mindmap_artifacts (
+    id TEXT PRIMARY KEY,
+    deck_id TEXT NOT NULL REFERENCES decks(id) ON DELETE CASCADE,
+    status TEXT NOT NULL,
+    generation_version TEXT NOT NULL,
+    prompt_version TEXT NOT NULL,
+    model TEXT NOT NULL,
+    content_hash TEXT NOT NULL,
+    payload_json TEXT,
+    quality_warnings_json TEXT NOT NULL DEFAULT '[]',
+    error_summary TEXT,
+    created_at TEXT NOT NULL,
+    generated_at TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_mindmaps_deck_version
+ON mindmap_artifacts(deck_id, generation_version, status);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_mindmaps_one_active
+ON mindmap_artifacts(deck_id, content_hash, generation_version)
+WHERE status = 'generating';
+
 CREATE VIRTUAL TABLE IF NOT EXISTS slide_search USING fts5(
     deck_id UNINDEXED,
     slide_id UNINDEXED,
