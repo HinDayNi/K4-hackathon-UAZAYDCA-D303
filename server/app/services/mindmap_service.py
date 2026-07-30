@@ -16,6 +16,7 @@ from app.prompts.learning_map import LEARNING_MAP_SYSTEM, build_learning_map_pro
 from app.repositories import deck_repository
 from app.repositories import mindmap_repository as repo
 from app.schemas.mindmap import MindmapNode
+from app.services.importance_service import ImportanceScoringError, ImportanceService
 
 
 class MindmapGenerationError(RuntimeError):
@@ -275,6 +276,16 @@ class MindmapService:
             for position, slide in enumerate(context)
         }
         tree_data = raw["tree"]
+        try:
+            scoring_warnings = ImportanceService(self.settings).score_tree(
+                tree_data, source_index
+            )
+        except ImportanceScoringError as exc:
+            raise MindmapValidationError(str(exc)) from exc
+        importance_breakdowns = {
+            node["id"]: node.pop("_importance_breakdown")
+            for node in self._raw_nodes(tree_data)
+        }
         self._canonicalize_sources(tree_data, deck_id, source_index)
         self._normalize_section_ranges(tree_data, source_index)
         self._normalize_node_text(tree_data)
@@ -282,9 +293,21 @@ class MindmapService:
             tree = MindmapNode.model_validate(tree_data)
         except ValidationError as exc:
             raise MindmapValidationError(str(exc)) from exc
-        warnings = self._validate_tree(tree, context)
+        warnings = scoring_warnings + self._validate_tree(tree, context)
         stats = self._stats(tree)
-        return {"tree": tree.model_dump(), "stats": stats}, warnings
+        return {
+            "tree": tree.model_dump(),
+            "stats": stats,
+            "importance_breakdowns": importance_breakdowns,
+        }, warnings
+
+    @staticmethod
+    def _raw_nodes(tree: dict[str, Any]) -> list[dict[str, Any]]:
+        nodes = [tree]
+        for section in tree.get("children", []):
+            nodes.append(section)
+            nodes.extend(section.get("children", []))
+        return nodes
 
     @classmethod
     def _normalize_node_text(cls, node: dict[str, Any]) -> None:

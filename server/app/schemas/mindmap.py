@@ -31,6 +31,14 @@ class MindmapImportance(BaseModel):
         return self
 
 
+class MindmapImportanceSignals(BaseModel):
+    foundational: int = Field(ge=0, le=100)
+    emphasis: int = Field(ge=0, le=100)
+    applicability: int = Field(ge=0, le=100)
+    evidence_refs: list[str] = Field(default_factory=list, max_length=3)
+    prerequisite_for: list[str] = Field(default_factory=list)
+
+
 class MindmapCoverage(BaseModel):
     start_slide_index: int = Field(ge=1)
     end_slide_index: int = Field(ge=1)

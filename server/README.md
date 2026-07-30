@@ -70,9 +70,15 @@ Mọi structured JSON request đều tắt thinking và kiểm tra `finish_reaso
 trước khi parse. Response bị cắt được báo bằng `ai_response_truncated`;
 backend không tự retry.
 
-Mindmap v2 chỉ gửi alias, title và summary rút gọn của từng slide. Payload
+Mindmap v3 chỉ gửi alias, title và summary rút gọn của từng slide. Payload
 không chứa ID thật hoặc toàn bộ block text, bị giới hạn ở 75.000 ký tự và
 được ánh xạ lại sang `SourceTarget` sau khi model trả kết quả.
+
+DeepSeek chỉ nhận diện các tín hiệu importance (`foundational`, `emphasis`,
+`applicability`), evidence và quan hệ prerequisite. Backend tính điểm cuối theo
+rubric cố định 30/25/20/15/10 cho nền tảng, nhấn mạnh, ảnh hưởng downstream,
+khả năng áp dụng và độ bao phủ. `confidence` được tính riêng từ chất lượng và
+số bằng chứng; tối đa 30% topic được gắn `important`.
 
 `TutorService` hiện là điểm mở rộng dành cho retrieval, OpenAI và kiểm tra
 citation. Không commit `.env`, API key hay file `storage/*.db`.

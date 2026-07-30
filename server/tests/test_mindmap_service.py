@@ -56,13 +56,13 @@ def _seed_deck(deck_id: str = "deck_map") -> None:
     deck_repo.update_deck(deck_id, status="ready", slide_count=1)
 
 
-def _importance() -> dict:
+def _importance_signals() -> dict:
     return {
-        "level": "important",
-        "label": "Quan trọng",
-        "score": 90,
-        "reason": "Là trọng tâm bài học.",
-        "confidence": 90,
+        "foundational": 90,
+        "emphasis": 90,
+        "applicability": 80,
+        "evidence_refs": ["S001"],
+        "prerequisite_for": [],
     }
 
 
@@ -85,7 +85,7 @@ def _valid_tree() -> dict:
                 "summary": "Tóm tắt chủ đề.",
                 "order": topic_index,
                 "depth": 2,
-                "importance": _importance(),
+                "importance_signals": _importance_signals(),
                 "source_refs": _source_refs(),
                 "range": _range(),
                 "children": [],
@@ -100,7 +100,7 @@ def _valid_tree() -> dict:
                 "summary": "Tóm tắt phần.",
                 "order": section_index,
                 "depth": 1,
-                "importance": _importance(),
+                "importance_signals": _importance_signals(),
                 "source_refs": _source_refs(),
                 "range": _range(),
                 "children": topics,
@@ -114,7 +114,7 @@ def _valid_tree() -> dict:
             "summary": "Tóm tắt bài học.",
             "order": 0,
             "depth": 0,
-            "importance": _importance(),
+            "importance_signals": _importance_signals(),
             "source_refs": [],
             "range": _range(),
             "children": sections,
@@ -307,11 +307,10 @@ def test_verbose_model_text_is_truncated_before_schema_validation() -> None:
     payload = _valid_tree()
     payload["tree"]["title"] = "T" * 300
     payload["tree"]["summary"] = "S" * 500
-    payload["tree"]["importance"]["reason"] = "R" * 500
     with TestClient(app):
         _seed_deck()
         artifact = MindmapService(lambda _: payload).generate("deck_map")
     root = artifact["payload"]["tree"]
     assert len(root["title"]) == 180
     assert len(root["summary"]) == 300
-    assert len(root["importance"]["reason"]) == 300
+    assert len(root["importance"]["reason"]) <= 300
