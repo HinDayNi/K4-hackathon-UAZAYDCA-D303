@@ -132,3 +132,21 @@ def retry_deck(deck_id: str, background_tasks: BackgroundTasks) -> dict:
     repo.create_job(job_id, deck_id)
     background_tasks.add_task(process_deck, deck_id, job_id, deck["file_path"])
     return {"deck_id": deck_id, "job_id": job_id}
+
+
+@router.delete("/{deck_id}", status_code=200)
+def delete_deck(deck_id: str) -> dict:
+    deck = repo.get_deck(deck_id)
+    if not deck:
+        raise HTTPException(status_code=404, detail="Deck not found")
+    # Remove uploaded file from disk if it exists
+    file_path = deck.get("file_path")
+    if file_path:
+        try:
+            p = Path(file_path)
+            if p.exists():
+                p.unlink()
+        except Exception:
+            pass
+    repo.delete_deck(deck_id)
+    return {"deleted": True, "deck_id": deck_id}

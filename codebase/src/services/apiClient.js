@@ -164,3 +164,18 @@ export async function fetchSlides(deckId) {
   }
   return null;
 }
+
+/**
+ * Delete a deck by ID from backend (removes DB records + uploaded file)
+ * @param {string} deckId
+ */
+export async function deleteDeck(deckId) {
+  const res = await fetch(`${API_BASE}/decks/${deckId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `Delete failed: ${res.status}`);
+  }
+  return await res.json();
+}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { uploadDeck, fetchDecks } from "../services/apiClient.js";
+import { uploadDeck, fetchDecks, deleteDeck } from "../services/apiClient.js";
 
 export default function AdminUploadView({ onUploadSuccess }) {
   const [file, setFile] = useState(null);
@@ -9,8 +9,9 @@ export default function AdminUploadView({ onUploadSuccess }) {
   const [uploadDone, setUploadDone] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [uploadedFilesList, setUploadedFilesList] = useState([]);
+  const [deletingId, setDeletingId] = useState(null);
 
-  useEffect(() => {
+  const loadDecks = () => {
     fetchDecks().then((decks) => {
       if (decks && decks.length > 0) {
         setUploadedFilesList(decks.map((d, i) => ({
@@ -19,12 +20,29 @@ export default function AdminUploadView({ onUploadSuccess }) {
           course: "COMP2010",
           pages: d.slide_count || 19,
           size: "6.3 MB",
-          date: "31/07/2026",
+          date: new Date(d.created_at || Date.now()).toLocaleDateString("vi-VN"),
           status: d.processing_status === "ready" || d.processing_status === "ready_with_warnings" ? "Đã sinh Sơ đồ Mindmap" : d.processing_status
         })));
+      } else {
+        setUploadedFilesList([]);
       }
     });
-  }, [uploadDone]);
+  };
+
+  useEffect(() => { loadDecks(); }, [uploadDone]);
+
+  const handleDelete = async (deckId, filename) => {
+    if (!window.confirm(`Xóa tài liệu "${filename}" khỏi hệ thống? Hành động này không thể hoàn tác.`)) return;
+    setDeletingId(deckId);
+    try {
+      await deleteDeck(deckId);
+      loadDecks();
+    } catch (err) {
+      alert("Xóa thất bại: " + err.message);
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -203,11 +221,12 @@ export default function AdminUploadView({ onUploadSuccess }) {
                 <th style={{ padding: '0.75rem 1rem' }}>Dung lượng</th>
                 <th style={{ padding: '0.75rem 1rem' }}>Ngày tải</th>
                 <th style={{ padding: '0.75rem 1.25rem' }}>Trạng thái AI</th>
+                <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {uploadedFilesList.map((item) => (
-                <tr key={item.id} style={{ borderBottom: '1px solid #E2E8F0' }}>
+                <tr key={item.id} style={{ borderBottom: '1px solid #E2E8F0', opacity: deletingId === item.id ? 0.5 : 1, transition: 'opacity 0.2s' }}>
                   <td style={{ padding: '0.85rem 1.25rem', fontWeight: '700', color: '#0F172A' }}>📄 {item.name}</td>
                   <td style={{ padding: '0.85rem 1rem', color: '#475569' }}>{item.course}</td>
                   <td style={{ padding: '0.85rem 1rem', color: '#475569' }}>{item.pages} trang</td>
@@ -217,6 +236,28 @@ export default function AdminUploadView({ onUploadSuccess }) {
                     <span style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#047857', padding: '0.2rem 0.6rem', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '700' }}>
                       ✓ {item.status}
                     </span>
+                  </td>
+                  <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+                    <button
+                      onClick={() => handleDelete(item.id, item.name)}
+                      disabled={deletingId === item.id}
+                      style={{
+                        background: '#FEF2F2',
+                        border: '1px solid #FECACA',
+                        color: '#B91C1C',
+                        padding: '0.35rem 0.85rem',
+                        borderRadius: '6px',
+                        fontSize: '0.82rem',
+                        fontWeight: '700',
+                        cursor: deletingId === item.id ? 'not-allowed' : 'pointer',
+                        transition: 'all 0.15s',
+                        whiteSpace: 'nowrap',
+                      }}
+                      onMouseEnter={e => { if (deletingId !== item.id) e.target.style.background = '#FEE2E2'; }}
+                      onMouseLeave={e => { e.target.style.background = '#FEF2F2'; }}
+                    >
+                      {deletingId === item.id ? '⏳ Đang xóa...' : '🗑 Xóa tệp'}
+                    </button>
                   </td>
                 </tr>
               ))}
