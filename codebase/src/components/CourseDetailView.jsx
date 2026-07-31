@@ -41,7 +41,7 @@ export default function CourseDetailView({ lessons, onOpenLesson }) {
             onClick={() => onOpenLesson(lesson.id)}
           >
             <div className="day-circle-badge">
-              <span className="badge-tag">DAY</span>
+              <span className="badge-tag">{t("dayBadgeLabel")}</span>
               <span className="badge-num">{String(idx + 1).padStart(2, "0")}</span>
             </div>
 

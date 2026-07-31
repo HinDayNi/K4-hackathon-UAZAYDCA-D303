@@ -2,6 +2,7 @@ import { useRef, useState, useCallback, useEffect } from "react";
 import AITutorDrawer from "./AITutorDrawer.jsx";
 import PdfSlideViewer from "./PdfSlideViewer.jsx";
 import MindmapSideView from "./MindmapSideView.jsx";
+import { fetchSlides } from "../services/apiClient.js";
 
 const INITIAL_TOOLBAR = { visible: false, x: 0, y: 0, text: "", codes: [] };
 
@@ -20,6 +21,20 @@ export default function TranscriptReader({
   const [selectedPassageForDrawer, setSelectedPassageForDrawer] = useState(null);
   const [currentPageIndex, setCurrentPageIndex] = useState(1);
   const [numPdfPages, setNumPdfPages] = useState(55);
+  const [backendSlides, setBackendSlides] = useState(null);
+
+  useEffect(() => {
+    if (currentLesson?.id) {
+      setBackendSlides(null);
+      fetchSlides(currentLesson.id).then((slides) => {
+        if (slides && slides.length > 0) {
+          setBackendSlides(slides);
+          setNumPdfPages(slides.length);
+          setCurrentPageIndex(1);
+        }
+      });
+    }
+  }, [currentLesson?.id]);
 
   const handlePrevSlide = useCallback(() => {
     setCurrentPageIndex((prev) => Math.max(1, prev - 1));
@@ -94,7 +109,7 @@ export default function TranscriptReader({
         return;
       }
 
-      const currentCode = currentLesson?.segments[currentPageIndex - 1]?.code || `T01-${String(currentPageIndex).padStart(3, "0")}`;
+      const currentCode = currentLesson?.segments?.[currentPageIndex - 1]?.code || `T01-${String(currentPageIndex).padStart(3, "0")}`;
       const codes = [currentCode];
 
       const rect = range.getBoundingClientRect();
@@ -150,12 +165,13 @@ export default function TranscriptReader({
           {/* Continuous Vertical Scroll PDF Slide Rendering Canvas */}
           <div className="document-paper-container">
             <PdfSlideViewer
-              pdfUrl="/lecture.pdf"
+              pdfUrl={currentLesson?.fileType === "pdf" ? (currentLesson.fileUrl || `http://127.0.0.1:8000/api/v1/decks/${currentLesson.id}/file`) : null}
               targetPageNumber={currentPageIndex}
               onNumPages={(num) => setNumPdfPages(num)}
               containerRef={containerRef}
               onMouseUp={handleMouseUp}
               segments={currentLesson.segments}
+              backendSlides={backendSlides}
             />
 
             {/* Selection Floating Action Popover Toolbar */}
@@ -240,8 +256,21 @@ export default function TranscriptReader({
               <div className="right-panel-content">
                 {rightPanelMode === "mindmap" && (
                   <MindmapSideView
+                    deckId={currentLesson?.id}
                     onSelectSlide={(code) => {
-                      const idx = currentLesson.segments.findIndex((s) => s.code === code);
+                      if (typeof code === "number") {
+                        setCurrentPageIndex(code);
+                        return;
+                      }
+                      const match = String(code).match(/\d+/);
+                      if (match) {
+                        const pageNum = parseInt(match[0], 10);
+                        if (pageNum >= 1 && pageNum <= numPdfPages) {
+                          setCurrentPageIndex(pageNum);
+                          return;
+                        }
+                      }
+                      const idx = (currentLesson.segments ?? []).findIndex((s) => s.code === code);
                       if (idx >= 0) setCurrentPageIndex(idx + 1);
                     }}
                   />
@@ -253,6 +282,15 @@ export default function TranscriptReader({
                     selectedPassage={selectedPassageForDrawer}
                     onClose={() => setRightPanelMode("none")}
                     onOpenMindmap={() => setRightPanelMode("mindmap")}
+                    onJumpToSlide={(code) => {
+                      const match = String(code).match(/\d+/);
+                      if (match) {
+                        const pageNum = parseInt(match[0], 10);
+                        if (pageNum >= 1 && pageNum <= numPdfPages) {
+                          setCurrentPageIndex(pageNum);
+                        }
+                      }
+                    }}
                   />
                 )}
               </div>

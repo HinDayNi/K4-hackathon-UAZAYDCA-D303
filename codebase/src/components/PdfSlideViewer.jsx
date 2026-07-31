@@ -99,28 +99,21 @@ export default function PdfSlideViewer({
   containerRef,
   onMouseUp,
   segments = [],
+  backendSlides = null,
 }) {
   const [pdfDoc, setPdfDoc] = useState(cachedPdfDoc);
-  const [loading, setLoading] = useState(!cachedPdfDoc);
+  const [loading, setLoading] = useState(!cachedPdfDoc && !backendSlides);
   const [activePageNum, setActivePageNum] = useState(targetPageNumber);
 
-  // Load PDF document ONCE and cache it
+  // Load PDF Document when pdfUrl changes
   useEffect(() => {
-    if (cachedPdfDoc) {
-      setPdfDoc(cachedPdfDoc);
-      setLoading(false);
-      if (onNumPages) onNumPages(cachedPdfDoc.numPages);
-      return;
-    }
+    if (!pdfUrl) return;
 
     let isCancelled = false;
-    if (!cachedPdfPromise) {
-      cachedPdfPromise = pdfjsLib.getDocument(pdfUrl).promise;
-    }
+    setLoading(true);
 
-    cachedPdfPromise
+    pdfjsLib.getDocument(pdfUrl).promise
       .then((doc) => {
-        cachedPdfDoc = doc;
         if (!isCancelled) {
           setPdfDoc(doc);
           setLoading(false);
@@ -128,8 +121,11 @@ export default function PdfSlideViewer({
         }
       })
       .catch((err) => {
-        console.error("Error loading PDF:", err);
-        if (!isCancelled) setLoading(false);
+        console.warn("Native PDF not available (PPTX mode or unavailable file):", err);
+        if (!isCancelled) {
+          setPdfDoc(null);
+          setLoading(false);
+        }
       });
 
     return () => {
@@ -148,7 +144,7 @@ export default function PdfSlideViewer({
     }
   }, [targetPageNumber]);
 
-  const numPages = pdfDoc ? pdfDoc.numPages : 55;
+  const numPages = pdfDoc ? pdfDoc.numPages : (backendSlides ? backendSlides.length : 55);
   const pagesList = Array.from({ length: numPages }, (_, i) => i + 1);
 
   return (
@@ -159,11 +155,12 @@ export default function PdfSlideViewer({
     >
       {loading && (
         <div className="pdf-loading-spinner">
-          ⏳ Đang tải toàn bộ Slide bài giảng PDF...
+          ⏳ Đang tải toàn bộ Slide bài giảng...
         </div>
       )}
 
-      {pdfDoc && (
+      {/* Render Native PDF Canvas if PDF file loaded */}
+      {pdfDoc ? (
         <div className="pdf-vertical-pages-list">
           {pagesList.map((pageNum) => (
             <PdfSinglePage
@@ -176,7 +173,76 @@ export default function PdfSlideViewer({
             />
           ))}
         </div>
-      )}
+      ) : backendSlides && backendSlides.length > 0 ? (
+        /* Render Backend Slide Cards if PPTX or extracted text */
+        <div className="pdf-vertical-pages-list">
+          {backendSlides.map((slide) => {
+            const pageNum = slide.slide_index;
+            const isTarget = pageNum === activePageNum;
+            return (
+              <div
+                key={slide.id || pageNum}
+                id={`slide-page-${pageNum}`}
+                className={`pdf-single-page-card ${isTarget ? "is-active-target-page" : ""}`}
+                style={{
+                  padding: "2rem",
+                  marginBottom: "1.5rem",
+                  background: "#ffffff",
+                  borderRadius: "14px",
+                  border: isTarget ? "2px solid var(--vlearn-red)" : "1px solid #E2E8F0",
+                  boxShadow: isTarget ? "0 8px 24px rgba(185, 28, 28, 0.12)" : "0 4px 12px rgba(0,0,0,0.04)",
+                  transition: "all 0.3s ease",
+                }}
+              >
+                <div
+                  className="pdf-page-number-tag"
+                  style={{
+                    display: "inline-block",
+                    background: isTarget ? "var(--vlearn-red)" : "#F1F5F9",
+                    color: isTarget ? "#FFFFFF" : "#475569",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "999px",
+                    fontWeight: 700,
+                    fontSize: "0.82rem",
+                    marginBottom: "1rem",
+                  }}
+                >
+                  Slide <strong>{pageNum}</strong> / {backendSlides.length}
+                </div>
+
+                {slide.title && (
+                  <h3
+                    style={{
+                      fontFamily: "var(--font-heading)",
+                      fontSize: "1.25rem",
+                      fontWeight: 800,
+                      color: "#0F172A",
+                      marginBottom: "1rem",
+                      borderBottom: "1px solid #F1F5F9",
+                      paddingBottom: "0.5rem",
+                    }}
+                  >
+                    {slide.title}
+                  </h3>
+                )}
+
+                <div
+                  className="backend-slide-content"
+                  style={{
+                    fontSize: "0.95rem",
+                    lineHeight: "1.75",
+                    color: "#334155",
+                    whiteSpace: "pre-line",
+                    fontFamily: "var(--font-body)",
+                  }}
+                >
+                  {slide.full_text}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { uploadDeck, fetchDecks } from "../services/apiClient.js";
 
 export default function AdminUploadView({ onUploadSuccess }) {
   const [file, setFile] = useState(null);
@@ -6,48 +7,58 @@ export default function AdminUploadView({ onUploadSuccess }) {
   const [lessonTitle, setLessonTitle] = useState("AI Research to AI Products & Requirements");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadDone, setUploadDone] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [uploadedFilesList, setUploadedFilesList] = useState([]);
 
-  const uploadedFilesList = [
-    {
-      id: 1,
-      name: "AI Research to AI Products.pdf",
-      course: "COMP2010",
-      pages: 55,
-      size: "8.4 MB",
-      date: "30/07/2026 23:15",
-      status: "Đã sinh Sơ đồ Mindmap",
-    },
-    {
-      id: 2,
-      name: "Product Definition & Desirability.pdf",
-      course: "COMP2010",
-      pages: 42,
-      size: "6.2 MB",
-      date: "29/07/2026 14:20",
-      status: "Đã sinh Sơ đồ Mindmap",
-    },
-  ];
+  useEffect(() => {
+    fetchDecks().then((decks) => {
+      if (decks && decks.length > 0) {
+        setUploadedFilesList(decks.map((d, i) => ({
+          id: d.id || i,
+          name: d.filename,
+          course: "COMP2010",
+          pages: d.slide_count || 19,
+          size: "6.3 MB",
+          date: "31/07/2026",
+          status: d.processing_status === "ready" || d.processing_status === "ready_with_warnings" ? "Đã sinh Sơ đồ Mindmap" : d.processing_status
+        })));
+      }
+    });
+  }, [uploadDone]);
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
+      setErrorMessage("");
     }
   };
 
-  const handleUploadSubmit = (e) => {
+  const handleUploadSubmit = async (e) => {
     e.preventDefault();
     if (!file) return;
 
     setIsUploading(true);
-    setTimeout(() => {
+    setErrorMessage("");
+
+    try {
+      const res = await uploadDeck(file);
       setIsUploading(false);
       setUploadDone(true);
       if (onUploadSuccess) {
         setTimeout(() => {
-          onUploadSuccess();
+          onUploadSuccess(res?.deck_id);
         }, 1200);
       }
-    }, 1500);
+    } catch (err) {
+      console.error("Backend upload error:", err);
+      setIsUploading(false);
+      const msg = err.message || "Tải bài giảng thất bại";
+      setErrorMessage(
+        msg.includes("pptx")
+          ? "Hệ thống Backend hỗ trợ tệp slide PowerPoint (.pptx). Vui lòng chọn tệp định dạng .pptx để AI tự động phân tích RAG & Mindmap!"
+          : `Lỗi tải file: ${msg}`
+      );
+    }
   };
 
   return (
@@ -58,7 +69,7 @@ export default function AdminUploadView({ onUploadSuccess }) {
           <span className="vlearn-kicker">ADMIN PORTAL · VLEARN LECTURE UPLOAD</span>
           <h1 className="vlearn-page-title">Quản trị Tải lên Slide Bài giảng (Admin)</h1>
           <p className="vlearn-page-sub">
-            Tải tệp bài giảng PDF lên hệ thống. AI sẽ tự động OCR, phân tích cấu trúc bài giảng và sinh cây Sơ đồ Mindmap hai chiều.
+            Tải tệp bài giảng PowerPoint (.pptx) lên hệ thống. AI sẽ tự động OCR, phân tích cấu trúc bài giảng và sinh cây Sơ đồ Mindmap hai chiều.
           </p>
         </div>
       </div>
@@ -111,7 +122,7 @@ export default function AdminUploadView({ onUploadSuccess }) {
           {/* File Dropzone */}
           <div>
             <label style={{ display: 'block', fontWeight: '700', fontSize: '0.88rem', marginBottom: '0.4rem', color: '#0F172A' }}>
-              Tệp slide bài giảng PDF (PDF File)
+              Tệp slide bài giảng PDF hoặc PowerPoint (.pdf / .pptx)
             </label>
             <div
               style={{
@@ -127,19 +138,26 @@ export default function AdminUploadView({ onUploadSuccess }) {
               <input
                 type="file"
                 id="admin-pdf-input"
-                accept=".pdf"
+                accept=".pptx,.pdf"
                 style={{ display: 'none' }}
                 onChange={handleFileChange}
               />
               <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📄</div>
               <div style={{ fontWeight: '700', color: '#0F172A', fontSize: '1rem' }}>
-                {file ? file.name : "Kéo thả hoặc bấm để chọn tệp PDF bài giảng"}
+                {file ? file.name : "Kéo thả hoặc bấm để chọn tệp PDF (.pdf) hoặc PowerPoint (.pptx)"}
               </div>
               <div style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.25rem' }}>
-                {file ? `${(file.size / (1024 * 1024)).toFixed(2)} MB` : "Hỗ trợ định dạng .pdf lên đến 100MB"}
+                {file ? `${(file.size / (1024 * 1024)).toFixed(2)} MB` : "Hỗ trợ định dạng .pdf và .pptx lên đến 100MB"}
               </div>
             </div>
           </div>
+
+          {/* Error Banner */}
+          {errorMessage && (
+            <div style={{ padding: '0.85rem 1rem', background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: '8px', color: '#991B1B', fontWeight: '700', fontSize: '0.88rem' }}>
+              ⚠️ {errorMessage}
+            </div>
+          )}
 
           {/* Upload CTA Button */}
           <button
