@@ -20,6 +20,9 @@ const path = require('path');
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(1000);
 
+  // Emulate print media to trigger 6-page layout
+  await page.emulateMedia({ media: 'print' });
+
   // Count slides
   const slideCount = await page.evaluate(() => document.querySelectorAll('.slide').length);
   console.log(`Found ${slideCount} slides.`);
