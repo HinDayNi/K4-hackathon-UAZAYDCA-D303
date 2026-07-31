@@ -15,8 +15,8 @@ export default function TranscriptReader({
   const containerRef = useRef(null);
   const isDraggingRef = useRef(false);
   const [toolbar, setToolbar] = useState(INITIAL_TOOLBAR);
-  const [rightPanelMode, setRightPanelMode] = useState("mindmap"); // Mặc định mở Sơ đồ Mindmap side-by-side
-  const [rightPanelWidth, setRightPanelWidth] = useState(450); // Chiều rộng vừa đẹp cho sơ đồ tư duy
+  const [rightPanelMode, setRightPanelMode] = useState("mindmap");
+  const [rightPanelWidth, setRightPanelWidth] = useState(450);
   const [selectedPassageForDrawer, setSelectedPassageForDrawer] = useState(null);
   const [currentPageIndex, setCurrentPageIndex] = useState(1);
   const [numPdfPages, setNumPdfPages] = useState(55);
@@ -31,7 +31,6 @@ export default function TranscriptReader({
     setToolbar(INITIAL_TOOLBAR);
   }, [numPdfPages]);
 
-  // Keyboard Arrow Left & Right listener for automatic slide switching
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (
@@ -52,7 +51,6 @@ export default function TranscriptReader({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handlePrevSlide, handleNextSlide]);
 
-  // Mouse Drag Handle Resizer logic for expanding/collapsing right panel width
   const handleMouseDownResize = (e) => {
     e.preventDefault();
     isDraggingRef.current = true;
@@ -147,10 +145,9 @@ export default function TranscriptReader({
       <div className="reader-body">
         {/* Center Main Workspace Canvas */}
         <main className="reader-canvas">
-          {/* Continuous Vertical Scroll PDF Slide Rendering Canvas */}
           <div className="document-paper-container">
             <PdfSlideViewer
-              pdfUrl="/lecture.pdf"
+              pdfUrl="../../../data/Lesson_01_Agile.pdf" 
               targetPageNumber={currentPageIndex}
               onNumPages={(num) => setNumPdfPages(num)}
               containerRef={containerRef}
@@ -185,10 +182,9 @@ export default function TranscriptReader({
           </div>
         </main>
 
-        {/* Resizable Split Handle & Right Side Panel (Inline replacing Chatbot with Mindmap) */}
+        {/* Resizable Split Handle & Right Side Panel */}
         {rightPanelMode !== "none" && (
           <>
-            {/* Drag Handle to Resize Right Panel Width */}
             <div
               className="panel-resizer"
               onMouseDown={handleMouseDownResize}
@@ -198,7 +194,6 @@ export default function TranscriptReader({
             </div>
 
             <div className="reader-right-panel" style={{ width: `${rightPanelWidth}px` }}>
-              {/* Top Mode Tabs inside Right Panel */}
               <div className="right-panel-tabs">
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <button
@@ -247,21 +242,44 @@ export default function TranscriptReader({
                   />
                 )}
 
-                {rightPanelMode === "chat" && (
+                {/* {rightPanelMode === "chat" && (
                   <AITutorDrawer
                     lesson={currentLesson}
                     selectedPassage={selectedPassageForDrawer}
                     onClose={() => setRightPanelMode("none")}
                     onOpenMindmap={() => setRightPanelMode("mindmap")}
+                    // 🔥 TRUYỀN HÀM XỬ LÝ NHẢY SLIDE VÀO DRAWER
+                    onJumpToSlide={(pageNum) => {
+                      if (pageNum) {
+                        setCurrentPageIndex(pageNum);
+                      }
+                    }}
                   />
-                )}
+                )} */}
+
+                {rightPanelMode === "chat" && (
+  <AITutorDrawer
+    // 🔥 ĐẢM BẢO LESSON OBJECT MANG ĐÚNG ID CỦA FIRESTORE
+    lesson={{
+      ...currentLesson,
+      id: currentLesson?.id && currentLesson.id !== "Day01" ? currentLesson.id : "lesson_01_agile"
+    }}
+    selectedPassage={selectedPassageForDrawer}
+    onClose={() => setRightPanelMode("none")}
+    onOpenMindmap={() => setRightPanelMode("mindmap")}
+    onJumpToSlide={(pageNum) => {
+      if (pageNum) {
+        setCurrentPageIndex(pageNum);
+      }
+    }}
+  />
+)}
               </div>
             </div>
           </>
         )}
       </div>
 
-      {/* Floating Trigger Button at Bottom Right when panel is closed */}
       {rightPanelMode === "none" && (
         <button
           type="button"
