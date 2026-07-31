@@ -258,11 +258,122 @@ function buildGraph({ activeDay, onSelectBranch, onSelectChild }) {
   return { nodes, edges };
 }
 
+import { fetchMindmap } from "../services/apiClient.js";
+
+const BRANCH_COLORS = ["#e2635c", "#eaa04b", "#1f7d76", "#3b82f6", "#8b5cf6", "#ec4899"];
+
+function buildGraphFromBackendTree(tree, activeBranchId, onSelectBranch, onSelectChild) {
+  const nodes = [
+    {
+      id: "hub",
+      type: "hub",
+      position: { x: -150, y: -62 },
+      draggable: false,
+      selectable: false,
+      data: { title: tree.title || mindmapData.title, subtitle: tree.summary || mindmapData.subtitle },
+    },
+  ];
+  const edges = [];
+  const sections = tree.children || [];
+  const branchCount = sections.length;
+
+  sections.forEach((section, i) => {
+    const color = BRANCH_COLORS[i % BRANCH_COLORS.length];
+    const angle = -90 + i * (360 / Math.max(1, branchCount));
+    const sector = sectorFor(angle);
+    const targetSector = OPPOSITE_SECTOR[sector];
+    const bx = Math.cos(toRad(angle)) * BRANCH_RADIUS;
+    const by = Math.sin(toRad(angle)) * BRANCH_RADIUS;
+
+    nodes.push({
+      id: section.id,
+      type: "branch",
+      position: { x: bx - 95, y: by - 34 },
+      draggable: false,
+      selectable: false,
+      data: {
+        title: section.title,
+        desc: section.summary,
+        color: color,
+        count: section.children?.length || 0,
+        isActive: activeBranchId === section.id,
+        onSelect: () => onSelectBranch(section.id),
+      },
+    });
+
+    edges.push({
+      id: `e-hub-${section.id}`,
+      source: "hub",
+      target: section.id,
+      sourceHandle: `${sector}-src`,
+      targetHandle: `${targetSector}-tgt`,
+      style: { stroke: color, strokeWidth: 2.5 },
+      markerEnd: { type: MarkerType.ArrowClosed, color: color, width: 16, height: 16 },
+    });
+
+    const topics = section.children || [];
+    const childCount = topics.length;
+    topics.forEach((topic, j) => {
+      const spread = (j - (childCount - 1) / 2) * CHILD_SPREAD_DEG;
+      const childAngle = angle + spread;
+      const childSector = sectorFor(childAngle);
+      const childTargetSector = OPPOSITE_SECTOR[childSector];
+      const cx = Math.cos(toRad(childAngle)) * CHILD_RADIUS;
+      const cy = Math.sin(toRad(childAngle)) * CHILD_RADIUS;
+
+      const firstSource = topic.sources?.[0];
+      const slideIndex = firstSource?.slide_index || topic.coverage?.start_slide_index || 1;
+      const slideCode = `T01-${String(slideIndex).padStart(3, '0')}`;
+
+      nodes.push({
+        id: topic.id,
+        type: "chip",
+        position: { x: cx - 85, y: cy - 18 },
+        draggable: false,
+        selectable: false,
+        data: {
+          label: topic.title,
+          code: slideCode,
+          status: topic.importance?.level === "important" ? "gap" : "mastered",
+          text: topic.summary || topic.importance?.reason,
+          color: color,
+          onSelect: () => onSelectChild({ label: topic.title, code: slideCode, text: topic.summary }),
+        },
+      });
+
+      edges.push({
+        id: `e-${section.id}-${topic.id}`,
+        source: section.id,
+        target: topic.id,
+        sourceHandle: `${sector}-src`,
+        targetHandle: `${childTargetSector}-tgt`,
+        style: { stroke: color, strokeWidth: 1.5, strokeDasharray: "5 4" },
+      });
+    });
+  });
+
+  return { nodes, edges };
+}
+
 // --- Component -------------------------------------------------------------
 
-export default function MindmapSideView({ onSelectSlide }) {
+export default function MindmapSideView({ onSelectSlide, deckId = "deck_demo" }) {
   const [activeDay, setActiveDay] = useState("Day01");
   const [selectedNode, setSelectedNode] = useState(null);
+  const [backendTree, setBackendTree] = useState(null);
+  const [isBackendConnected, setIsBackendConnected] = useState(false);
+
+  useEffect(() => {
+    fetchMindmap(deckId).then((res) => {
+      if (res && res.tree) {
+        setBackendTree(res.tree);
+        setIsBackendConnected(true);
+        if (res.tree.children && res.tree.children[0]) {
+          setActiveDay(res.tree.children[0].id);
+        }
+      }
+    });
+  }, [deckId]);
 
   const handleSelectBranch = useCallback((id) => setActiveDay(id), []);
   const handleSelectChild = useCallback(
@@ -273,10 +384,12 @@ export default function MindmapSideView({ onSelectSlide }) {
     [onSelectSlide]
   );
 
-  const { nodes: initialNodes, edges: initialEdges } = useMemo(
-    () => buildGraph({ activeDay, onSelectBranch: handleSelectBranch, onSelectChild: handleSelectChild }),
-    [activeDay, handleSelectBranch, handleSelectChild]
-  );
+  const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
+    if (backendTree) {
+      return buildGraphFromBackendTree(backendTree, activeDay, handleSelectBranch, handleSelectChild);
+    }
+    return buildGraph({ activeDay, onSelectBranch: handleSelectBranch, onSelectChild: handleSelectChild });
+  }, [backendTree, activeDay, handleSelectBranch, handleSelectChild]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);

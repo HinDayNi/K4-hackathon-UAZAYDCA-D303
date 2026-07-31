@@ -8,5 +8,15 @@ export default defineConfig({
     // codebase/ is nested one level under the repo root; the transcript
     // data pack lives in ../data, outside Vite's default project root.
     fs: { allow: [".."] },
+    proxy: {
+      "/api": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
+      "/health": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
+    },
   },
 });

@@ -6,6 +6,7 @@ from zipfile import BadZipFile
 from typing import Annotated
 
 from fastapi import APIRouter, BackgroundTasks, File, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse
 from pptx import Presentation
 from pptx.exc import PackageNotFoundError
 
@@ -18,7 +19,11 @@ router = APIRouter()
 
 
 def _public_deck(deck: dict) -> dict:
-    return {key: value for key, value in deck.items() if key != "file_path"}
+    res = {key: value for key, value in deck.items() if key != "file_path"}
+    filename = deck.get("filename", "")
+    res["file_type"] = "pdf" if filename.lower().endswith(".pdf") else "pptx"
+    res["file_url"] = f"/api/v1/decks/{deck['id']}/file"
+    return res
 
 
 @router.get("")
@@ -29,24 +34,30 @@ def list_decks() -> list[dict]:
 @router.post("", status_code=status.HTTP_202_ACCEPTED)
 async def upload_deck(
     background_tasks: BackgroundTasks,
-    file: Annotated[UploadFile, File(description="PowerPoint .pptx file")],
+    file: Annotated[UploadFile, File(description="PowerPoint .pptx or PDF .pdf file")],
 ) -> dict:
     filename = Path(file.filename or "").name
-    if Path(filename).suffix.lower() != ".pptx":
-        raise HTTPException(status_code=415, detail="MVP only supports .pptx files")
+    suffix = Path(filename).suffix.lower()
+    if suffix not in {".pptx", ".pdf"}:
+        raise HTTPException(status_code=415, detail="Supported file formats: .pptx, .pdf")
     settings = get_settings()
     content = await file.read(settings.max_upload_bytes + 1)
     await file.close()
     if len(content) > settings.max_upload_bytes:
         raise HTTPException(status_code=413, detail="File exceeds upload limit")
-    if not content.startswith(b"PK"):
-        raise HTTPException(status_code=422, detail="Invalid PPTX archive")
-    try:
-        presentation = Presentation(BytesIO(content))
-        if not presentation.slides:
-            raise HTTPException(status_code=422, detail="PPTX contains no slides")
-    except (BadZipFile, PackageNotFoundError, ValueError, KeyError):
-        raise HTTPException(status_code=422, detail="Invalid or unreadable PPTX") from None
+    if suffix == ".pptx":
+        if not content.startswith(b"PK"):
+            raise HTTPException(status_code=422, detail="Invalid PPTX archive")
+        try:
+            presentation = Presentation(BytesIO(content))
+            if not presentation.slides:
+                raise HTTPException(status_code=422, detail="PPTX contains no slides")
+        except (BadZipFile, PackageNotFoundError, ValueError, KeyError):
+            raise HTTPException(status_code=422, detail="Invalid or unreadable PPTX") from None
+    elif suffix == ".pdf":
+        if not content.startswith(b"%PDF"):
+            raise HTTPException(status_code=422, detail="Invalid PDF document")
+
     file_hash = hashlib.sha256(content).hexdigest()
     existing = repo.find_deck_by_hash(file_hash)
     if existing:
@@ -56,7 +67,7 @@ async def upload_deck(
     deck_id, job_id = f"deck_{uuid.uuid4().hex}", f"job_{uuid.uuid4().hex}"
     upload_dir = settings.resolved_upload_path
     upload_dir.mkdir(parents=True, exist_ok=True)
-    target = upload_dir / f"{deck_id}.pptx"
+    target = upload_dir / f"{deck_id}{suffix}"
     target.write_bytes(content)
     repo.create_deck(
         deck_id=deck_id, filename=filename, file_hash=file_hash, file_path=str(target)
@@ -64,6 +75,22 @@ async def upload_deck(
     repo.create_job(job_id, deck_id)
     background_tasks.add_task(process_deck, deck_id, job_id, str(target))
     return {"deck_id": deck_id, "job_id": job_id, "duplicate": False}
+
+
+@router.get("/{deck_id}/file")
+def get_deck_file(deck_id: str):
+    deck = repo.get_deck(deck_id)
+    if not deck or not deck.get("file_path"):
+        raise HTTPException(status_code=404, detail="Deck file not found")
+    file_path = Path(deck["file_path"])
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="File on disk missing")
+    media_type = (
+        "application/pdf"
+        if file_path.suffix.lower() == ".pdf"
+        else "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    )
+    return FileResponse(file_path, media_type=media_type, filename=deck["filename"])
 
 
 @router.get("/{deck_id}")
@@ -105,3 +132,21 @@ def retry_deck(deck_id: str, background_tasks: BackgroundTasks) -> dict:
     repo.create_job(job_id, deck_id)
     background_tasks.add_task(process_deck, deck_id, job_id, deck["file_path"])
     return {"deck_id": deck_id, "job_id": job_id}
+
+
+@router.delete("/{deck_id}", status_code=200)
+def delete_deck(deck_id: str) -> dict:
+    deck = repo.get_deck(deck_id)
+    if not deck:
+        raise HTTPException(status_code=404, detail="Deck not found")
+    # Remove uploaded file from disk if it exists
+    file_path = deck.get("file_path")
+    if file_path:
+        try:
+            p = Path(file_path)
+            if p.exists():
+                p.unlink()
+        except Exception:
+            pass
+    repo.delete_deck(deck_id)
+    return {"deleted": True, "deck_id": deck_id}

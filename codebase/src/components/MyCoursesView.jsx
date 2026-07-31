@@ -1,63 +1,44 @@
-export default function MyCoursesView({ onSelectCourse }) {
-  const daysList = [
-    { id: "Day01", title: "Day01", slides: "2 slide", status: "Chưa hoàn thành ngày học" },
-    { id: "Day02", title: "Day02", slides: "1 slide", status: "Chưa hoàn thành ngày học" },
-    { id: "Day03", title: "Day03", slides: "1 slide", status: "Chưa hoàn thành ngày học" },
-    { id: "Day04", title: "Day04", slides: "1 slide", status: "Chưa hoàn thành ngày học" },
-    { id: "Day05", title: "Day05", slides: "1 slide", status: "Chưa hoàn thành ngày học" },
-    { id: "Day06", title: "Day06", slides: "1 slide", status: "Chưa hoàn thành ngày học" },
-  ];
-
+export default function MyCoursesView({ lessons = [], onSelectCourse }) {
   return (
     <div className="vlearn-page">
       {/* Sub-Header Section */}
       <div className="vlearn-sec-header" style={{ alignItems: 'flex-start' }}>
         <div>
           <span className="vlearn-kicker">VLEARN · VINUNI AI THỰC CHIẾN</span>
-          <h1 className="vlearn-page-title" style={{ fontSize: '2rem' }}>COMP2010 - Khoá 3 + 4 Phase 1</h1>
-          <p className="vlearn-page-sub">1074 học viên cùng lớp</p>
+          <h1 className="vlearn-page-title" style={{ fontSize: '2rem' }}>Danh sách Bài giảng Slide</h1>
+          <p className="vlearn-page-sub">Các bộ Slide bài giảng đã được hệ thống AI xử lý RAG & Sơ đồ Mindmap</p>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          <div className="reading-progress-pill">
-            <span className="check-icon">✔</span> Đã đọc 0/6 ngày
-            <div className="progress-bar-track">
-              <div className="progress-bar-fill" style={{ width: '0%' }}></div>
-            </div>
-            <span className="progress-percent">0%</span>
-          </div>
-
           <button
             type="button"
             className="btn-start-reading"
-            onClick={onSelectCourse}
+            onClick={() => onSelectCourse && lessons[0] && onSelectCourse(lessons[0].id)}
           >
-            Bắt đầu đọc
+            Bắt đầu học →
           </button>
         </div>
       </div>
 
-      {/* Days Accordion List */}
+      {/* Accordion List */}
       <div className="days-accordion-list">
-        {daysList.map((day, idx) => (
+        {lessons.map((item, idx) => (
           <div
-            key={day.id}
+            key={item.id}
             className="day-accordion-card"
-            onClick={onSelectCourse}
+            onClick={() => onSelectCourse && onSelectCourse(item.id)}
           >
             <div className="day-circle-badge">
-              <span className="badge-tag">DAY</span>
+              <span className="badge-tag">BÀI</span>
               <span className="badge-num">{String(idx + 1).padStart(2, "0")}</span>
             </div>
 
             <div className="day-accordion-info">
-              <h3>{day.title}</h3>
-              <p>{day.status} · {day.slides}</p>
+              <h3>{item.title.startsWith("Day") ? item.title : `Bài ${String(idx + 1).padStart(2, "0")}: ${item.title}`}</h3>
+              <p>{item.slideCount ? `${item.slideCount} trang slide` : "Slide bài giảng"} • Tự động phân tích Mindmap & RAG Tutor</p>
             </div>
 
-            <div className="day-chevron">
-              ⌄
-            </div>
+            <div className="day-chevron">›</div>
           </div>
         ))}
       </div>
