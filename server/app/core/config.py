@@ -5,6 +5,8 @@ from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+from typing import Union
+
 SERVER_ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -53,7 +55,7 @@ class Settings(BaseSettings):
     mindmap_important_threshold: int = Field(80, ge=0, le=100)
     mindmap_should_know_threshold: int = Field(50, ge=0, le=100)
     mindmap_important_max_ratio: float = Field(0.30, gt=0, le=1)
-    cors_origins: list[str] = ["http://localhost:3000"]
+    cors_origins: Union[list[str], str] = ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5173"]
 
     model_config = SettingsConfigDict(
         env_file=SERVER_ROOT / ".env",
@@ -65,7 +67,14 @@ class Settings(BaseSettings):
     @classmethod
     def parse_cors_origins(cls, value: object) -> object:
         if isinstance(value, str):
-            return [item.strip() for item in value.split(",") if item.strip()]
+            val_str = value.strip()
+            if val_str.startswith("[") and val_str.endswith("]"):
+                import json
+                try:
+                    return json.loads(val_str)
+                except Exception:
+                    pass
+            return [item.strip() for item in val_str.split(",") if item.strip()]
         return value
 
     @model_validator(mode="after")

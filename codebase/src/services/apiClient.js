@@ -60,11 +60,20 @@ export async function uploadDeck(file) {
  * Helper to resolve active deck ID (replaces dummy deck_demo with actual deck in database)
  */
 export async function getActiveDeckId(requestedDeckId) {
-  if (requestedDeckId && requestedDeckId !== "deck_demo") {
-    return requestedDeckId;
-  }
   const decks = await fetchDecks();
   if (decks && decks.length > 0) {
+    if (requestedDeckId && requestedDeckId !== "deck_demo") {
+      const exactMatch = decks.find(d => d.id === requestedDeckId);
+      if (exactMatch) return exactMatch.id;
+
+      const dayMatch = decks.find(d => {
+        const reqClean = requestedDeckId.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const fnClean = d.filename.toLowerCase().replace(/[^a-z0-9]/g, "");
+        return fnClean.includes(reqClean) || reqClean.includes(fnClean);
+      });
+      if (dayMatch) return dayMatch.id;
+    }
+
     const readyDeck = decks.find(d => d.processing_status === "ready" || d.processing_status === "ready_with_warnings");
     if (readyDeck) return readyDeck.id;
     return decks[0].id;

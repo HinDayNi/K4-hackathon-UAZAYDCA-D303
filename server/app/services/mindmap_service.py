@@ -447,12 +447,12 @@ class MindmapService:
     ) -> None:
         if not isinstance(node, dict):
             raise MindmapValidationError("Every node must be an object")
-        refs = node.get("source_refs", [])
-        if not isinstance(refs, list):
-            raise MindmapValidationError("source_refs must be an array")
-        refs = list(dict.fromkeys(str(ref) for ref in refs))
+        raw_refs = node.get("source_refs", [])
+        if not isinstance(raw_refs, list):
+            raw_refs = []
+        refs = list(dict.fromkeys(str(ref) for ref in raw_refs if str(ref) in source_index))
         if len(refs) > self.settings.mindmap_max_source_slides_per_node:
-            raise MindmapValidationError(f"Node {node.get('id')} has too many sources")
+            refs = refs[:self.settings.mindmap_max_source_slides_per_node]
         range_data = node.get("range")
         if not isinstance(range_data, dict):
             raise MindmapValidationError(f"Node {node.get('id')} has no range")
@@ -612,19 +612,19 @@ class MindmapService:
         visit(root, 0)
         section_count = len(root.children)
         if section_count > settings.mindmap_max_sections:
-            raise MindmapValidationError("Mindmap has too many sections")
+            warnings.append("above_target_section_count")
         if section_count < settings.mindmap_min_sections:
             warnings.append("below_target_section_count")
         for section in root.children:
             topic_count = len(section.children)
             if topic_count > settings.mindmap_max_topics_per_section:
-                raise MindmapValidationError(f"Section {section.id} has too many topics")
+                warnings.append(f"above_target_topic_count:{section.id}")
             if topic_count < settings.mindmap_min_topics_per_section:
                 warnings.append(f"below_target_topic_count:{section.id}")
         self._validate_section_coverage(root, context)
         node_count = len(seen_ids)
         if node_count > settings.mindmap_target_max_nodes:
-            raise MindmapValidationError("Mindmap has too many nodes")
+            warnings.append("above_target_node_count")
         if node_count < settings.mindmap_target_min_nodes:
             warnings.append("below_target_node_count")
         return warnings
