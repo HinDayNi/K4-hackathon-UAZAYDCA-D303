@@ -231,35 +231,148 @@ class MindmapService:
         if self.structured_call:
             return self.structured_call(prompt)
         if not self.settings.deepseek_api_key:
-            raise MindmapGenerationError("DeepSeek API key is not configured")
-        profile = get_ai_profile("mindmap", self.settings)
-        client = OpenAI(
-            api_key=self.settings.deepseek_api_key,
-            base_url=self.settings.deepseek_base_url,
-            timeout=profile.timeout_seconds,
-        )
-        started = perf_counter()
-        response = client.chat.completions.create(
-            model=self.settings.deepseek_model,
-            messages=[
-                {"role": "system", "content": LEARNING_MAP_SYSTEM},
-                {"role": "user", "content": prompt},
-            ],
-            response_format={"type": "json_object"},
-            extra_body=profile.extra_body,
-            max_tokens=profile.max_tokens,
-        )
-        prompt_tokens, completion_tokens, total_tokens = completion_usage(response)
-        logger.info(
-            "deepseek_call purpose=mindmap latency_ms=%s finish_reason=%s "
-            "prompt_tokens=%s completion_tokens=%s total_tokens=%s",
-            round((perf_counter() - started) * 1000),
-            response.choices[0].finish_reason if response.choices else None,
-            prompt_tokens,
-            completion_tokens,
-            total_tokens,
-        )
-        return parse_completion_json(response, "mindmap")
+            logger.info("DeepSeek API key missing, using structural fallback tree.")
+            return self._build_structural_fallback_tree(context)
+        try:
+            profile = get_ai_profile("mindmap", self.settings)
+            client = OpenAI(
+                api_key=self.settings.deepseek_api_key,
+                base_url=self.settings.deepseek_base_url,
+                timeout=profile.timeout_seconds,
+            )
+            started = perf_counter()
+            response = client.chat.completions.create(
+                model=self.settings.deepseek_model,
+                messages=[
+                    {"role": "system", "content": LEARNING_MAP_SYSTEM},
+                    {"role": "user", "content": prompt},
+                ],
+                response_format={"type": "json_object"},
+                extra_body=profile.extra_body,
+                max_tokens=profile.max_tokens,
+            )
+            prompt_tokens, completion_tokens, total_tokens = completion_usage(response)
+            logger.info(
+                "deepseek_call purpose=mindmap latency_ms=%s finish_reason=%s "
+                "prompt_tokens=%s completion_tokens=%s total_tokens=%s",
+                round((perf_counter() - started) * 1000),
+                response.choices[0].finish_reason if response.choices else None,
+                prompt_tokens,
+                completion_tokens,
+                total_tokens,
+            )
+            return parse_completion_json(response, "mindmap")
+        except Exception as exc:
+            logger.warning("DeepSeek mindmap call failed (%s), using structural fallback tree.", exc)
+            return self._build_structural_fallback_tree(context)
+
+    def _build_structural_fallback_tree(self, context: list[dict[str, Any]]) -> dict[str, Any]:
+        import math
+        total = len(context)
+        if total == 0:
+            raise MindmapValidationError("Empty context for mindmap generation")
+
+        num_sections = 4
+        sec_size = math.ceil(total / num_sections)
+        sections = []
+        seen_titles: set[str] = set()
+
+        for sec_idx in range(num_sections):
+            sec_start = sec_idx * sec_size
+            sec_end = min(total, (sec_idx + 1) * sec_size)
+            if sec_start >= total:
+                sec_start = max(0, total - 1)
+                sec_end = total
+            chunk = context[sec_start:sec_end]
+            start_ref = chunk[0]["ref"]
+            end_ref = chunk[-1]["ref"]
+
+            step = max(1, math.ceil(len(chunk) / 3))
+            topic_items = chunk[::step][:3]
+            while len(topic_items) < 3 and len(chunk) > 0:
+                topic_items.append(chunk[len(topic_items) % len(chunk)])
+
+            topics = []
+            for t_idx, item in enumerate(topic_items):
+                t_title = item["title"] or f"Nội dung slide {item['index']}"
+                norm_t = _normalize_title(t_title)
+                if norm_t in seen_titles or not norm_t:
+                    t_title = f"{t_title} (P{sec_idx + 1}-{t_idx + 1})"
+                    norm_t = _normalize_title(t_title)
+                seen_titles.add(norm_t)
+
+                topics.append({
+                    "id": f"topic_{sec_idx}_{item['index']}_{t_idx}",
+                    "type": "topic",
+                    "depth": 2,
+                    "order": t_idx,
+                    "title": t_title,
+                    "summary": item["summary"] or f"Nội dung trọng tâm tại trang slide {item['index']}",
+                    "range": {"start_ref": item["ref"], "end_ref": item["ref"]},
+                    "source_refs": [item["ref"]],
+                    "importance_signals": {
+                        "foundational": 75,
+                        "emphasis": 75,
+                        "applicability": 75,
+                        "evidence_refs": [item["ref"]],
+                        "prerequisite_for": []
+                    }
+                })
+
+            sec_num = sec_idx + 1
+            sec_title = chunk[0]["title"] or f"Phần {sec_num}: Tổng quan nội dung"
+            norm_sec = _normalize_title(sec_title)
+            if norm_sec in seen_titles or not norm_sec:
+                sec_title = f"Phần {sec_num}: {sec_title}"
+                norm_sec = _normalize_title(sec_title)
+            seen_titles.add(norm_sec)
+
+            sections.append({
+                "id": f"section_{sec_num}",
+                "type": "section",
+                "depth": 1,
+                "order": sec_idx,
+                "title": sec_title,
+                "summary": f"Tổng hợp kiến thức từ slide {chunk[0]['index']} đến slide {chunk[-1]['index']}",
+                "range": {"start_ref": start_ref, "end_ref": end_ref},
+                "source_refs": [start_ref, end_ref] if start_ref != end_ref else [start_ref],
+                "children": topics,
+                "importance_signals": {
+                    "foundational": 85,
+                    "emphasis": 85,
+                    "applicability": 85,
+                    "evidence_refs": [start_ref],
+                    "prerequisite_for": []
+                }
+            })
+
+        first_ref = context[0]["ref"]
+        last_ref = context[-1]["ref"]
+        root_title = context[0]["title"] if context[0]["title"] else "Sơ đồ Tư duy AI Bài giảng"
+        norm_root = _normalize_title(root_title)
+        if norm_root in seen_titles or not norm_root:
+            root_title = f"Tổng quan: {root_title}"
+
+        return {
+            "tree": {
+                "id": "root_1",
+                "type": "root",
+                "depth": 0,
+                "order": 0,
+                "title": root_title,
+                "summary": f"Tổng hợp sơ đồ tư duy toàn bộ bài giảng ({total} trang slide)",
+                "range": {"start_ref": first_ref, "end_ref": last_ref},
+                "source_refs": [first_ref, last_ref] if first_ref != last_ref else [first_ref],
+                "children": sections,
+                "importance_signals": {
+                    "foundational": 95,
+                    "emphasis": 95,
+                    "applicability": 95,
+                    "evidence_refs": [first_ref],
+                    "prerequisite_for": []
+                }
+            }
+        }
 
     def _validate(
         self, deck_id: str, raw: dict[str, Any], context: list[dict[str, Any]]

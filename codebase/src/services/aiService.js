@@ -1,5 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { logAiCall } from "../utils/aiLog.js";
+import { askTutorApi } from "./apiClient.js";
 
 const MODEL = "gemini-2.5-flash";
 const MIN_WORDS_FOR_QUESTION = 40;
@@ -176,8 +177,31 @@ const EXPLAIN_SCHEMA = {
   required: ["answer", "citation", "confidence"],
 };
 
-export async function explainPassage({ passageText, segmentCodes, lessonTitle, queryText }) {
-  const prompt = `Bạn là VLearn AI Tutor của khoá "${lessonTitle}". Học viên bôi đen đoạn trích dẫn [${segmentCodes.join(", ")}] trong bài giảng và đưa ra yêu cầu: "${queryText || "Giải thích giúp mình đoạn này"}".
+export async function explainPassage({ passageText, segmentCodes, lessonTitle, queryText, deckId = "deck_demo" }) {
+  // Try backend FastAPI server RAG first
+  const apiResult = await askTutorApi({
+    deckId: deckId,
+    question: queryText || `Giải thích giúp mình đoạn này: ${passageText.slice(0, 100)}`,
+    selection: {
+      text: passageText,
+      slide_id: segmentCodes?.[0] || "slide_1",
+      block_ids: segmentCodes || ["b1"],
+    },
+  });
+
+  if (apiResult && apiResult.answer) {
+    const mainCitation = apiResult.citations?.[0];
+    return {
+      answer: apiResult.answer,
+      citation: mainCitation ? `Slide ${mainCitation.slide_index} (${mainCitation.slide_title})` : (segmentCodes?.[0] || "RAG Source"),
+      confidence: apiResult.confidence || 95,
+      grounded: apiResult.grounded,
+      citations: apiResult.citations,
+    };
+  }
+
+  // Fallback to Client-side Gemini SDK / Mock if backend is offline
+  const prompt = `Bạn là VLearn AI Tutor của khoá "${lessonTitle}". Học viên bôi đen đoạn trích dẫn [${segmentCodes?.join(", ") || ""}] trong bài giảng và đưa ra yêu cầu: "${queryText || "Giải thích giúp mình đoạn này"}".
 
 Đoạn bài giảng được bôi đen:
 """
@@ -186,15 +210,15 @@ ${passageText}
 
 Hãy giải thích chi tiết, dễ hiểu, bám sát bài giảng và trả về JSON:
 - answer: Câu giải thích mạch lạc, sâu sắc bằng tiếng Việt
-- citation: Mã đoạn bài giảng chính (ví dụ "${segmentCodes[0]}")
+- citation: Mã đoạn bài giảng chính (ví dụ "${segmentCodes?.[0] || "T01-001"}")
 - confidence: Độ tin cậy (từ 85 đến 98)`;
 
   try {
     const ai = getClient();
     if (!ai) {
       const mockAns = {
-        answer: `Đoạn bài giảng [${segmentCodes.join(", ")}] tập trung giải thích rằng: "${passageText.slice(0, 120)}...". Ý cốt lõi ở đây là giúp bạn định hình đúng bài toán AI và xác định rõ 5 tiêu chí nghiệm thu trước khi bắt tay vào xây dựng sản phẩm.`,
-        citation: segmentCodes[0],
+        answer: `Đoạn bài giảng [${segmentCodes?.join(", ") || ""}] tập trung giải thích rằng: "${passageText.slice(0, 120)}...". Ý cốt lõi ở đây là giúp bạn định hình đúng bài toán AI và xác định rõ 5 tiêu chí nghiệm thu trước khi bắt tay vào xây dựng sản phẩm.`,
+        citation: segmentCodes?.[0] || "T01-001",
         confidence: 95,
       };
       logAiCall({ kind: "explainPassage_mock", request: { prompt }, response: mockAns });
@@ -212,8 +236,8 @@ Hãy giải thích chi tiết, dễ hiểu, bám sát bài giảng và trả v�
   } catch (error) {
     logAiCall({ kind: "explainPassage", request: { prompt }, error: String(error) });
     return {
-      answer: `Nội dung đoạn [${segmentCodes.join(", ")}] nêu rõ ý chính về thiết kế giải pháp và tư duy sản phẩm AI. Hãy áp dụng điều này vào lát cắt dự án của bạn.`,
-      citation: segmentCodes[0],
+      answer: `Nội dung đoạn [${segmentCodes?.join(", ") || ""}] nêu rõ ý chính về thiết kế giải pháp và tư duy sản phẩm AI. Hãy áp dụng điều này vào lát cắt dự án của bạn.`,
+      citation: segmentCodes?.[0] || "T01-001",
       confidence: 90,
     };
   }
