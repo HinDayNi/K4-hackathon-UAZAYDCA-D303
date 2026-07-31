@@ -1,0 +1,89 @@
+{
+  "name": "Bài giảng Pháp luật đại cương - Chat API smoke set",
+  "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+  "endpoint": "/api/v1/decks/deck_f8060c8ba23c41b689660c43134fd129/chat",
+  "cases": [
+    {
+      "id": "selection_state_and_law",
+      "description": "Có bôi đen; phải ưu tiên đúng block và slide 4.",
+      "request": {
+        "question": "Mối quan hệ hữu cơ giữa nhà nước và pháp luật là gì?",
+        "selection": {
+          "text": "Quan hệ qua lại: Nhà nước chỉ thực hiện quản lý xã hội theo đường lối của mình bằng hệ thống pháp luật. Pháp luật chỉ có ý nghĩa thực sự khi được nhà nước bảo đảm thực hiện bằng sức mạnh cưỡng chế, tổ chức. Quan hệ ràng buộc: Mặc dù pháp luật do Nhà nước đề ra nhưng khi được ban hành, pháp luật tác động trở lại đối với Nhà nước.",
+          "slide_id": "sld_649141e3818c42048946559b235cee04",
+          "block_ids": ["blk_c4978de8749344668cc110fc5069cc3b"]
+        },
+        "current_slide_id": "sld_649141e3818c42048946559b235cee04",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "required_citation_slide_indexes": [4]
+      }
+    },
+    {
+      "id": "free_question_state_characteristics",
+      "description": "Không bôi đen; retrieval phải tìm được slide 18.",
+      "request": {
+        "question": "Nhà nước có những đặc điểm cơ bản nào?",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "required_citation_slide_indexes": [18]
+      }
+    },
+    {
+      "id": "history_follow_up_inheritance",
+      "description": "Câu hỏi nối tiếp cần dùng history để hiểu 'hình thức thứ hai'.",
+      "request": {
+        "question": "Khi nào áp dụng hình thức thứ hai?",
+        "history": [
+          {
+            "question": "Thừa kế có những hình thức nào?",
+            "answer": "Deck trình bày thừa kế theo di chúc và thừa kế theo pháp luật."
+          }
+        ]
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "required_citation_slide_indexes": [189]
+      }
+    },
+    {
+      "id": "far_slide_criminal_penalties",
+      "description": "Không bôi đen; phải tìm nội dung ở gần cuối deck.",
+      "request": {
+        "question": "Hình phạt chính và hình phạt bổ sung trong luật hình sự gồm những loại nào?",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "required_citation_slide_indexes": [197]
+      }
+    },
+    {
+      "id": "outside_deck_no_basis",
+      "description": "Câu hỏi ngoài deck phải từ chối trả lời.",
+      "request": {
+        "question": "Deck có hướng dẫn cách cấu hình Kubernetes autoscaling không?",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "no_basis",
+        "grounded": false,
+        "confidence": 0,
+        "required_citation_slide_indexes": []
+      }
+    }
+  ]
+}

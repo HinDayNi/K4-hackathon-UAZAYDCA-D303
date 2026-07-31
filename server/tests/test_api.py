@@ -20,7 +20,7 @@ def test_lessons_are_empty_before_seed() -> None:
 def test_chat_validates_request() -> None:
     with TestClient(app) as client:
         response = client.post(
-            "/api/v1/chat",
-            json={"lesson_id": "demo", "question": "  "},
+            "/api/v1/decks/demo/chat",
+            json={"question": "  "},
         )
     assert response.status_code == 422
