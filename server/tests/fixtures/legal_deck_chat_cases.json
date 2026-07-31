@@ -1,15 +1,40 @@
 {
-  "name": "Bài giảng Pháp luật đại cương - Chat API smoke set",
+  "name": "Bài giảng Pháp luật đại cương - Chat Tutor golden set",
   "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
   "endpoint": "/api/v1/decks/deck_f8060c8ba23c41b689660c43134fd129/chat",
+  "source_deck": {
+    "filename": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+    "sha256": "CB4BB05AD0AC9E96A296EC349F95BCC23CA3BE453D7ED04AC16CCE83AC4A1C44",
+    "slide_count": 199
+  },
+  "quality_bar": {
+    "minimum_pass_rate_percent": 85,
+    "minimum_passed_cases": 17,
+    "citation_accuracy_percent": 100
+  },
+  "composition": {
+    "core": 14,
+    "niche": 6,
+    "normal": 10,
+    "hard": 6,
+    "rare": 4,
+    "chatlog_pattern_adapted": 10
+  },
   "cases": [
     {
-      "id": "selection_state_and_law",
-      "description": "Có bôi đen; phải ưu tiên đúng block và slide 4.",
+      "id": "CASE01",
+      "tier": "core",
+      "rarity": "normal",
+      "taxonomy_layer": ["① Nguồn sự thật"],
+      "description": "Có bôi đen; phải ưu tiên đúng block nói về quan hệ Nhà nước và pháp luật.",
+      "provenance": {
+        "content_source": "slide 4",
+        "query_pattern": "chatlog_pattern_adapted: selection + direct_question"
+      },
       "request": {
         "question": "Mối quan hệ hữu cơ giữa nhà nước và pháp luật là gì?",
         "selection": {
-          "text": "Quan hệ qua lại: Nhà nước chỉ thực hiện quản lý xã hội theo đường lối của mình bằng hệ thống pháp luật. Pháp luật chỉ có ý nghĩa thực sự khi được nhà nước bảo đảm thực hiện bằng sức mạnh cưỡng chế, tổ chức. Quan hệ ràng buộc: Mặc dù pháp luật do Nhà nước đề ra nhưng khi được ban hành, pháp luật tác động trở lại đối với Nhà nước.",
+          "text": "Quan hệ qua lại: Nhà nước quản lý xã hội bằng pháp luật; pháp luật được Nhà nước bảo đảm thực hiện. Quan hệ ràng buộc: pháp luật tác động trở lại đối với Nhà nước.",
           "slide_id": "sld_649141e3818c42048946559b235cee04",
           "block_ids": ["blk_c4978de8749344668cc110fc5069cc3b"]
         },
@@ -20,12 +45,27 @@
         "http_status": 200,
         "status": "answered",
         "grounded": true,
-        "required_citation_slide_indexes": [4]
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [4],
+        "allowed_citation_slide_indexes": [4, 61, 71],
+        "required_answer_concepts": [
+          ["quản lý xã hội", "quản lý"],
+          ["bảo đảm thực hiện", "cưỡng chế"],
+          ["tác động trở lại", "ràng buộc"]
+        ],
+        "forbidden_answer_terms": []
       }
     },
     {
-      "id": "free_question_state_characteristics",
-      "description": "Không bôi đen; retrieval phải tìm được slide 18.",
+      "id": "CASE02",
+      "tier": "core",
+      "rarity": "normal",
+      "taxonomy_layer": ["① Nguồn sự thật"],
+      "description": "Truy vấn tự do phải tìm đúng slide tổng hợp năm đặc điểm của Nhà nước.",
+      "provenance": {
+        "content_source": "slide 18",
+        "query_pattern": "chatlog_pattern_adapted: short_direct_question"
+      },
       "request": {
         "question": "Nhà nước có những đặc điểm cơ bản nào?",
         "history": []
@@ -34,12 +74,333 @@
         "http_status": 200,
         "status": "answered",
         "grounded": true,
-        "required_citation_slide_indexes": [18]
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [18],
+        "allowed_citation_slide_indexes": [18, 19, 20, 23, 26, 27],
+        "required_answer_concepts": [
+          ["quyền lực công cộng"],
+          ["lãnh thổ"],
+          ["chủ quyền quốc gia"],
+          ["ban hành pháp luật"],
+          ["thuế"]
+        ],
+        "forbidden_answer_terms": []
       }
     },
     {
-      "id": "history_follow_up_inheritance",
-      "description": "Câu hỏi nối tiếp cần dùng history để hiểu 'hình thức thứ hai'.",
+      "id": "CASE03",
+      "tier": "core",
+      "rarity": "normal",
+      "taxonomy_layer": ["① Nguồn sự thật"],
+      "description": "Giải thích đúng hai nhóm chức năng, không trộn nội dung đối nội và đối ngoại.",
+      "provenance": {
+        "content_source": "slide 28",
+        "query_pattern": "chatlog_pattern_adapted: explain_concept"
+      },
+      "request": {
+        "question": "Chức năng đối nội với đối ngoại khác nhau chỗ nào vậy?",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [28],
+        "allowed_citation_slide_indexes": [28, 30],
+        "required_answer_concepts": [
+          ["trong nội bộ đất nước", "đối nội"],
+          ["quan hệ với các nhà nước", "đối ngoại"]
+        ],
+        "forbidden_answer_terms": []
+      }
+    },
+    {
+      "id": "CASE04",
+      "tier": "core",
+      "rarity": "normal",
+      "taxonomy_layer": ["④ Đặc thù domain"],
+      "description": "Câu so sánh phải dùng đủ nguồn của cả Nhà nước đơn nhất và Nhà nước liên bang.",
+      "provenance": {
+        "content_source": "slides 41-42",
+        "query_pattern": "chatlog_pattern_adapted: compare_two_concepts"
+      },
+      "request": {
+        "question": "Phân biệt nhà nước đơn nhất và nhà nước liên bang giúp mình.",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [41, 42],
+        "allowed_citation_slide_indexes": [40, 41, 42, 43],
+        "required_answer_concepts": [
+          ["chủ quyền riêng"],
+          ["hệ thống cơ quan"],
+          ["hệ thống pháp luật"]
+        ],
+        "forbidden_answer_terms": []
+      }
+    },
+    {
+      "id": "CASE05",
+      "tier": "core",
+      "rarity": "normal",
+      "taxonomy_layer": ["① Nguồn sự thật"],
+      "description": "Định nghĩa pháp luật phải bám nguyên các thành tố trong slide.",
+      "provenance": {
+        "content_source": "slide 55",
+        "query_pattern": "chatlog_pattern_adapted: definition_request"
+      },
+      "request": {
+        "question": "Theo slide thì pháp luật là gì?",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [55],
+        "allowed_citation_slide_indexes": [55],
+        "required_answer_concepts": [
+          ["hệ thống các quy tắc xử sự", "hệ thống quy tắc xử sự"],
+          ["nhà nước đặt ra", "nhà nước thừa nhận"],
+          ["điều chỉnh các quan hệ xã hội"]
+        ],
+        "forbidden_answer_terms": []
+      }
+    },
+    {
+      "id": "CASE06",
+      "tier": "core",
+      "rarity": "normal",
+      "taxonomy_layer": ["④ Đặc thù domain"],
+      "description": "Phân biệt pháp luật và đạo đức theo nguồn gốc, phạm vi và bảo đảm thực hiện.",
+      "provenance": {
+        "content_source": "slides 69-70",
+        "query_pattern": "chatlog_pattern_adapted: conversational_compare"
+      },
+      "request": {
+        "question": "Pháp luật với đạo đức giống và khác nhau sao ạ?",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [69, 70],
+        "allowed_citation_slide_indexes": [69, 70, 72],
+        "required_answer_concepts": [
+          ["điều chỉnh hành vi", "điều chỉnh"],
+          ["dư luận xã hội"],
+          ["cưỡng chế của nhà nước", "cưỡng chế"]
+        ],
+        "forbidden_answer_terms": []
+      }
+    },
+    {
+      "id": "CASE07",
+      "tier": "core",
+      "rarity": "normal",
+      "taxonomy_layer": ["④ Đặc thù domain"],
+      "description": "Không được đồng nhất văn bản quy phạm pháp luật với văn bản áp dụng pháp luật.",
+      "provenance": {
+        "content_source": "slides 95-96",
+        "query_pattern": "chatlog_pattern_adapted: distinguish_similar_terms"
+      },
+      "request": {
+        "question": "VB quy phạm pháp luật khác VB áp dụng pháp luật như nào?",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [95, 96],
+        "allowed_citation_slide_indexes": [94, 95, 96],
+        "required_answer_concepts": [
+          ["quy tắc xử sự chung"],
+          ["áp dụng nhiều lần"],
+          ["vụ việc cụ thể", "trường hợp cụ thể"]
+        ],
+        "forbidden_answer_terms": []
+      }
+    },
+    {
+      "id": "CASE08",
+      "tier": "core",
+      "rarity": "normal",
+      "taxonomy_layer": ["① Nguồn sự thật"],
+      "description": "Phải lấy đúng bảng phân biệt quan hệ pháp luật và quan hệ xã hội.",
+      "provenance": {
+        "content_source": "slide 104",
+        "query_pattern": "chatlog_pattern_adapted: abbreviated_terms"
+      },
+      "request": {
+        "question": "QHPL khác QHXH ở điểm nào?",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [104],
+        "allowed_citation_slide_indexes": [104],
+        "required_answer_concepts": [
+          ["tồn tại khách quan"],
+          ["ý chí của nhà làm luật"],
+          ["hình thức pháp lý"]
+        ],
+        "forbidden_answer_terms": []
+      }
+    },
+    {
+      "id": "CASE09",
+      "tier": "core",
+      "rarity": "normal",
+      "taxonomy_layer": ["④ Đặc thù domain"],
+      "description": "Phân biệt ba hình thức thực hiện pháp luật bằng chủ thể và loại quy phạm.",
+      "failure_owner": "needs_review",
+      "review_status": "pending",
+      "review_note": "Cần hai người xác minh liệu slide 129 và 131 có đủ hỗ trợ câu trả lời khi thiếu citation trực tiếp tới slide 127 và 128.",
+      "provenance": {
+        "content_source": "slides 125-128",
+        "query_pattern": "chatlog_pattern_adapted: list_then_compare"
+      },
+      "request": {
+        "question": "Phân biệt tuân thủ, sử dụng và áp dụng pháp luật.",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [126, 127, 128],
+        "allowed_citation_slide_indexes": [125, 126, 127, 128],
+        "required_answer_concepts": [
+          ["kiềm chế không làm", "quy phạm cấm đoán"],
+          ["quyền chủ thể", "quy phạm trao quyền"],
+          ["cơ quan có thẩm quyền", "nhà chức trách"]
+        ],
+        "forbidden_answer_terms": []
+      }
+    },
+    {
+      "id": "CASE10",
+      "tier": "core",
+      "rarity": "normal",
+      "taxonomy_layer": ["④ Đặc thù domain"],
+      "description": "Liệt kê đủ các dấu hiệu cốt lõi của vi phạm pháp luật.",
+      "failure_owner": "evaluator",
+      "review_status": "verified",
+      "review_note": "Slide 139 liệt kê trực tiếp đủ bốn dấu hiệu; chấp nhận 139 là citation bắt buộc và 138 là nguồn bổ trợ.",
+      "provenance": {
+        "content_source": "slides 138-139",
+        "query_pattern": "chatlog_pattern_adapted: exam_review_list"
+      },
+      "request": {
+        "question": "Ôn thi: vi phạm pháp luật có những dấu hiệu gì?",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [139],
+        "allowed_citation_slide_indexes": [138, 139],
+        "required_answer_concepts": [
+          ["hành vi"],
+          ["trái pháp luật"],
+          ["có lỗi", "lỗi"],
+          ["năng lực trách nhiệm pháp lý", "năng lực tnpl"]
+        ],
+        "forbidden_answer_terms": []
+      }
+    },
+    {
+      "id": "CASE11",
+      "tier": "core",
+      "rarity": "hard",
+      "taxonomy_layer": ["④ Đặc thù domain"],
+      "description": "Câu hỏi tổng hợp xa nhau phải nêu đủ bốn yếu tố cấu thành vi phạm pháp luật.",
+      "failure_owner": "needs_review",
+      "review_status": "pending",
+      "review_note": "Cần hai người xác minh slide 150 có hỗ trợ đầy đủ bốn yếu tố hay đang trộn cấu thành tội phạm với cấu thành vi phạm pháp luật.",
+      "provenance": {
+        "content_source": "slides 140-144",
+        "query_pattern": "deck_derived: multi_slide_synthesis"
+      },
+      "request": {
+        "question": "Trình bày bốn yếu tố cấu thành vi phạm pháp luật và ý nghĩa từng yếu tố.",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [140, 141, 142, 143, 144],
+        "allowed_citation_slide_indexes": [140, 141, 142, 143, 144],
+        "required_answer_concepts": [
+          ["mặt khách quan"],
+          ["mặt chủ quan"],
+          ["chủ thể"],
+          ["khách thể"]
+        ],
+        "forbidden_answer_terms": []
+      }
+    },
+    {
+      "id": "CASE12",
+      "tier": "core",
+      "rarity": "hard",
+      "taxonomy_layer": ["① Nguồn sự thật", "④ Đặc thù domain"],
+      "description": "Đọc bảng nhiều cột để phân loại đủ trách nhiệm hình sự, hành chính, dân sự và kỷ luật.",
+      "provenance": {
+        "content_source": "slides 146-148",
+        "query_pattern": "deck_derived: table_extraction"
+      },
+      "request": {
+        "question": "Phân loại trách nhiệm pháp lý tương ứng với từng loại vi phạm pháp luật.",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [148],
+        "allowed_citation_slide_indexes": [145, 146, 147, 148],
+        "required_answer_concepts": [
+          ["trách nhiệm hình sự", "tn hình sự"],
+          ["trách nhiệm hành chính", "tn hành chính"],
+          ["trách nhiệm dân sự", "tn dân sự"],
+          ["trách nhiệm kỷ luật", "tn kỷ luật"]
+        ],
+        "forbidden_answer_terms": []
+      }
+    },
+    {
+      "id": "CASE13",
+      "tier": "core",
+      "rarity": "hard",
+      "taxonomy_layer": ["② Mơ hồ / thiếu thông tin"],
+      "description": "Câu nối tiếp phải dùng history để suy ra hình thức thứ hai là thừa kế theo pháp luật.",
+      "failure_owner": "needs_review",
+      "review_status": "pending",
+      "review_note": "Cần hai người xác minh slide 191 có hỗ trợ nhận định trong answer hay chỉ là citation thừa từ phần bài tập.",
+      "provenance": {
+        "content_source": "slide 189",
+        "query_pattern": "deck_derived: resolvable_follow_up"
+      },
       "request": {
         "question": "Khi nào áp dụng hình thức thứ hai?",
         "history": [
@@ -53,26 +414,121 @@
         "http_status": 200,
         "status": "answered",
         "grounded": true,
-        "required_citation_slide_indexes": [189]
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [189],
+        "allowed_citation_slide_indexes": [188, 189, 190],
+        "required_answer_concepts": [
+          ["thừa kế theo pháp luật"],
+          ["không có di chúc", "ko có di chúc", "di chúc không hợp pháp", "di chúc ko hợp pháp"]
+        ],
+        "forbidden_answer_terms": []
       }
     },
     {
-      "id": "far_slide_criminal_penalties",
-      "description": "Không bôi đen; phải tìm nội dung ở gần cuối deck.",
+      "id": "CASE14",
+      "tier": "core",
+      "rarity": "hard",
+      "taxonomy_layer": ["④ Đặc thù domain"],
+      "description": "Phân biệt hai hệ thống pháp luật trên nhiều tiêu chí nhưng phải ưu tiên slide so sánh.",
+      "provenance": {
+        "content_source": "slide 170",
+        "query_pattern": "deck_derived: domain_comparison"
+      },
       "request": {
-        "question": "Hình phạt chính và hình phạt bổ sung trong luật hình sự gồm những loại nào?",
+        "question": "So sánh Common Law và Civil Law theo nguồn luật, pháp điển hóa và tố tụng.",
         "history": []
       },
       "expected": {
         "http_status": 200,
         "status": "answered",
         "grounded": true,
-        "required_citation_slide_indexes": [197]
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [170],
+        "allowed_citation_slide_indexes": [161, 165, 167, 168, 170],
+        "required_answer_concepts": [
+          ["án lệ"],
+          ["luật thành văn"],
+          ["tranh tụng"],
+          ["thẩm vấn", "tố tụng viết"]
+        ],
+        "forbidden_answer_terms": []
       }
     },
     {
-      "id": "outside_deck_no_basis",
-      "description": "Câu hỏi ngoài deck phải từ chối trả lời.",
+      "id": "CASE15",
+      "tier": "niche",
+      "rarity": "hard",
+      "taxonomy_layer": ["② Mơ hồ / thiếu thông tin"],
+      "description": "Câu hỏi gần như không có từ khóa; selection phải đủ để định vị ý cần giải thích.",
+      "provenance": {
+        "content_source": "slide 69 selected block",
+        "query_pattern": "deck_derived: selection_resolves_ambiguous_question"
+      },
+      "request": {
+        "question": "Ý này nghĩa là gì?",
+        "selection": {
+          "text": "Pháp luật và đạo đức đều là một hình thái ý thức xã hội thuộc kiến trúc thượng tầng, cùng điều chỉnh hành vi của xã hội, mang tính giai cấp, tính dân tộc và tính thời đại.",
+          "slide_id": "sld_5a7f1c7c2c274f19bfbca69e4723779d",
+          "block_ids": ["blk_cfe6fd1722424ebe85cafd74172a77d4"]
+        },
+        "current_slide_id": "sld_5a7f1c7c2c274f19bfbca69e4723779d",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "answered",
+        "grounded": true,
+        "minimum_confidence": 70,
+        "required_citation_slide_indexes": [69],
+        "allowed_citation_slide_indexes": [69],
+        "required_answer_concepts": [
+          ["pháp luật và đạo đức"],
+          ["điều chỉnh hành vi"],
+          ["tính giai cấp", "tính dân tộc", "tính thời đại"]
+        ],
+        "forbidden_answer_terms": []
+      }
+    },
+    {
+      "id": "CASE16",
+      "tier": "niche",
+      "rarity": "hard",
+      "taxonomy_layer": ["② Mơ hồ / thiếu thông tin"],
+      "description": "History không chứa chủ đề thật; hệ thống không được tự gán đại từ vào một khái niệm bất kỳ.",
+      "provenance": {
+        "content_source": "no resolvable source",
+        "query_pattern": "deck_derived: unresolvable_follow_up"
+      },
+      "request": {
+        "question": "Nó khác loại thứ hai ở điểm nào?",
+        "history": [
+          {
+            "question": "Có những loại nào?",
+            "answer": "Có loại thứ nhất và loại thứ hai."
+          }
+        ]
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "no_basis",
+        "grounded": false,
+        "confidence": 0,
+        "required_citation_slide_indexes": [],
+        "allowed_citation_slide_indexes": [],
+        "required_answer_concepts": [],
+        "forbidden_answer_terms": []
+      }
+    },
+    {
+      "id": "CASE17",
+      "tier": "niche",
+      "rarity": "rare",
+      "taxonomy_layer": ["① Nguồn sự thật"],
+      "description": "Chủ đề kỹ thuật hoàn toàn ngoài deck phải trả về no_basis.",
+      "provenance": {
+        "content_source": "negative control",
+        "query_pattern": "deck_derived: out_of_deck_topic"
+      },
       "request": {
         "question": "Deck có hướng dẫn cách cấu hình Kubernetes autoscaling không?",
         "history": []
@@ -82,7 +538,85 @@
         "status": "no_basis",
         "grounded": false,
         "confidence": 0,
-        "required_citation_slide_indexes": []
+        "required_citation_slide_indexes": [],
+        "allowed_citation_slide_indexes": [],
+        "required_answer_concepts": [],
+        "forbidden_answer_terms": []
+      }
+    },
+    {
+      "id": "CASE18",
+      "tier": "niche",
+      "rarity": "rare",
+      "taxonomy_layer": ["③ Ngoài phạm vi / thẩm quyền"],
+      "description": "Không được đoán thông tin vận hành khóa học không tồn tại trong deck.",
+      "provenance": {
+        "content_source": "negative control",
+        "query_pattern": "deck_derived: course_logistics"
+      },
+      "request": {
+        "question": "Deadline và link nộp bài trên Discord là gì?",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "no_basis",
+        "grounded": false,
+        "confidence": 0,
+        "required_citation_slide_indexes": [],
+        "allowed_citation_slide_indexes": [],
+        "required_answer_concepts": [],
+        "forbidden_answer_terms": ["deadline là", "link nộp bài là"]
+      }
+    },
+    {
+      "id": "CASE19",
+      "tier": "niche",
+      "rarity": "rare",
+      "taxonomy_layer": ["③ Ngoài phạm vi / thẩm quyền"],
+      "description": "Không dùng kiến thức giáo trình để kết luận trách nhiệm hình sự cho một cá nhân giả định.",
+      "provenance": {
+        "content_source": "negative control",
+        "query_pattern": "deck_derived: personal_legal_advice"
+      },
+      "request": {
+        "question": "Tôi chỉ kể rằng một người làm tôi bị thiệt hại nhưng không có thêm dữ kiện. Hãy kết luận chắc chắn người đó phạm tội gì và mức án bao nhiêu.",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "no_basis",
+        "grounded": false,
+        "confidence": 0,
+        "required_citation_slide_indexes": [],
+        "allowed_citation_slide_indexes": [],
+        "required_answer_concepts": [],
+        "forbidden_answer_terms": ["chắc chắn phạm tội", "mức án là", "bị phạt tù"]
+      }
+    },
+    {
+      "id": "CASE20",
+      "tier": "niche",
+      "rarity": "rare",
+      "taxonomy_layer": ["① Nguồn sự thật", "④ Đặc thù domain"],
+      "description": "Deck không phải nguồn xác minh pháp luật hiện hành năm 2026; không được nâng nội dung lịch sử trong slide thành kết luận cập nhật.",
+      "provenance": {
+        "content_source": "negative control based on dated references in the deck",
+        "query_pattern": "deck_derived: freshness_trap"
+      },
+      "request": {
+        "question": "Theo pháp luật hiện hành năm 2026, toàn bộ các quy định trong slide này vẫn còn hiệu lực đúng không?",
+        "history": []
+      },
+      "expected": {
+        "http_status": 200,
+        "status": "no_basis",
+        "grounded": false,
+        "confidence": 0,
+        "required_citation_slide_indexes": [],
+        "allowed_citation_slide_indexes": [],
+        "required_answer_concepts": [],
+        "forbidden_answer_terms": ["toàn bộ vẫn còn hiệu lực", "đều còn hiệu lực", "chắc chắn còn hiệu lực"]
       }
     }
   ]

@@ -32,6 +32,9 @@ uvicorn app.main:app --reload
 
 Swagger UI: `http://localhost:8000/docs`
 
+Project API documentation and authoring rules:
+[`../docs/README.md`](../docs/README.md).
+
 ## Kiểm thử
 
 ```powershell
@@ -43,9 +46,19 @@ python -m pytest
 - `GET /health`
 - `GET /api/v1/lessons`
 - `GET /api/v1/lessons/{lesson_id}`
-- `POST /api/v1/chat`
+- `GET /api/v1/decks`
+- `POST /api/v1/decks`
+- `GET /api/v1/decks/{deck_id}`
+- `GET /api/v1/decks/{deck_id}/slides`
+- `GET /api/v1/decks/{deck_id}/slides/{slide_id}`
+- `POST /api/v1/decks/{deck_id}/retry`
+- `GET /api/v1/jobs/{job_id}`
+- `POST /api/v1/decks/{deck_id}/chat`
 - `GET /api/v1/decks/{deck_id}/mindmap`
 - `POST /api/v1/decks/{deck_id}/mindmap/generate`
+
+See [`../docs/api/README.md`](../docs/api/README.md) for contracts, examples,
+error behavior, and source references.
 
 Mindmap được tạo ở cuối ingestion và lưu trong SQLite. Endpoint GET chỉ đọc
 artifact đã lưu, không gọi AI. Developer có thể chủ động tạo lại bằng:

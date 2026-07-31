@@ -1,0 +1,125 @@
+{
+  "original_baseline": {
+    "total": 20,
+    "passed": 12,
+    "pass_rate_percent": 60.0,
+    "citation_accuracy_percent": 70.0,
+    "by_tier": {
+      "core": {
+        "passed": 7,
+        "total": 14
+      },
+      "niche": {
+        "passed": 5,
+        "total": 6
+      }
+    },
+    "by_layer": {
+      "① Nguồn sự thật": {
+        "passed": 6,
+        "total": 8
+      },
+      "② Mơ hồ / thiếu thông tin": {
+        "passed": 1,
+        "total": 3
+      },
+      "③ Ngoài phạm vi / thẩm quyền": {
+        "passed": 2,
+        "total": 2
+      },
+      "④ Đặc thù domain": {
+        "passed": 4,
+        "total": 9
+      }
+    }
+  },
+  "re_evaluated": {
+    "source": "Same raw API responses, evaluated with verified CASE10 expectation",
+    "total_cases": 20,
+    "official_automated_passes": 13,
+    "pass_rate_percent": 65.0,
+    "citation_accuracy_percent": 75.0
+  },
+  "by_tier": {
+    "core": {
+      "passed": 8,
+      "total": 14
+    },
+    "niche": {
+      "passed": 5,
+      "total": 6
+    }
+  },
+  "by_layer": {
+    "① Nguồn sự thật": {
+      "passed": 6,
+      "total": 8
+    },
+    "② Mơ hồ / thiếu thông tin": {
+      "passed": 1,
+      "total": 3
+    },
+    "③ Ngoài phạm vi / thẩm quyền": {
+      "passed": 2,
+      "total": 2
+    },
+    "④ Đặc thù domain": {
+      "passed": 5,
+      "total": 9
+    }
+  },
+  "evaluation_status": {
+    "automated_fail": 4,
+    "automated_pass": 13,
+    "needs_human_review": 3
+  },
+  "failure_categories": {
+    "ambiguity_guess": 1,
+    "answer_incomplete": 4,
+    "extra_citation": 4,
+    "missing_citation": 3,
+    "retrieval_no_source": 1,
+    "suspected_false_negative": 3
+  },
+  "needs_human_review": [
+    {
+      "id": "CASE09",
+      "review_note": "Cần hai người xác minh liệu slide 129 và 131 có đủ hỗ trợ câu trả lời khi thiếu citation trực tiếp tới slide 127 và 128.",
+      "failure_categories": [
+        "missing_citation",
+        "extra_citation",
+        "answer_incomplete",
+        "suspected_false_negative"
+      ]
+    },
+    {
+      "id": "CASE11",
+      "review_note": "Cần hai người xác minh slide 150 có hỗ trợ đầy đủ bốn yếu tố hay đang trộn cấu thành tội phạm với cấu thành vi phạm pháp luật.",
+      "failure_categories": [
+        "missing_citation",
+        "extra_citation",
+        "suspected_false_negative"
+      ]
+    },
+    {
+      "id": "CASE13",
+      "review_note": "Cần hai người xác minh slide 191 có hỗ trợ nhận định trong answer hay chỉ là citation thừa từ phần bài tập.",
+      "failure_categories": [
+        "extra_citation",
+        "suspected_false_negative"
+      ]
+    }
+  ],
+  "future_product_priorities": [
+    "Ngăn hệ thống đoán khi follow-up không đủ ngữ cảnh.",
+    "Cải thiện retrieval cho câu định nghĩa và câu hỏi nhiều phần.",
+    "Gom đủ block của bảng trong cùng slide trước khi sinh câu trả lời.",
+    "Kiểm tra độ đầy đủ từng ý và giảm citation thừa."
+  ],
+  "runtime_change_applied": false,
+  "quality_bar": {
+    "minimum_pass_rate_percent": 85,
+    "minimum_passed_cases": 17,
+    "citation_accuracy_percent": 100
+  }
+}
