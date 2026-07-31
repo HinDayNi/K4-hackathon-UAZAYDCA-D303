@@ -1,4 +1,20 @@
-# Mini Hackathon AI — Batch 03
+# Mini Hackathon AI — Batch 03 — Nhóm UADAYDCA
+
+**Sản phẩm:** VLearn Mindmap Navigation (Tự động tóm tắt Slide thành Mindmap & Nhảy Slide)
+
+---
+
+## 👥 Danh sách Thành viên & Phân công Nhiệm vụ
+
+| STT | Họ và Tên | Mã HV | Vai trò | Trách nhiệm CHỦ TRÌ (Deliverable chính) | Trách nhiệm PHỐI HỢP |
+|:---:|---|:---:|---|---|---|
+| **1** | **Nguyễn Thị Thanh Hiền** | `2A202601150` | **Product, Spec & Demo Presenter** | • Viết trọn bộ [`spec.md`](spec.md) từ §1 đến §9<br>• Soạn [`demo-slides.pdf`](demo-slides.pdf) (Slide thuyết trình)<br>• Dẫn dắt buổi Demo thuyết trình live | • Cùng TV2 đọc log khảo sát/mining<br>• Cùng TV5 ghép kịch bản thuyết trình Demo |
+| **2** | **Trần Thị Hường** | `2A202601648` | **Data & Validation Lead** | • Quản lý dữ liệu Mining / Khảo sát [`validation/survey_responses.csv`](validation/survey_responses.csv)<br>• Quản lý thư mục [`validation/`](validation/)<br>• Bảng Impact 3 ứng viên & HAX/PAIR | • Cùng TV1 làm rõ Evidence chuẩn A/B<br>• Hỗ trợ làm Slide thuyết trình |
+| **3** | **Vũ Ngọc Hùng** | `2A202601722` | **AI Prompt & Eval Lead** | • Thiết kế System Prompt & RAG Context<br>• Xây dựng [`eval/golden_set.json`](eval/golden_set.json) (Golden Set 20 cases)<br>• Đo % Quality Bar & Script kiểm thử [`eval/run_eval_verification.py`](eval/run_eval_verification.py) | • Cùng TV4 nhúng Prompt vào Code<br>• Cùng TV1 chốt 4 lớp chỗ khó (①②③④) |
+| **4** | **Đỗ Thành Đạt** | `2A202601278` | **AI Backend Developer** | • Xây dựng Backend FastAPI [`server/`](server/) xử lý logic & gọi AI API thật (Gemini/OpenAI)<br>• Xử lý RAG / Citations / Logic lọc lỗi | • Cùng TV3 tối ưu latency & token<br>• Cùng TV5 nối API vào giao diện UI |
+| **5** | **Nguyễn Công Việt Quang** | `2A202601586` | **Frontend Developer** | • Xây dựng Frontend React [`codebase/`](codebase/) (Mindmap Sidebar, Trượt slide hai chiều [trang N]) | • Cùng TV4 ghép API vào giao diện<br>• Cùng TV1 chuẩn bị bài thuyết trình |
+
+---
 
 **SPEC → Prototype → Demo.** Đây không phải cuộc thi code — đây là cuộc thi **tư duy sản phẩm AI**.
 
