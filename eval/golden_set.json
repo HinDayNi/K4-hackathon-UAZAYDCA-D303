@@ -1,202 +1,45 @@
-[
-  {
-    "id": "CASE01",
-    "layer": "① Nguồn sự thật",
-    "slide_id": "Lecture_01_Prompt_Engineering",
-    "total_pages": 24,
-    "user_query": "Tóm tắt khái niệm Few-shot Prompting",
-    "expected_citations": [14],
-    "expected_mindmap_nodes": ["Few-shot Prompting", "Input/Output Examples"],
-    "expected_status": "PASS"
+{
+  "name": "Bài giảng Pháp luật đại cương - Chat Tutor golden set",
+  "canonical_fixture": "../server/tests/fixtures/legal_deck_chat_cases.json",
+  "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+  "source_deck": {
+    "filename": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+    "sha256": "CB4BB05AD0AC9E96A296EC349F95BCC23CA3BE453D7ED04AC16CCE83AC4A1C44",
+    "slide_count": 199
   },
-  {
-    "id": "CASE02",
-    "layer": "② Mơ hồ / thiếu thông tin",
-    "slide_id": "Lecture_02_RAG_Architecture",
-    "total_pages": 30,
-    "user_query": "Giải thích quy trình Retrieval",
-    "expected_citations": [4, 5],
-    "expected_mindmap_nodes": ["Khái niệm RAG", "Retrieval Pipeline", "Vector Database"],
-    "expected_status": "PASS"
+  "quality_bar": {
+    "minimum_pass_rate_percent": 85,
+    "minimum_passed_cases": 17,
+    "citation_accuracy_percent": 100
   },
-  {
-    "id": "CASE03",
-    "layer": "① Nguồn sự thật",
-    "slide_id": "Lecture_03_FineTuning_LLMs",
-    "total_pages": 18,
-    "user_query": "Phân biệt LoRA và Full Fine-tuning",
-    "expected_citations": [8, 12],
-    "expected_mindmap_nodes": ["Parameter Efficient FT", "LoRA Adaptation", "Full Weights Update"],
-    "expected_status": "PASS"
+  "composition": {
+    "core": 14,
+    "niche": 6,
+    "normal": 10,
+    "hard": 6,
+    "rare": 4,
+    "chatlog_pattern_adapted": 10
   },
-  {
-    "id": "CASE04",
-    "layer": "④ Đặc thù domain",
-    "slide_id": "Lecture_04_AI_Agents",
-    "total_pages": 35,
-    "user_query": "ReAct pattern trong AI Agent là gì?",
-    "expected_citations": [10, 11],
-    "expected_mindmap_nodes": ["ReAct Pattern", "Reasoning Step", "Action Execution"],
-    "expected_status": "PASS"
-  },
-  {
-    "id": "CASE05",
-    "layer": "① Nguồn sự thật",
-    "slide_id": "Lecture_05_Vector_Search",
-    "total_pages": 22,
-    "user_query": "Cosine Similarity hoạt động như thế nào?",
-    "expected_citations": [6],
-    "expected_mindmap_nodes": ["Vector Embedding", "Cosine Similarity", "Distance Metric"],
-    "expected_status": "PASS"
-  },
-  {
-    "id": "CASE06",
-    "layer": "① Nguồn sự thật",
-    "slide_id": "Lecture_06_LangChain_Framework",
-    "total_pages": 28,
-    "user_query": "Tóm tắt các thành phần trong LangChain",
-    "expected_citations": [3, 7, 15],
-    "expected_mindmap_nodes": ["Model I/O", "Chains", "Memory Modules"],
-    "expected_status": "PASS"
-  },
-  {
-    "id": "CASE07",
-    "layer": "① Nguồn sự thật",
-    "slide_id": "Lecture_07_Prompt_Optimization",
-    "total_pages": 19,
-    "user_query": "System Prompt khác User Prompt thế nào?",
-    "expected_citations": [5, 9],
-    "expected_mindmap_nodes": ["System Instruction", "User Input Prompt"],
-    "expected_status": "PASS"
-  },
-  {
-    "id": "CASE08",
-    "layer": "① Nguồn sự thật",
-    "slide_id": "Lecture_08_Evaluations",
-    "total_pages": 26,
-    "user_query": "Định nghĩa RAG Triad Evals",
-    "expected_citations": [16, 17],
-    "expected_mindmap_nodes": ["Context Relevance", "Groundedness", "Answer Relevance"],
-    "expected_status": "PASS"
-  },
-  {
-    "id": "CASE09",
-    "layer": "② Mơ hồ / thiếu thông tin",
-    "slide_id": "Lecture_09_Short_Overview",
-    "total_pages": 6,
-    "user_query": "Tóm tắt bài học ngắn dưới 10 trang",
-    "expected_citations": [2, 4],
-    "expected_mindmap_nodes": ["Tổng quan ngắn", "Các ý chính"],
-    "expected_status": "PASS"
-  },
-  {
-    "id": "CASE10",
-    "layer": "② Mơ hồ / thiếu thông tin",
-    "slide_id": "Lecture_10_Comprehensive_Guide",
-    "total_pages": 65,
-    "user_query": "Tóm tắt bài học dài trên 50 trang",
-    "expected_citations": [1, 25, 48],
-    "expected_mindmap_nodes": ["Phần 1: Kiến thức nền", "Phần 2: Ứng dụng", "Phần 3: Nâng cao"],
-    "expected_status": "PASS"
-  },
-  {
-    "id": "CASE11",
-    "layer": "② Mơ hồ / thiếu thông tin",
-    "slide_id": "Lecture_11_External_Reading",
-    "total_pages": 12,
-    "user_query": "Tóm tắt tài liệu ngoài slide",
-    "expected_citations": [1],
-    "expected_mindmap_nodes": ["Tài liệu tham khảo ngoài", "Thông tin mở rộng"],
-    "expected_status": "PASS"
-  },
-  {
-    "id": "CASE12",
-    "layer": "② Mơ hồ / thiếu thông tin",
-    "slide_id": "Lecture_12_Summary_Notes",
-    "total_pages": 15,
-    "user_query": "Tổng hợp bài đọc thêm",
-    "expected_citations": [3],
-    "expected_mindmap_nodes": ["Đọc thêm", "Bài tập nâng cao"],
-    "expected_status": "PASS"
-  },
-  {
-    "id": "CASE13",
-    "layer": "④ Đặc thù domain",
-    "slide_id": "Lecture_13_Python_Code_Examples",
-    "total_pages": 20,
-    "user_query": "Tóm tắt hàm gọi OpenAI API bằng Python",
-    "expected_citations": [12, 13],
-    "expected_mindmap_nodes": ["OpenAI SDK", "ChatCompletion API", "Temperature Parameter"],
-    "expected_status": "PASS"
-  },
-  {
-    "id": "CASE14",
-    "layer": "④ Đặc thù domain",
-    "slide_id": "Lecture_14_Math_Formulas",
-    "total_pages": 16,
-    "user_query": "Công thức tính Attention Weight trong Transformer",
-    "expected_citations": [7],
-    "expected_mindmap_nodes": ["Query Key Value", "Softmax Function", "Scale Factor"],
-    "expected_status": "PASS"
-  },
-  {
-    "id": "CASE15",
-    "layer": "④ Đặc thù domain",
-    "slide_id": "Lecture_15_Embedding_Math",
-    "total_pages": 22,
-    "user_query": "Giải thích công thức Softmax",
-    "expected_citations": [9, 10],
-    "expected_mindmap_nodes": ["Probability Distribution", "Exponentiation", "Normalization"],
-    "expected_status": "PASS"
-  },
-  {
-    "id": "CASE16",
-    "layer": "④ Đặc thù domain",
-    "slide_id": "Lecture_16_Neural_Network_Code",
-    "total_pages": 25,
-    "user_query": "Đoạn code PyTorch Backpropagation",
-    "expected_citations": [18],
-    "expected_mindmap_nodes": ["Forward Pass", "Loss Function", "Optimizer Step"],
-    "expected_status": "PASS"
-  },
-  {
-    "id": "CASE17",
-    "layer": "① Nguồn sự thật",
-    "slide_id": "Lecture_17_Image_Only_Slides",
-    "total_pages": 10,
-    "user_query": "Vẽ mindmap cho slide toàn sơ đồ hình ảnh không text",
-    "expected_citations": [1],
-    "expected_mindmap_nodes": ["Transcript Lời giảng", "Sơ đồ minh hoạ"],
-    "expected_status": "FAIL_FALLBACK_TRANSCRIPT"
-  },
-  {
-    "id": "CASE18",
-    "layer": "① Nguồn sự thật",
-    "slide_id": "Lecture_18_Cover_Page_Offset",
-    "total_pages": 30,
-    "user_query": "Tóm tắt slide có 2 trang bìa",
-    "expected_citations": [3],
-    "expected_mindmap_nodes": ["Trang bìa & Mục lục", "Nội dung chính"],
-    "expected_status": "FAIL_PAGE_OFFSET"
-  },
-  {
-    "id": "CASE19",
-    "layer": "③ Ngoài phạm vi",
-    "slide_id": "Lecture_19_Homework_Assignment",
-    "total_pages": 14,
-    "user_query": "Giải hộ bài tập nộp điểm cuối kỳ",
-    "expected_citations": [],
-    "expected_mindmap_nodes": ["Từ chối giải hộ", "Hiển thị kiến thức nền tảng"],
-    "expected_status": "PASS"
-  },
-  {
-    "id": "CASE20",
-    "layer": "③ Ngoài phạm vi",
-    "slide_id": "Lecture_20_Course_Policy",
-    "total_pages": 8,
-    "user_query": "Hỏi deadline nộp bài tập trên Discord",
-    "expected_citations": [],
-    "expected_mindmap_nodes": ["Cảnh báo ngoài phạm vi", "Trỏ về kênh Discord"],
-    "expected_status": "PASS"
-  }
-]
+  "cases": [
+    {"id": "CASE01", "tier": "core", "rarity": "normal", "taxonomy_layer": ["① Nguồn sự thật"], "user_query": "Mối quan hệ hữu cơ giữa nhà nước và pháp luật là gì?", "expected_status": "answered", "required_citations": [4]},
+    {"id": "CASE02", "tier": "core", "rarity": "normal", "taxonomy_layer": ["① Nguồn sự thật"], "user_query": "Nhà nước có những đặc điểm cơ bản nào?", "expected_status": "answered", "required_citations": [18]},
+    {"id": "CASE03", "tier": "core", "rarity": "normal", "taxonomy_layer": ["① Nguồn sự thật"], "user_query": "Chức năng đối nội với đối ngoại khác nhau chỗ nào vậy?", "expected_status": "answered", "required_citations": [28]},
+    {"id": "CASE04", "tier": "core", "rarity": "normal", "taxonomy_layer": ["④ Đặc thù domain"], "user_query": "Phân biệt nhà nước đơn nhất và nhà nước liên bang giúp mình.", "expected_status": "answered", "required_citations": [41, 42]},
+    {"id": "CASE05", "tier": "core", "rarity": "normal", "taxonomy_layer": ["① Nguồn sự thật"], "user_query": "Theo slide thì pháp luật là gì?", "expected_status": "answered", "required_citations": [55]},
+    {"id": "CASE06", "tier": "core", "rarity": "normal", "taxonomy_layer": ["④ Đặc thù domain"], "user_query": "Pháp luật với đạo đức giống và khác nhau sao ạ?", "expected_status": "answered", "required_citations": [69, 70]},
+    {"id": "CASE07", "tier": "core", "rarity": "normal", "taxonomy_layer": ["④ Đặc thù domain"], "user_query": "VB quy phạm pháp luật khác VB áp dụng pháp luật như nào?", "expected_status": "answered", "required_citations": [95, 96]},
+    {"id": "CASE08", "tier": "core", "rarity": "normal", "taxonomy_layer": ["① Nguồn sự thật"], "user_query": "QHPL khác QHXH ở điểm nào?", "expected_status": "answered", "required_citations": [104]},
+    {"id": "CASE09", "tier": "core", "rarity": "normal", "taxonomy_layer": ["④ Đặc thù domain"], "user_query": "Phân biệt tuân thủ, sử dụng và áp dụng pháp luật.", "expected_status": "answered", "required_citations": [126, 127, 128], "failure_owner": "needs_review", "review_status": "pending"},
+    {"id": "CASE10", "tier": "core", "rarity": "normal", "taxonomy_layer": ["④ Đặc thù domain"], "user_query": "Ôn thi: vi phạm pháp luật có những dấu hiệu gì?", "expected_status": "answered", "required_citations": [139], "failure_owner": "evaluator", "review_status": "verified"},
+    {"id": "CASE11", "tier": "core", "rarity": "hard", "taxonomy_layer": ["④ Đặc thù domain"], "user_query": "Trình bày bốn yếu tố cấu thành vi phạm pháp luật và ý nghĩa từng yếu tố.", "expected_status": "answered", "required_citations": [140, 141, 142, 143, 144], "failure_owner": "needs_review", "review_status": "pending"},
+    {"id": "CASE12", "tier": "core", "rarity": "hard", "taxonomy_layer": ["① Nguồn sự thật", "④ Đặc thù domain"], "user_query": "Phân loại trách nhiệm pháp lý tương ứng với từng loại vi phạm pháp luật.", "expected_status": "answered", "required_citations": [148]},
+    {"id": "CASE13", "tier": "core", "rarity": "hard", "taxonomy_layer": ["② Mơ hồ / thiếu thông tin"], "user_query": "Khi nào áp dụng hình thức thứ hai?", "expected_status": "answered", "required_citations": [189], "failure_owner": "needs_review", "review_status": "pending"},
+    {"id": "CASE14", "tier": "core", "rarity": "hard", "taxonomy_layer": ["④ Đặc thù domain"], "user_query": "So sánh Common Law và Civil Law theo nguồn luật, pháp điển hóa và tố tụng.", "expected_status": "answered", "required_citations": [170]},
+    {"id": "CASE15", "tier": "niche", "rarity": "hard", "taxonomy_layer": ["② Mơ hồ / thiếu thông tin"], "user_query": "Ý này nghĩa là gì?", "expected_status": "answered", "required_citations": [69]},
+    {"id": "CASE16", "tier": "niche", "rarity": "hard", "taxonomy_layer": ["② Mơ hồ / thiếu thông tin"], "user_query": "Nó khác loại thứ hai ở điểm nào?", "expected_status": "no_basis", "required_citations": []},
+    {"id": "CASE17", "tier": "niche", "rarity": "rare", "taxonomy_layer": ["① Nguồn sự thật"], "user_query": "Deck có hướng dẫn cách cấu hình Kubernetes autoscaling không?", "expected_status": "no_basis", "required_citations": []},
+    {"id": "CASE18", "tier": "niche", "rarity": "rare", "taxonomy_layer": ["③ Ngoài phạm vi / thẩm quyền"], "user_query": "Deadline và link nộp bài trên Discord là gì?", "expected_status": "no_basis", "required_citations": []},
+    {"id": "CASE19", "tier": "niche", "rarity": "rare", "taxonomy_layer": ["③ Ngoài phạm vi / thẩm quyền"], "user_query": "Hãy kết luận chắc chắn một người phạm tội gì và mức án bao nhiêu khi không có đủ dữ kiện.", "expected_status": "no_basis", "required_citations": []},
+    {"id": "CASE20", "tier": "niche", "rarity": "rare", "taxonomy_layer": ["① Nguồn sự thật", "④ Đặc thù domain"], "user_query": "Theo pháp luật hiện hành năm 2026, toàn bộ các quy định trong slide này vẫn còn hiệu lực đúng không?", "expected_status": "no_basis", "required_citations": []}
+  ]
+}

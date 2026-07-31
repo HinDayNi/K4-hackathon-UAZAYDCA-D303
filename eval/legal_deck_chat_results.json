@@ -1,0 +1,1036 @@
+{
+  "suite": "Bài giảng Pháp luật đại cương - Chat Tutor golden set",
+  "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+  "quality_bar": {
+    "minimum_pass_rate_percent": 85,
+    "minimum_passed_cases": 17,
+    "citation_accuracy_percent": 100
+  },
+  "quality_bar_met": false,
+  "baseline_snapshot": {
+    "total": 20,
+    "passed": 12,
+    "pass_rate_percent": 60.0,
+    "citation_accuracy_percent": 70.0,
+    "by_tier": {
+      "core": {
+        "passed": 7,
+        "total": 14
+      },
+      "niche": {
+        "passed": 5,
+        "total": 6
+      }
+    },
+    "by_layer": {
+      "① Nguồn sự thật": {
+        "passed": 6,
+        "total": 8
+      },
+      "② Mơ hồ / thiếu thông tin": {
+        "passed": 1,
+        "total": 3
+      },
+      "③ Ngoài phạm vi / thẩm quyền": {
+        "passed": 2,
+        "total": 2
+      },
+      "④ Đặc thù domain": {
+        "passed": 4,
+        "total": 9
+      }
+    }
+  },
+  "summary": {
+    "total": 20,
+    "passed": 13,
+    "pass_rate_percent": 65.0,
+    "citation_accuracy_percent": 75.0,
+    "evaluation_status": {
+      "automated_fail": 4,
+      "automated_pass": 13,
+      "needs_human_review": 3
+    },
+    "failure_categories": {
+      "ambiguity_guess": 1,
+      "answer_incomplete": 4,
+      "extra_citation": 4,
+      "missing_citation": 3,
+      "retrieval_no_source": 1,
+      "suspected_false_negative": 3
+    },
+    "by_tier": {
+      "core": {
+        "passed": 8,
+        "total": 14
+      },
+      "niche": {
+        "passed": 5,
+        "total": 6
+      }
+    },
+    "by_layer": {
+      "① Nguồn sự thật": {
+        "passed": 6,
+        "total": 8
+      },
+      "② Mơ hồ / thiếu thông tin": {
+        "passed": 1,
+        "total": 3
+      },
+      "③ Ngoài phạm vi / thẩm quyền": {
+        "passed": 2,
+        "total": 2
+      },
+      "④ Đặc thù domain": {
+        "passed": 5,
+        "total": 9
+      }
+    }
+  },
+  "analysis": {
+    "original_baseline": {
+      "total": 20,
+      "passed": 12,
+      "pass_rate_percent": 60.0,
+      "citation_accuracy_percent": 70.0,
+      "by_tier": {
+        "core": {
+          "passed": 7,
+          "total": 14
+        },
+        "niche": {
+          "passed": 5,
+          "total": 6
+        }
+      },
+      "by_layer": {
+        "① Nguồn sự thật": {
+          "passed": 6,
+          "total": 8
+        },
+        "② Mơ hồ / thiếu thông tin": {
+          "passed": 1,
+          "total": 3
+        },
+        "③ Ngoài phạm vi / thẩm quyền": {
+          "passed": 2,
+          "total": 2
+        },
+        "④ Đặc thù domain": {
+          "passed": 4,
+          "total": 9
+        }
+      }
+    },
+    "re_evaluated": {
+      "source": "Same raw API responses, evaluated with verified CASE10 expectation",
+      "total_cases": 20,
+      "official_automated_passes": 13,
+      "pass_rate_percent": 65.0,
+      "citation_accuracy_percent": 75.0
+    },
+    "by_tier": {
+      "core": {
+        "passed": 8,
+        "total": 14
+      },
+      "niche": {
+        "passed": 5,
+        "total": 6
+      }
+    },
+    "by_layer": {
+      "① Nguồn sự thật": {
+        "passed": 6,
+        "total": 8
+      },
+      "② Mơ hồ / thiếu thông tin": {
+        "passed": 1,
+        "total": 3
+      },
+      "③ Ngoài phạm vi / thẩm quyền": {
+        "passed": 2,
+        "total": 2
+      },
+      "④ Đặc thù domain": {
+        "passed": 5,
+        "total": 9
+      }
+    },
+    "evaluation_status": {
+      "automated_fail": 4,
+      "automated_pass": 13,
+      "needs_human_review": 3
+    },
+    "failure_categories": {
+      "ambiguity_guess": 1,
+      "answer_incomplete": 4,
+      "extra_citation": 4,
+      "missing_citation": 3,
+      "retrieval_no_source": 1,
+      "suspected_false_negative": 3
+    },
+    "needs_human_review": [
+      {
+        "id": "CASE09",
+        "review_note": "Cần hai người xác minh liệu slide 129 và 131 có đủ hỗ trợ câu trả lời khi thiếu citation trực tiếp tới slide 127 và 128.",
+        "failure_categories": [
+          "missing_citation",
+          "extra_citation",
+          "answer_incomplete",
+          "suspected_false_negative"
+        ]
+      },
+      {
+        "id": "CASE11",
+        "review_note": "Cần hai người xác minh slide 150 có hỗ trợ đầy đủ bốn yếu tố hay đang trộn cấu thành tội phạm với cấu thành vi phạm pháp luật.",
+        "failure_categories": [
+          "missing_citation",
+          "extra_citation",
+          "suspected_false_negative"
+        ]
+      },
+      {
+        "id": "CASE13",
+        "review_note": "Cần hai người xác minh slide 191 có hỗ trợ nhận định trong answer hay chỉ là citation thừa từ phần bài tập.",
+        "failure_categories": [
+          "extra_citation",
+          "suspected_false_negative"
+        ]
+      }
+    ],
+    "future_product_priorities": [
+      "Ngăn hệ thống đoán khi follow-up không đủ ngữ cảnh.",
+      "Cải thiện retrieval cho câu định nghĩa và câu hỏi nhiều phần.",
+      "Gom đủ block của bảng trong cùng slide trước khi sinh câu trả lời.",
+      "Kiểm tra độ đầy đủ từng ý và giảm citation thừa."
+    ],
+    "runtime_change_applied": false,
+    "quality_bar": {
+      "minimum_pass_rate_percent": 85,
+      "minimum_passed_cases": 17,
+      "citation_accuracy_percent": 100
+    }
+  },
+  "raw_response_sha256": "1c73e23bac6e0c79eed1c5e1bbcfa68afadde98c39f043377653b8836f280463",
+  "results": [
+    {
+      "id": "CASE01",
+      "tier": "core",
+      "taxonomy_layer": [
+        "① Nguồn sự thật"
+      ],
+      "passed": true,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [],
+      "response": {
+        "status": "answered",
+        "answer": "Mối quan hệ giữa nhà nước và pháp luật là mối quan hệ biện chứng, tác động qua lại lẫn nhau, phụ thuộc lẫn nhau nhưng vẫn đảm bảo tính độc lập tương đối. Chúng là hai yếu tố thuộc kiến trúc thượng tầng, có cùng nguyên nhân, tiền đề xã hội cho sự hình thành, vận động và phát triển. Nhà nước và pháp luật không thể tồn tại thiếu nhau, là tiền đề của nhau. Bản chất của pháp luật phản ánh bản chất của nhà nước đặt ra nó; nhà nước kiểu nào thì pháp luật kiểu đó. Nhà nước ban hành hoặc thừa nhận pháp luật, nhưng khi đã ban hành, pháp luật tác động trở lại nhà nước, và nhà nước phải tôn trọng pháp luật, đặt mình dưới pháp luật. Nhà nước ban hành pháp luật phải tính đến sự chi phối của các nhân tố khác như kinh tế, chính trị, xã hội, không thể ban hành tùy tiện theo ý chí chủ quan. Việc hoàn thiện bộ máy nhà nước phải song song với việc hoàn thiện pháp luật. Pháp luật là công cụ sắc bén nhất trong quản lý xã hội của nhà nước. Nhà nước chỉ thực hiện quản lý xã hội theo đường lối của mình bằng hệ thống pháp luật; pháp luật chỉ có ý nghĩa thực sự khi được nhà nước bảo đảm thực hiện bằng sức mạnh cưỡng chế, tổ chức.",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_649141e3818c42048946559b235cee04",
+            "slide_index": 4,
+            "slide_title": "Mối quan hệ hữu cơ giữa nhà nước và pháp luật",
+            "block_ids": [
+              "blk_c4978de8749344668cc110fc5069cc3b"
+            ],
+            "excerpt": "Quan hệ qua lại: NN chỉ thực hiện quản lý xã hội theo đường lối của mình bằng hệ thống pháp luật. Pháp luật chỉ có ý nghĩa thực sự khi được nhà nước bảo đảm thực hiện bằng sức mạnh cưỡng chế, tổ chức…..\nQuan hệ ràng buộc: Mặc dù pháp luật do Nhà nước đề ra nhưng khi được ban hành, pháp luật tác động trở lại đối với Nhà nước"
+          },
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_5c3336931a2044afb971c5eec0151937",
+            "slide_index": 71,
+            "slide_title": "4.4.4 Pháp luật với nhà nước",
+            "block_ids": [
+              "blk_bf71b1199f3143b78e26ad1ea17f8c87"
+            ],
+            "excerpt": "Mối quan hệ biện chứng, tác động qua lại lẫn nhau, phụ thuộc lẫn nhau nhưng vẫn đảm bảo tính độc lập tương đối\nLà 2 yếu tố thuộc kiến trúc thượng tầng, chúng có cùng những nguyên nhân, tiền đề xã hội cho sự hình thành, vận động và phát triển\nNhà nước và pháp luật là 2 hiện tượng không thể tồn tại thiếu nhau, là tiền đề của nhau\nBản chất của luật pháp phản ánh bản chất của Nhà nước đặt ra nó. Nhà nước kiểu nào thì pháp luật kiểu đó.\nNhà nước ban hành hay thừa nhận pháp luật nhưng nhà nước lại phả"
+          }
+        ],
+        "confidence": 96,
+        "grounded": true
+      },
+      "evaluation_status": "automated_pass",
+      "failure_owner": null,
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": []
+    },
+    {
+      "id": "CASE02",
+      "tier": "core",
+      "taxonomy_layer": [
+        "① Nguồn sự thật"
+      ],
+      "passed": true,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [],
+      "response": {
+        "status": "answered",
+        "answer": "Nhà nước có những đặc điểm cơ bản sau: 1. Thiết lập một quyền lực công cộng đặc biệt, không còn hòa nhập hoàn toàn với dân cư. 2. Phân chia dân cư theo lãnh thổ, tổ chức thành các đơn vị hành chính – lãnh thổ trong phạm vi biên giới quốc gia. 3. Là tổ chức quyền lực mang chủ quyền quốc gia. 4. Ban hành pháp luật và bảo đảm thực hiện pháp luật bằng tất cả sức mạnh của mình, đặc biệt là sức mạnh cưỡng chế. 5. Quy định và thu các loại thuế dưới hình thức bắt buộc.",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_38a181880ff64dbca61b0983bbba89c2",
+            "slide_index": 18,
+            "slide_title": "2.3. Đặc điểm của Nhà nước",
+            "block_ids": [
+              "blk_1be9feab36f14f7aaeb65b0a06eb55d1"
+            ],
+            "excerpt": "1\nNhà nước thiết lập một quyền lực công cộng đặc biệt, không còn hòa nhập hoàn toàn với dân cư.\n\n2\nNhà nước phân chia dân cư theo lãnh thổ, tổ chức thành các đơn vị hành chính – lãnh thổ trong phạm vi biên giới quốc gia\n\n3\nNhà nước là tổ chức quyền lưc mang chủ quyền quốc gia\n\n4\nNhà nước ban hành pháp luật và bảo đảm thực hiện pháp luật bằng tất cả sức mạnh của mình, đặc biệt là sức mạnh cưỡng chế\n\n5\nNhà nước quy định và thu các loại thuế dưới hình thức bắt buộc"
+          }
+        ],
+        "confidence": 100,
+        "grounded": true
+      },
+      "evaluation_status": "automated_pass",
+      "failure_owner": null,
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": []
+    },
+    {
+      "id": "CASE03",
+      "tier": "core",
+      "taxonomy_layer": [
+        "① Nguồn sự thật"
+      ],
+      "passed": true,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [],
+      "response": {
+        "status": "answered",
+        "answer": "Chức năng đối nội là những hoạt động chủ yếu trong nội bộ đất nước, như bảo đảm trật tự an toàn xã hội, trấn áp phần tử chống đối, quản lý các lĩnh vực kinh tế - xã hội. Chức năng đối ngoại là những hoạt động trong quan hệ với các nhà nước và dân tộc khác, như phòng thủ đất nước và thiết lập bang giao quốc tế.",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_058d5e7f513b49d5b166732095b0bf75",
+            "slide_index": 28,
+            "slide_title": "2.4 Chức năng của nhà nước",
+            "block_ids": [
+              "blk_9a609824591c43a9ad24da8cf5f787a3"
+            ],
+            "excerpt": "Chức năng của nhà nước là phương diện hoạt động chủ yếu của nhà nước nhằm thực hiện những nhiệm vụ đặt ra cho nhà nước. \nChức năng đối nội là những mặt hoạt động chủ yếu trong nội bộ đất nước như: Bảo đảm trật tự an toàn xã hội, trấn áp những phần tử chống đối, quản lý các lĩnh vực của đời sống kinh tế – xã hội... \nChức năng đối ngoại thể hiện những mặt hoạt động của nhà nước trong quan hệ với các nhà nước trên thế giới và các dân tộc khác như: Phòng thủ đất nước, thiết lập mối bang giao với các"
+          }
+        ],
+        "confidence": 100,
+        "grounded": true
+      },
+      "evaluation_status": "automated_pass",
+      "failure_owner": null,
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": []
+    },
+    {
+      "id": "CASE04",
+      "tier": "core",
+      "taxonomy_layer": [
+        "④ Đặc thù domain"
+      ],
+      "passed": true,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [],
+      "response": {
+        "status": "answered",
+        "answer": "Nhà nước đơn nhất là nhà nước có chủ quyền chung, lãnh thổ toàn vẹn và thống nhất. Các bộ phận hợp thành không có chủ quyền riêng, có một hệ thống cơ quan nhà nước thống nhất từ trung ương đến địa phương và một hệ thống pháp luật thống nhất trên toàn lãnh thổ. Công dân thường có một quốc tịch. Ví dụ: Việt Nam, Trung Quốc, Pháp, Anh. Ngược lại, nhà nước liên bang được thiết lập từ hai hay nhiều nhà nước thành viên. Các nước thành viên có chủ quyền chung nhưng mỗi nước vẫn có chủ quyền riêng. Liên bang có hai hệ thống cơ quan nhà nước (liên bang và nước thành viên) và hai hệ thống pháp luật. Công dân mang hai quốc tịch. Ví dụ: Mỹ, Đức, Ấn Độ, Mexico, Brazil. Nhà nước liên bang có thể tan rã thành các quốc gia độc lập như Nam Tư, Tiệp Khắc, Liên Xô cũ.",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_4ccd60a231e84435b6295ecb8ed8883d",
+            "slide_index": 40,
+            "slide_title": "2.5.2 Hình thức cấu trúc nhà nước",
+            "block_ids": [
+              "blk_a1a92b81fa9d4fad90e9edf6764121c8"
+            ],
+            "excerpt": "Là sự cấu tạo (tổ chức) nhà nước thành các đơn vị hành chính lãnh thổ và tính chất quan hệ giữa các bộ phận câu thành nhà nước với nhau, giữa các cơ quan nhà nước ở trung ương với các cơ quan nhà nước ở địa phương.\nCó 2 loại:\nNhà nước đơn nhất\nNhà nước liên bang"
+          },
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_0fd4d2b4a23048668c7fefe548513911",
+            "slide_index": 41,
+            "slide_title": "Nhà nước đơn nhất",
+            "block_ids": [
+              "blk_fa6538f8b29140c3aec8e1e02578bd23"
+            ],
+            "excerpt": "Có chủ quyền chung\nCó lãnh thổ toàn vẹn, thống nhất\nCác bộ phận hợp thành nhà nước không có chủ quyền riêng\nCó 1 hệ thống cơ quan thống nhất từ trung ương đến địa phương\nCó một hệ thống pháp luật thống nhất trên toàn lãnh thổ quốc gia\nCông dân thường có 1 quốc tịch\nVí dụ: Việt Nam,Trung Quốc, Pháp, Anh ..."
+          },
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_ae370279d2884444b5da769238175c47",
+            "slide_index": 42,
+            "slide_title": "Nhà nước liên bang",
+            "block_ids": [
+              "blk_130cd85ce38943359be2a68590cb19b8"
+            ],
+            "excerpt": "Được thiết lập từ hai hay nhiều nhà nước thành viên\nCó chủ quyền chung nhưng mỗi nước thành viên đều có chủ quyền riêng\nCó 2 hệ thống các cơ quan nhà nước ( liên bang, nước thành viên)\nCó 2 hệ thống pháp luật\nCông dân mang hai quốc tịch\nVí dụ: hiện có khoảng 28 nhà nước liên bang như Mỹ, Đức, Áo, Ấn Độ, Mexico, Brazin,..\nNhà nước liên bang cũng có thể tan rã thành các quốc gia độc lập như Nam Tư (1945-1992), Tiệp Khắc (1969-1992) và Liên Xô cũ (1922-1991)."
+          }
+        ],
+        "confidence": 93,
+        "grounded": true
+      },
+      "evaluation_status": "automated_pass",
+      "failure_owner": null,
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": []
+    },
+    {
+      "id": "CASE05",
+      "tier": "core",
+      "taxonomy_layer": [
+        "① Nguồn sự thật"
+      ],
+      "passed": false,
+      "http_status": 200,
+      "citation_accurate": false,
+      "failures": [
+        "status: expected 'answered', got 'no_basis'",
+        "grounded: expected True, got False",
+        "missing required citation slides: [55]",
+        "confidence: expected >= 70, got 0",
+        "missing answer concept (any of): ['hệ thống các quy tắc xử sự', 'hệ thống quy tắc xử sự']",
+        "missing answer concept (any of): ['nhà nước đặt ra', 'nhà nước thừa nhận']",
+        "missing answer concept (any of): ['điều chỉnh các quan hệ xã hội']"
+      ],
+      "response": {
+        "status": "no_basis",
+        "answer": "Thông tin này hiện không tồn tại trong deck.",
+        "citations": [],
+        "confidence": 0,
+        "grounded": false
+      },
+      "evaluation_status": "automated_fail",
+      "failure_owner": "product",
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": [
+        "retrieval_no_source",
+        "missing_citation",
+        "answer_incomplete"
+      ]
+    },
+    {
+      "id": "CASE06",
+      "tier": "core",
+      "taxonomy_layer": [
+        "④ Đặc thù domain"
+      ],
+      "passed": false,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [
+        "missing answer concept (any of): ['dư luận xã hội']",
+        "missing answer concept (any of): ['cưỡng chế của nhà nước', 'cưỡng chế']"
+      ],
+      "response": {
+        "status": "answered",
+        "answer": "Pháp luật và đạo đức có những điểm giống và khác nhau. Giống nhau: cả hai đều là hình thái ý thức xã hội thuộc kiến trúc thượng tầng, cùng điều chỉnh hành vi xã hội, mang tính giai cấp, dân tộc và thời đại. Khác nhau về nguồn gốc, phạm vi và hình thức thể hiện: Đạo đức xuất hiện trước pháp luật, là quy tắc hành vi tự nhiên dựa trên quan hệ giữa người với người. Phạm vi điều chỉnh của đạo đức rộng hơn, điều chỉnh các mối quan hệ tình cảm, luân lý. Đạo đức thường được thể hiện qua ca dao, tục ngữ, cảm xúc, quan niệm, chuẩn mực tâm hồn, không thể cân đo đong đếm, mỗi người có thể có quan niệm khác nhau.",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_5a7f1c7c2c274f19bfbca69e4723779d",
+            "slide_index": 69,
+            "slide_title": "4.4.3 Pháp luật với đạo đức",
+            "block_ids": [
+              "blk_cfe6fd1722424ebe85cafd74172a77d4"
+            ],
+            "excerpt": "Giống nhau:\n\nPháp luật và đạo đức đều là một hình thái ý thức xã hội thuộc kiến trúc thượng tầng, cùng điều chỉnh hành vi của xã hội, mang tính giai cấp, tính dân tộc và tính thời đại."
+          },
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_a5ae29fdaf3a41e58c03d4ffc2263eea",
+            "slide_index": 70,
+            "slide_title": "4.4.3Pháp luật với đạo đức",
+            "block_ids": [
+              "blk_4c05f6a391d64d86a5b6d8256ae32b08",
+              "blk_02b3aab8120f4e2caedb805cb8f131f6",
+              "blk_8cc8ef1c9b2f4164accdc6c3f25aa512"
+            ],
+            "excerpt": "Đạo đức xuất hiện trước pháp luật, là những quy tắc hành vi tồn tại tự nhiên trong đời sống xã hội trên cơ sở mối quan hệ giữa người với người. Phạm vi điều chỉnh rộng hơn.\nĐiều chỉnh các mối quan hệ xã hội trên cơ sở tình cảm, luân lý xã hội, ví dụ: tình bạn, tình yêu, sự giúp đỡ lẫn nhau … - Thường được thể hiện qua ca dao, tục ngữ, thông qua cảm xúc, quan niệm, chuẩn mực là cái tâm ở đời \n\n- Không thể cân đo đong đếm được, mỗi người có thể có một quan niệm khác nhau về đạo đức."
+          }
+        ],
+        "confidence": 89,
+        "grounded": true
+      },
+      "evaluation_status": "automated_fail",
+      "failure_owner": "product",
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": [
+        "answer_incomplete"
+      ]
+    },
+    {
+      "id": "CASE07",
+      "tier": "core",
+      "taxonomy_layer": [
+        "④ Đặc thù domain"
+      ],
+      "passed": true,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [],
+      "response": {
+        "status": "answered",
+        "answer": "Văn bản quy phạm pháp luật (VBQPPL) và văn bản áp dụng pháp luật (VBPL cá biệt) khác nhau ở nhiều điểm. VBQPPL là hình thức thể hiện các quyết định pháp luật do cơ quan nhà nước có thẩm quyền ban hành theo trình tự, thủ tục nhất định, chứa đựng những quy tắc xử sự chung để điều chỉnh một loạt quan hệ xã hội, được áp dụng nhiều lần và việc áp dụng không làm chấm dứt hiệu lực của nó (blk_e3bdd4911d394b1eafe8739e308a2076). Trong khi đó, văn bản áp dụng pháp luật do cơ quan nhà nước hoặc người có thẩm quyền ban hành căn cứ vào VBQPPL để giải quyết những vụ việc cụ thể, trường hợp cụ thể (blk_b09d20f290d54a00ac1dfba562da9b26). Như vậy, VBQPPL có tính quy phạm phổ biến, áp dụng cho nhiều đối tượng, còn VBAPL mang tính cá biệt, áp dụng cho từng trường hợp cụ thể.",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_34feaacab8f94bcda5e45c92efdcde97",
+            "slide_index": 95,
+            "slide_title": "VB áp dụng QPPL (VBPL cá biệt)",
+            "block_ids": [
+              "blk_b09d20f290d54a00ac1dfba562da9b26"
+            ],
+            "excerpt": "Do cơ quan nhà nước hoặc người có thẩm quyền ban hành\nCăn cứ vào văn bản quy phạm pháp luật để ban hành và giải quyết những vụ việc cụ thể, trường hợp cụ thể"
+          },
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_2ee316b7823b4f21bb36cdf416cab81d",
+            "slide_index": 96,
+            "slide_title": "Văn bản quy phạm pháp luật",
+            "block_ids": [
+              "blk_e3bdd4911d394b1eafe8739e308a2076"
+            ],
+            "excerpt": "Là hình thức thể hiện các quyết định pháp luật \n do cơ quan nhà nước có thẩm quyền ban hành \n theo trình tự và thủ tục nhất định\n chứa đựng những quy tắc xử sự chung\n nhằm điều chỉnh 1 loạt quan hệ xã hội nhất định\n được áp dụng nhiều lần trong thực tiễn đời sống\nViệc áp dụng không làm chấm dứt hiệu lực của VBQPPL"
+          }
+        ],
+        "confidence": 95,
+        "grounded": true
+      },
+      "evaluation_status": "automated_pass",
+      "failure_owner": null,
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": []
+    },
+    {
+      "id": "CASE08",
+      "tier": "core",
+      "taxonomy_layer": [
+        "① Nguồn sự thật"
+      ],
+      "passed": true,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [],
+      "response": {
+        "status": "answered",
+        "answer": "QHPL (quan hệ pháp luật) khác QHXH (quan hệ xã hội) ở điểm QHPL thuộc phạm trù chủ quan, xuất hiện trên cơ sở ý chí của nhà làm luật, trong khi QHXH luôn tồn tại khách quan. Ngoài ra, QHPL là hình thức pháp lý của quan hệ xã hội, xuất hiện dưới tác động điều chỉnh của các quy phạm pháp luật, và là đối tượng nghiên cứu của khoa học pháp lý.",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_e9f49a7c024f42809955ccf41ab4d1f2",
+            "slide_index": 104,
+            "slide_title": "Phân biệt QHPL và QHXH",
+            "block_ids": [
+              "blk_32cb45c6fa644648938c6846f599baab",
+              "blk_e400ba10104b4bc486027b770bdcf157",
+              "blk_d67408285f384a1b9c8ac5cd8e022b21",
+              "blk_cec77b09e43446d9875d899eef5020c6",
+              "blk_36e369081d3f4b20a55aae72ecde026f"
+            ],
+            "excerpt": "Luôn tồn tại khách quan Thuộc phạm trù chủ quan, xuất hiện trên cơ sở ý chí của nhà làm luật Là hình thức pháp lý của quan hệ xã hội, xuất hiện dưới tác động điều chỉnh của các quy phạm pháp luật. Phân biệt QHPL và QHXH Là đối tượng nghiên cứu của khoa học pháp lý"
+          }
+        ],
+        "confidence": 92,
+        "grounded": true
+      },
+      "evaluation_status": "automated_pass",
+      "failure_owner": null,
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": []
+    },
+    {
+      "id": "CASE09",
+      "tier": "core",
+      "taxonomy_layer": [
+        "④ Đặc thù domain"
+      ],
+      "passed": false,
+      "http_status": 200,
+      "citation_accurate": false,
+      "failures": [
+        "missing required citation slides: [127, 128]",
+        "unexpected citation slides: [129, 131]",
+        "missing answer concept (any of): ['quyền chủ thể', 'quy phạm trao quyền']",
+        "missing answer concept (any of): ['cơ quan có thẩm quyền', 'nhà chức trách']"
+      ],
+      "response": {
+        "status": "answered",
+        "answer": "Tuân thủ pháp luật là hình thức thực hiện pháp luật đối với các quy phạm cấm đoán, trong đó chủ thể kiềm chế không thực hiện những hành vi mà pháp luật cấm (hành vi thụ động). Sử dụng pháp luật là hình thức thực hiện pháp luật trong đó chủ thể có thể thực hiện hoặc không thực hiện quyền của mình theo quy định của pháp luật. Áp dụng pháp luật là hoạt động mang tính tổ chức, thể hiện quyền lực nhà nước, do cơ quan nhà nước có thẩm quyền hoặc cá nhân có thẩm quyền thực hiện theo thủ tục, trình tự do pháp luật quy định nhằm cá biệt hóa quy phạm pháp luật hiện hành đối với cá nhân, cơ quan, tổ chức cụ thể trong trường hợp cụ thể. Áp dụng pháp luật có các đặc điểm: chỉ được tiến hành bởi cơ quan nhà nước có thẩm quyền hoặc cá nhân có thẩm quyền; được tiến hành theo thủ tục, trình tự do pháp luật quy định (hình thức, thủ tục rất chặt chẽ); mang tính quyền lực nhà nước; mang tính cá biệt, cụ thể; có tính sáng tạo.",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_77ac26fd7a374134978161c1f2beb3e4",
+            "slide_index": 125,
+            "slide_title": "4.8.2 Các hình thức thực hiện pháp luật",
+            "block_ids": [
+              "blk_076f21f8a4fb4a38a569c96f0fa4d4c7"
+            ],
+            "excerpt": "Các hình thức thực hiện pháp luật\nTuân thủ pháp luật\n\nChấp hành pháp luật\n\nSử dụng pháp luật\n\nÁp dụng pháp luật"
+          },
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_9af2bf157e754d8c809edb33b5a8e2ea",
+            "slide_index": 126,
+            "slide_title": "4.8.2 Các hình thức thực hiện pháp luật Tuân thủ pháp luật",
+            "block_ids": [
+              "blk_f2842769f834427390fe706a4554ce5e",
+              "blk_278a4b86156c47778863cf3d0fd2c1ae",
+              "blk_fdcddb88d02e459ab4930141d230572b"
+            ],
+            "excerpt": "4.8.2 Các hình thức thực hiện pháp luật\u000b\u000bTuân thủ pháp luật Quy phạm cấm đoán Thực hiện những quy phạm pháp luật mang tính chất ngăn cấm bằng hành vi thụ động, trong đó chủ thể pháp luật kiềm chế không làm những việc mà pháp luật cấm"
+          },
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_7d6a4d695dc24281ad52adcf8179dd00",
+            "slide_index": 129,
+            "slide_title": "Định nghĩa",
+            "block_ids": [
+              "blk_c30ccd733f8c4b34acc8560f73120d1c"
+            ],
+            "excerpt": "Áp dụng pháp luật là hoạt động mang tính tổ chức, thể hiện quyền lực nhà nước, do các cơ quan nhà nước có thẩm quyền hoặc cá nhân có thẩm quyền thực hiện theo thủ tục, trình tự do pháp luật quy định nhằm cá biệt hóa quy phạm pháp luật hiện hành đối với cá nhân, cơ quan, tổ chức cụ thể trong trường hợp cụ thể"
+          },
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_058ab423377643c1b205d83fe923afb6",
+            "slide_index": 131,
+            "slide_title": "Đặc điểm của áp dụng pháp luật",
+            "block_ids": [
+              "blk_0d02cb8363aa41d5a75a0e91f8bb082b"
+            ],
+            "excerpt": "Chỉ được tiến hành bởi cơ quan nhà nước có thẩm quyền hoặc cá nhân có thẩm quyền\n\nĐược tiến hành theo thủ tục, trình tự do pháp luật quy định (hình thức, thủ tục áp dụng pháp luật rất chặt chẽ)\n\nMang tính quyền lực nhà nước\n\nMang tính cá biệt, cụ thể\n\nCó tính sáng tạo"
+          }
+        ],
+        "confidence": 92,
+        "grounded": true
+      },
+      "evaluation_status": "needs_human_review",
+      "failure_owner": "needs_review",
+      "review_status": "pending",
+      "review_note": "Cần hai người xác minh liệu slide 129 và 131 có đủ hỗ trợ câu trả lời khi thiếu citation trực tiếp tới slide 127 và 128.",
+      "failure_categories": [
+        "missing_citation",
+        "extra_citation",
+        "answer_incomplete",
+        "suspected_false_negative"
+      ]
+    },
+    {
+      "id": "CASE10",
+      "tier": "core",
+      "taxonomy_layer": [
+        "④ Đặc thù domain"
+      ],
+      "passed": true,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [],
+      "response": {
+        "status": "answered",
+        "answer": "Vi phạm pháp luật có các dấu hiệu: lỗi, trái pháp luật, chủ thể có năng lực trách nhiệm pháp lý (TNPL), và hành vi.",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_d96d06b75d634659a28f2414984c3f5a",
+            "slide_index": 139,
+            "slide_title": "Các dấu hiệu của VPPL",
+            "block_ids": [
+              "blk_1086d50c834e4b22a7ef725d18f6bd6b",
+              "blk_7c0031e792bc440694e5ce3ccc3a0dbf",
+              "blk_3974fbea5f974c0f93f621f7879243e9",
+              "blk_a27e1f4e910a4f229357a481f4de5cc4",
+              "blk_b1ec23cd0e494134adc2033276e5b086"
+            ],
+            "excerpt": "Các dấu hiệu của VPPL Lỗi Trái pháp luật Chủ thể có năng lực TNPL Hành vi"
+          }
+        ],
+        "confidence": 98,
+        "grounded": true
+      },
+      "evaluation_status": "automated_pass",
+      "failure_owner": "evaluator",
+      "review_status": "verified",
+      "review_note": "Slide 139 liệt kê trực tiếp đủ bốn dấu hiệu; chấp nhận 139 là citation bắt buộc và 138 là nguồn bổ trợ.",
+      "failure_categories": []
+    },
+    {
+      "id": "CASE11",
+      "tier": "core",
+      "taxonomy_layer": [
+        "④ Đặc thù domain"
+      ],
+      "passed": false,
+      "http_status": 200,
+      "citation_accurate": false,
+      "failures": [
+        "missing required citation slides: [140, 141, 142, 143, 144]",
+        "unexpected citation slides: [150]"
+      ],
+      "response": {
+        "status": "answered",
+        "answer": "Bốn yếu tố cấu thành vi phạm pháp luật bao gồm: mặt khách quan, mặt chủ quan, chủ thể, khách thể. Ý nghĩa của từng yếu tố: - Mặt khách quan: phản ánh hành vi phạm tội cụ thể, hậu quả và mối quan hệ nhân quả giữa hành vi và hậu quả. - Mặt chủ quan: thể hiện lỗi, mục đích và động cơ của chủ thể khi thực hiện hành vi. - Chủ thể: là cá nhân có đủ tuổi và năng lực chịu trách nhiệm pháp lý. - Khách thể: là quan hệ xã hội được pháp luật bảo vệ mà hành vi xâm hại.",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_6220de9125874793a1003cf01e4cef90",
+            "slide_index": 150,
+            "slide_title": "Dạng bài tập xác định cấu thành tội phạm",
+            "block_ids": [
+              "blk_5ac5ff2db07b40cdbc2c6ad5c1f98ede"
+            ],
+            "excerpt": "a. Mặt khách quan: sinh viên phải chỉ ra được các yếu tố sau:\n- Hành vi phạm tội (hành vi khách quan): miêu tả cụ thể hành vi\n- Hậu quả của hành vi đó\n- Mối quan hệ nhân quả giữa hành vi với hậu quả xảy ra:  nếu tình huống đã rõ ràng sinh viên chỉ cần nhấn mạnh lại là việc hậu quả xảy ra nêu trên là do hành vi khách quan gây ra…\nb. Mặt chủ quan:  sinh viên phải chỉ ra được các yếu tố sau:\n- Lỗi của chủ thể khi thực hiện hành vi: xác định là lỗi (là cố trực tiếp hay cố ý gián tiếp; vô ý vì quá tự"
+          }
+        ],
+        "confidence": 100,
+        "grounded": true
+      },
+      "evaluation_status": "needs_human_review",
+      "failure_owner": "needs_review",
+      "review_status": "pending",
+      "review_note": "Cần hai người xác minh slide 150 có hỗ trợ đầy đủ bốn yếu tố hay đang trộn cấu thành tội phạm với cấu thành vi phạm pháp luật.",
+      "failure_categories": [
+        "missing_citation",
+        "extra_citation",
+        "suspected_false_negative"
+      ]
+    },
+    {
+      "id": "CASE12",
+      "tier": "core",
+      "taxonomy_layer": [
+        "① Nguồn sự thật",
+        "④ Đặc thù domain"
+      ],
+      "passed": false,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [
+        "missing answer concept (any of): ['trách nhiệm hình sự', 'tn hình sự']",
+        "missing answer concept (any of): ['trách nhiệm hành chính', 'tn hành chính']",
+        "missing answer concept (any of): ['trách nhiệm dân sự', 'tn dân sự']",
+        "missing answer concept (any of): ['trách nhiệm kỷ luật', 'tn kỷ luật']"
+      ],
+      "response": {
+        "status": "answered",
+        "answer": "Trách nhiệm pháp lý được phân loại tương ứng với từng loại vi phạm pháp luật, bao gồm các hình thức như khiển trách, cảnh cáo, cách chức, hạ bậc lương, đình chỉ công tác, thôi việc. Các hình thức này áp dụng cho các đối tượng cụ thể tùy theo loại vi phạm.",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_a712f108524147999c0cf9df06905f5f",
+            "slide_index": 148,
+            "slide_title": "Phân loại TNPL tương ứng với các loại VPPL",
+            "block_ids": [
+              "blk_a7be5355bb0046a495e9c52e3c3c6cae",
+              "blk_42ae1e4733de41fe9ec0dc2ef03c7c13",
+              "blk_01d90ce02a19463eb0e477c2bd97efd2",
+              "blk_f1f379d3647c45eda774b8bf698b4ec2"
+            ],
+            "excerpt": "Phân loại TNPL\u000btương ứng với các loại VPPL Loại TNPL Đối tượng áp dụng Khiển trách, cảnh cáo, cách chức, hạ bậc lương, đình chỉ công tác, thôi việc"
+          }
+        ],
+        "confidence": 89,
+        "grounded": true
+      },
+      "evaluation_status": "automated_fail",
+      "failure_owner": "product",
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": [
+        "answer_incomplete"
+      ]
+    },
+    {
+      "id": "CASE13",
+      "tier": "core",
+      "taxonomy_layer": [
+        "② Mơ hồ / thiếu thông tin"
+      ],
+      "passed": false,
+      "http_status": 200,
+      "citation_accurate": false,
+      "failures": [
+        "unexpected citation slides: [191]"
+      ],
+      "response": {
+        "status": "answered",
+        "answer": "Áp dụng hình thức thứ hai (thừa kế theo pháp luật) trong các trường hợp: không có di chúc hoặc di chúc không có hiệu lực; người được chỉ định hưởng thừa kế trong di chúc chết trước, bị tước quyền thừa kế hoặc từ chối hưởng thừa kế; hoặc khi phần di sản còn lại sau khi chia theo di chúc chưa được định đoạt.",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_e9f03700e9504095bd22f74ea805aaa9",
+            "slide_index": 189,
+            "slide_title": "Chế định Thừa kế (tiếp)",
+            "block_ids": [
+              "blk_28a595ff73f64f21b62593ac2e891d50"
+            ],
+            "excerpt": "Thừa kế theo di chúc \nlà việc chuyển di sản của người chết cho người sống bằng chính sự định đoạt của người có di sản theo di chúc được lập ra khi họ còn sống.\nDi chúc là sự thể hiện ý chí của cá nhân nhằm chuyển tài sản của mình cho người khác sau khi chết\nDi chúc hợp pháp phải đảm bảo các điều kiện về:\nNgười lập di chúc\nNội dung di chúc\nHình thức di chúc\n\nThừa kế theo pháp luật \nlà thừa kế theo hàng thừa kế, điều kiện và trình tự thừa kế do pháp luật quy định.\nÁp dụng trong trường hợp:\nKo có d"
+          },
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_c43c4b21bd154d22a351f50697bd5775",
+            "slide_index": 191,
+            "slide_title": "Dạng bài tập thừa kế",
+            "block_ids": [
+              "blk_e60dcee751314dce8d1b3ff2a396845c"
+            ],
+            "excerpt": "1. Thời điểm mở thừa kế: sinh viên phải trình bày chính xác theo dữ kiện đề bài nêu ra như ngày tháng năm thời điểm mở thừa kế là thời điểm người có di sản để lại chết.\n2. Chia di sản thừa kế\na. Trình tự: Trong một tình huống thì nếu có cả chia di sản theo di chúc và theo pháp luật thì chia theo di chúc trước, còn lại mới chia theo pháp luật.\nb. Xác định di sản thừa kế: là phần tài sản riêng của người chết và tài sản nằm trong khối tài sản chung (cách xác định tài sản riêng hay di sản thừa kế đã"
+          }
+        ],
+        "confidence": 88,
+        "grounded": true
+      },
+      "evaluation_status": "needs_human_review",
+      "failure_owner": "needs_review",
+      "review_status": "pending",
+      "review_note": "Cần hai người xác minh slide 191 có hỗ trợ nhận định trong answer hay chỉ là citation thừa từ phần bài tập.",
+      "failure_categories": [
+        "extra_citation",
+        "suspected_false_negative"
+      ]
+    },
+    {
+      "id": "CASE14",
+      "tier": "core",
+      "taxonomy_layer": [
+        "④ Đặc thù domain"
+      ],
+      "passed": true,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [],
+      "response": {
+        "status": "answered",
+        "answer": "Common Law và Civil Law có sự khác biệt rõ rệt về nguồn luật, pháp điển hóa và tố tụng. Về nguồn luật, Common Law chủ yếu dựa vào án lệ [blk_90367f4a9a904f6d97f16ccaa2a3006f], trong khi Civil Law chủ yếu dựa vào luật thành văn [blk_6d0ab038591e40308ac44b8a98f70383]. Về pháp điển hóa, Civil Law có sự phân chia thành luật công và luật tư, đề cao tính khái quát và ổn định [blk_b5c5e434bce24dbbaa3878f4a5fb20a3], trong khi Common Law được hình thành từ tục lệ, cụ thể và khó phân chia [blk_51216b9debe24eaf8f03aaf07f5a1776]. Về tố tụng, Common Law sử dụng tố tụng tranh tụng, coi tòa án là cơ quan làm luật thứ hai và sáng tạo án lệ [blk_13f22dda32ff455aa976f354d9dba888], còn Civil Law sử dụng tố tụng thẩm vấn, chỉ có Nghị viện mới có quyền lập pháp, tòa án chỉ áp dụng pháp luật [blk_32abcacb0c0742f1be68b6a894ec5040]. Ngoài ra, trong Common Law, luật sư và thẩm phán được coi trọng, thẩm phán có quyền sáng tạo luật khi xét xử [blk_110448e46e24424faace4b13e35cf71e], trong khi ở Civil Law, luật sư ít được coi trọng, thẩm phán được đào tạo riêng và không được sáng tạo luật [blk_b26fa06e4e1546f383214968a8dd762e].",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_44256442aa464970b8f51ade2a961aa2",
+            "slide_index": 170,
+            "slide_title": "PHÂN BIỆT COMMON LAW VÀ CIVIL LAW",
+            "block_ids": [
+              "blk_13f22dda32ff455aa976f354d9dba888",
+              "blk_32abcacb0c0742f1be68b6a894ec5040",
+              "blk_b5c5e434bce24dbbaa3878f4a5fb20a3",
+              "blk_51216b9debe24eaf8f03aaf07f5a1776",
+              "blk_b26fa06e4e1546f383214968a8dd762e",
+              "blk_110448e46e24424faace4b13e35cf71e",
+              "blk_90367f4a9a904f6d97f16ccaa2a3006f",
+              "blk_6d0ab038591e40308ac44b8a98f70383"
+            ],
+            "excerpt": "- Tố tụng tranh tụng\n- Tòa án được coi là cơ quan làm luật lần thứ hai, sáng tạo ra án lệ - Tố tụng thẩm vấn/ tố tụng viết\n- Chỉ có Nghị viện mới có quyền lập pháp, Tòa án chỉ là cơ quan áp dụng pháp luật Quan niệm: luật pháp phải từ các chế định cụ thể\n Khái quát hóa, ổn định cao\n Chia thành luật công và luật tư - Quan niệm: luật pháp được hình thành từ tục lệ\n- Cụ thể, phù hợp với sự phát triển các quan hệ xã hội\n- Khó phân chia - Luật sư ít được coi trọng\n- Thẩm phán được đào tạo theo một quy"
+          }
+        ],
+        "confidence": 99,
+        "grounded": true
+      },
+      "evaluation_status": "automated_pass",
+      "failure_owner": null,
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": []
+    },
+    {
+      "id": "CASE15",
+      "tier": "niche",
+      "taxonomy_layer": [
+        "② Mơ hồ / thiếu thông tin"
+      ],
+      "passed": true,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [],
+      "response": {
+        "status": "answered",
+        "answer": "Điểm giống nhau giữa pháp luật và đạo đức là: cả hai đều là hình thái ý thức xã hội thuộc kiến trúc thượng tầng, cùng điều chỉnh hành vi của xã hội, và đều mang tính giai cấp, tính dân tộc và tính thời đại.",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_5a7f1c7c2c274f19bfbca69e4723779d",
+            "slide_index": 69,
+            "slide_title": "4.4.3 Pháp luật với đạo đức",
+            "block_ids": [
+              "blk_cfe6fd1722424ebe85cafd74172a77d4"
+            ],
+            "excerpt": "Giống nhau:\n\nPháp luật và đạo đức đều là một hình thái ý thức xã hội thuộc kiến trúc thượng tầng, cùng điều chỉnh hành vi của xã hội, mang tính giai cấp, tính dân tộc và tính thời đại."
+          }
+        ],
+        "confidence": 100,
+        "grounded": true
+      },
+      "evaluation_status": "automated_pass",
+      "failure_owner": null,
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": []
+    },
+    {
+      "id": "CASE16",
+      "tier": "niche",
+      "taxonomy_layer": [
+        "② Mơ hồ / thiếu thông tin"
+      ],
+      "passed": false,
+      "http_status": 200,
+      "citation_accurate": false,
+      "failures": [
+        "status: expected 'no_basis', got 'answered'",
+        "grounded: expected False, got True",
+        "unexpected citation slides: [40]",
+        "confidence: expected 0, got 95"
+      ],
+      "response": {
+        "status": "answered",
+        "answer": "Câu hỏi không có đủ ngữ cảnh để xác định 'loại thứ hai' là gì, vì vậy không thể trả lời chính xác. Tuy nhiên, dựa trên nguồn, có hai loại nhà nước: nhà nước đơn nhất và nhà nước liên bang. Nếu 'loại thứ hai' là nhà nước liên bang, thì khác biệt so với nhà nước đơn nhất là ở cấu tạo thành các đơn vị hành chính lãnh thổ và tính chất quan hệ giữa các bộ phận cấu thành. Cụ thể, nhà nước liên bang gồm nhiều thành viên có quyền tự trị, quan hệ giữa trung ương và địa phương là quan hệ liên bang, trong khi nhà nước đơn nhất có các đơn vị hành chính trực thuộc trung ương.",
+        "citations": [
+          {
+            "deck_id": "deck_f8060c8ba23c41b689660c43134fd129",
+            "deck_name": "Bài giảng Pháp luật đại cương - ThS. Nguyễn Thị Thúy Hằng.pptx",
+            "slide_id": "sld_4ccd60a231e84435b6295ecb8ed8883d",
+            "slide_index": 40,
+            "slide_title": "2.5.2 Hình thức cấu trúc nhà nước",
+            "block_ids": [
+              "blk_a1a92b81fa9d4fad90e9edf6764121c8"
+            ],
+            "excerpt": "Là sự cấu tạo (tổ chức) nhà nước thành các đơn vị hành chính lãnh thổ và tính chất quan hệ giữa các bộ phận câu thành nhà nước với nhau, giữa các cơ quan nhà nước ở trung ương với các cơ quan nhà nước ở địa phương.\nCó 2 loại:\nNhà nước đơn nhất\nNhà nước liên bang"
+          }
+        ],
+        "confidence": 95,
+        "grounded": true
+      },
+      "evaluation_status": "automated_fail",
+      "failure_owner": "product",
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": [
+        "extra_citation",
+        "ambiguity_guess"
+      ]
+    },
+    {
+      "id": "CASE17",
+      "tier": "niche",
+      "taxonomy_layer": [
+        "① Nguồn sự thật"
+      ],
+      "passed": true,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [],
+      "response": {
+        "status": "no_basis",
+        "answer": "Thông tin này hiện không tồn tại trong deck.",
+        "citations": [],
+        "confidence": 0,
+        "grounded": false
+      },
+      "evaluation_status": "automated_pass",
+      "failure_owner": null,
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": []
+    },
+    {
+      "id": "CASE18",
+      "tier": "niche",
+      "taxonomy_layer": [
+        "③ Ngoài phạm vi / thẩm quyền"
+      ],
+      "passed": true,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [],
+      "response": {
+        "status": "no_basis",
+        "answer": "Thông tin này hiện không tồn tại trong deck.",
+        "citations": [],
+        "confidence": 0,
+        "grounded": false
+      },
+      "evaluation_status": "automated_pass",
+      "failure_owner": null,
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": []
+    },
+    {
+      "id": "CASE19",
+      "tier": "niche",
+      "taxonomy_layer": [
+        "③ Ngoài phạm vi / thẩm quyền"
+      ],
+      "passed": true,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [],
+      "response": {
+        "status": "no_basis",
+        "answer": "Thông tin này hiện không tồn tại trong deck.",
+        "citations": [],
+        "confidence": 0,
+        "grounded": false
+      },
+      "evaluation_status": "automated_pass",
+      "failure_owner": null,
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": []
+    },
+    {
+      "id": "CASE20",
+      "tier": "niche",
+      "taxonomy_layer": [
+        "① Nguồn sự thật",
+        "④ Đặc thù domain"
+      ],
+      "passed": true,
+      "http_status": 200,
+      "citation_accurate": true,
+      "failures": [],
+      "response": {
+        "status": "no_basis",
+        "answer": "Thông tin này hiện không tồn tại trong deck.",
+        "citations": [],
+        "confidence": 0,
+        "grounded": false
+      },
+      "evaluation_status": "automated_pass",
+      "failure_owner": null,
+      "review_status": "not_required",
+      "review_note": "",
+      "failure_categories": []
+    }
+  ]
+}

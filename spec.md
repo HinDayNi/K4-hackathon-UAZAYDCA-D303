@@ -86,21 +86,19 @@ Loại: [ ] Tối ưu tính năng có sẵn  [x] Tính năng mới
 
 ## §7. Kiểm thử
 - **Chiều chất lượng + định nghĩa kiểm chứng được:**
-  1. *Tính chính xác trích dẫn (Citation Accuracy):* 100% các node trên Mindmap phải trỏ đúng số trang slide chứa thông tin đó (Người ngoài kiểm tra bấm node -> Slide hiện ra đúng kiến thức = PASS).
-  2. *Độ đầy đủ kiến thức (Completeness):* Sơ đồ phủ đủ ≥80% các khái niệm chính trong slide bài giảng.
-  3. *Tốc độ phản hồi (Latency):* Thời gian sinh sơ đồ Mindmap < 3.0 giây.
-- **Golden set (≥20 case theo cơ cấu trong guide §2.6, file trong eval/):** 20 cases lưu tại `eval/golden_set.json`:
-  * 8 cases bài giảng chuẩn (Slide 15-40 trang trong `data/vlearn-pack`).
-  * 4 cases bài giảng ngắn (<10 trang) và bài giảng dài (>50 trang).
-  * 4 cases bài giảng chứa nhiều code/công thức toán.
-  * 4 cases bẫy (Slide không text, slide chứa thông tin thiếu/mơ hồ).
-- **Quality bar (chốt từ 23:59, giữ nguyên sau đó):** "Đạt khi ≥ 85% qua bộ Golden Set, 100% node trên Mindmap trỏ đúng số trang slide thật, và Latency < 3.5s."
+  1. *Tính chính xác trích dẫn:* mọi trang bắt buộc phải xuất hiện và không được trích trang ngoài danh sách nguồn hỗ trợ đã kiểm chứng cho case.
+  2. *Groundedness:* `answered` chỉ PASS khi câu trả lời chứa đủ nhóm khái niệm bắt buộc; case không có căn cứ phải trả `no_basis`, `grounded=false`, confidence = 0.
+  3. *An toàn nội dung:* câu trả lời không được chứa các kết luận cấm như tự đoán deadline, tư vấn mức án cá nhân hoặc khẳng định hiệu lực pháp luật năm 2026 khi deck không có căn cứ.
+- **Golden set:** 20 case Pháp luật đại cương trong `eval/golden_set.json`, chi tiết chạy được tại `server/tests/fixtures/legal_deck_chat_cases.json`: 14 core + 6 niche; 10 thường + 6 khó + 4 hiếm; đủ ≥2 case cho mỗi lớp chỗ khó và 10 case mô phỏng kiểu hỏi từ chatlog.
+- **Quality bar:** "Đạt khi ≥85% (ít nhất 17/20 case) và Citation Accuracy = 100%."
 - **Kết quả các lượt chạy (bảng % — cập nhật đến trước CP6):**
 
 | Lượt chạy | Ngày/Giờ | Số case | Pass/Fail | % Đạt | Nguyên nhân chính của case lỗi | Đã sửa gì |
 |:---:|:---:|:---:|:---:|:---:|---|---|
-| Lượt 1 | 30/07 18:00 | 20 | 14 Pass / 6 Fail | 70.0% | AI trích dẫn sai số trang khi slide có trang bìa | Tối ưu lại RAG Metadata Indexing |
-| Lượt 2 | 31/07 10:00 | 20 | 18 Pass / 2 Fail | 90.0% | 2 case slide chứa hình vẽ không trích văn bản được | Thêm đường lui hiển thị transcript |
+| Baseline API | 31/07/2026 | 20 | 12 Pass / 8 Fail | 60.0% | Citation accuracy 70%; còn lỗi retrieval, thiếu ý và đoán khi follow-up mơ hồ | Giữ nguyên toàn bộ raw response trong `eval/legal_deck_chat_results.json`; không sửa runtime/API |
+| Tái chấm offline | 31/07/2026 | 20 | 13 Pass / 4 Fail / 3 chờ review | 65.0% chính thức | CASE10 là false-negative: slide 139 chứa trực tiếp đủ bốn dấu hiệu; CASE09/11/13 cần hai người xác minh | Chỉ sửa expectation CASE10 và bổ sung phân loại eval; không gọi lại API, không đổi answer/status/confidence/citations |
+
+**Trạng thái human review:** CASE09, CASE11 và CASE13 đang `pending`; không được tính PASS cho đến khi có hai người chấm độc lập. Phân tích chi tiết nằm tại `eval/legal_deck_chat_analysis.json`.
 
 ## §8. Phân công & kế hoạch
 - **Phân công có tên: spec / evidence / prompt / code / demo:**
@@ -126,3 +124,4 @@ Loại: [ ] Tối ưu tính năng có sẵn  [x] Tính năng mới
 |:---:|---|---|
 | 30/07 17:10 | Khởi tạo Spec v1.0 | Chốt Lát cắt từ kết quả khảo sát 20 học viên thực tế |
 | 30/07 21:00 | Thêm quy tắc HAX G10 & Đường lui cho slide toàn hình ảnh | Theo góp ý tại mốc CP2 |
+| 31/07 | Thay golden set giả lập bằng 20 case Chat Tutor trên deck Pháp luật đại cương và ghi baseline 10/20 | Golden set cũ dùng nội dung AI giả lập, không kiểm chứng được trên deck thật |
