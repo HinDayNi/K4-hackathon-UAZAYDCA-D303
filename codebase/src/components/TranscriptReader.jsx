@@ -15,8 +15,8 @@ export default function TranscriptReader({
   const containerRef = useRef(null);
   const isDraggingRef = useRef(false);
   const [toolbar, setToolbar] = useState(INITIAL_TOOLBAR);
-  const [rightPanelMode, setRightPanelMode] = useState("none"); // "none" | "chat" | "mindmap"
-  const [rightPanelWidth, setRightPanelWidth] = useState(420); // Resizable width in px
+  const [rightPanelMode, setRightPanelMode] = useState("mindmap"); // Mặc định mở Sơ đồ Mindmap side-by-side
+  const [rightPanelWidth, setRightPanelWidth] = useState(450); // Chiều rộng vừa đẹp cho sơ đồ tư duy
   const [selectedPassageForDrawer, setSelectedPassageForDrawer] = useState(null);
   const [currentPageIndex, setCurrentPageIndex] = useState(1);
   const [numPdfPages, setNumPdfPages] = useState(55);
@@ -138,15 +138,8 @@ export default function TranscriptReader({
       <div className="reader-topbar">
         <div className="reader-topbar__left">
           <button type="button" className="btn-back" onClick={onBack}>
-            ‹
+            Quay lại
           </button>
-          <div className="vlearn-logo vlearn-logo--sm">
-            <img src="/vinuni_logo.png" alt="VinUniversity VLearn" className="vinuni-logo-img-sm" />
-          </div>
-          <div className="doc-title-badge">
-            📘 AI Research to AI Products.pdf
-            <span className="doc-meta">COMP2010 · VinUniversity Lecture Material</span>
-          </div>
         </div>
       </div>
 
@@ -154,11 +147,11 @@ export default function TranscriptReader({
       <div className="reader-body">
         {/* Center Main Workspace Canvas */}
         <main className="reader-canvas">
-          {/* Real PDF Slide Rendering Workspace Canvas */}
+          {/* Continuous Vertical Scroll PDF Slide Rendering Canvas */}
           <div className="document-paper-container">
             <PdfSlideViewer
               pdfUrl="/lecture.pdf"
-              pageNumber={currentPageIndex}
+              targetPageNumber={currentPageIndex}
               onNumPages={(num) => setNumPdfPages(num)}
               containerRef={containerRef}
               onMouseUp={handleMouseUp}
@@ -189,31 +182,6 @@ export default function TranscriptReader({
                 </button>
               </div>
             )}
-
-            {/* Slide Pagination Footer Controls */}
-            <div className="reader-pagination-footer">
-              <button
-                type="button"
-                className="btn-page-nav-large"
-                onClick={handlePrevSlide}
-                disabled={currentPageIndex === 1}
-              >
-                ‹ Slide trước
-              </button>
-
-              <span>
-                Slide <strong>{currentPageIndex}</strong> / {numPdfPages}
-              </span>
-
-              <button
-                type="button"
-                className="btn-page-nav-large"
-                onClick={handleNextSlide}
-                disabled={currentPageIndex === numPdfPages}
-              >
-                Slide tiếp ›
-              </button>
-            </div>
           </div>
         </main>
 
@@ -232,24 +200,37 @@ export default function TranscriptReader({
             <div className="reader-right-panel" style={{ width: `${rightPanelWidth}px` }}>
               {/* Top Mode Tabs inside Right Panel */}
               <div className="right-panel-tabs">
-                <button
-                  type="button"
-                  className={`panel-tab ${rightPanelMode === "chat" ? "is-active" : ""}`}
-                  onClick={() => setRightPanelMode("chat")}
-                >
-                  💬 VLearn AI Tutor
-                </button>
-                <button
-                  type="button"
-                  className={`panel-tab ${rightPanelMode === "mindmap" ? "is-active" : ""}`}
-                  onClick={() => setRightPanelMode("mindmap")}
-                >
-                  🗺️ Sơ đồ Mindmap
-                </button>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    type="button"
+                    className={`panel-tab ${rightPanelMode === "mindmap" ? "is-active" : ""}`}
+                    onClick={() => setRightPanelMode("mindmap")}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
+                      <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                      <polyline points="2 17 12 22 22 17"></polyline>
+                      <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                    Sơ đồ Mindmap
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`panel-tab ${rightPanelMode === "chat" ? "is-active" : ""}`}
+                    onClick={() => setRightPanelMode("chat")}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    VLearn AI Tutor
+                  </button>
+                </div>
+
                 <button
                   type="button"
                   className="btn-close-panel"
                   onClick={() => setRightPanelMode("none")}
+                  title="Thu gọn khung side-by-side"
                 >
                   ✕
                 </button>
@@ -257,15 +238,6 @@ export default function TranscriptReader({
 
               {/* Panel Body Switching */}
               <div className="right-panel-content">
-                {rightPanelMode === "chat" && (
-                  <AITutorDrawer
-                    lesson={currentLesson}
-                    selectedPassage={selectedPassageForDrawer}
-                    onClose={() => setRightPanelMode("none")}
-                    onOpenMindmap={() => setRightPanelMode("mindmap")}
-                  />
-                )}
-
                 {rightPanelMode === "mindmap" && (
                   <MindmapSideView
                     onSelectSlide={(code) => {
@@ -274,21 +246,35 @@ export default function TranscriptReader({
                     }}
                   />
                 )}
+
+                {rightPanelMode === "chat" && (
+                  <AITutorDrawer
+                    lesson={currentLesson}
+                    selectedPassage={selectedPassageForDrawer}
+                    onClose={() => setRightPanelMode("none")}
+                    onOpenMindmap={() => setRightPanelMode("mindmap")}
+                  />
+                )}
               </div>
             </div>
           </>
         )}
       </div>
 
-      {/* Floating AI Tutor Icon Trigger at Bottom Right */}
+      {/* Floating Trigger Button at Bottom Right when panel is closed */}
       {rightPanelMode === "none" && (
         <button
           type="button"
           className="floating-ai-tutor-trigger"
-          onClick={() => setRightPanelMode("chat")}
-          title="Mở VLearn Tutor AI"
+          onClick={() => setRightPanelMode("mindmap")}
+          title="Mở Sơ đồ Mindmap & AI Tutor"
         >
-          🤖
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+          <span>Sơ đồ Mindmap</span>
         </button>
       )}
     </div>

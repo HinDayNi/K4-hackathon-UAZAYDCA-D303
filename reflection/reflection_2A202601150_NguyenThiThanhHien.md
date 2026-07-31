@@ -13,7 +13,7 @@
 Trong suốt 1.5 ngày diễn ra **Mini Hackathon AI (Batch 03)**, tôi đảm nhận vị trí **Product, Spec & Demo Presenter** của Nhóm UADAYDCA với các deliverable trực tiếp đứng tên trách nhiệm:
 
 - **Chủ trì xây dựng TRỌN BỘ [`spec.md`](spec.md) từ §1 đến §9:**
-  - **§1. User & Job:** Định hình **Problem Statement** chuẩn không chữ "AI/Chatbot", tổng hợp dữ liệu khảo sát chuẩn A ($n = 20$ người) từ `validation/survey_responses.csv`, chứng minh **90.0% học viên xác nhận nỗi đau**.
+  - **§1. User & Job:** Định hình **Problem Statement** chuẩn không chữ "AI/Chatbot", tổng hợp dữ liệu khảo sát chuẩn A ($n = 28$ người) từ `validation/survey_responses.csv`, chứng minh **92.9% học viên xác nhận nỗi đau**.
   - **§2. Impact & quyết định chọn:** Lập **Bảng Impact 3 ứng viên bài toán**, phân tích chọn bài toán có impact cao nhất (*Mindmap Sync & Slide Navigation*) và lưu vết lý do loại 2 ứng viên còn lại.
   - **§3. Giải pháp tương tự:** Nghiên cứu và so sánh 2 sản phẩm thị trường (*NotebookLM*, *Khanmigo*) để tìm điểm khác biệt cạnh tranh cho VLearn Mindmap.
   - **§4. Thiết kế & HAX/PAIR:** Viết Lát cắt 1 câu, xác định Non-goals, chọn mức Working Prototype, chế độ Conditional Automation theo cost-of-error và áp dụng 4 nguyên tắc HAX/PAIR (G1, G2, G10, G9).

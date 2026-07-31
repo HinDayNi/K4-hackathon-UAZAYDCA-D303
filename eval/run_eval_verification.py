@@ -38,7 +38,7 @@ try:
     print(f"  • Tốn thời gian tự tóm tắt kiến thức     : {cnt_summarize_time}/{n} người ({cnt_summarize_time/n*100:.1f}%)")
     print(f"  • Nội dung chia nhỏ manh mún, khó nhớ    : {cnt_fragmented}/{n} người ({cnt_fragmented/n*100:.1f}%)")
     print(f"  • Không hiểu slide nói gì                : {cnt_hard_understand}/{n} người ({cnt_hard_understand/n*100:.1f}%)")
-    print(f"  ==> TỔNG TỈ LỆ XÁC NHẬN NỖI ĐAU (Candidate 1): {total_pain}/{n} người ({pain_rate:.1f}%) -> Khớp 90.0% trong Spec §1 & §2!")
+    print(f"  ==> TỔNG TỈ LỆ XÁC NHẬN NỖI ĐAU (Candidate 1): {total_pain}/{n} người ({pain_rate:.1f}%) -> Khớp và vượt Evidence Chuẩn A (≥ 50%) trong Spec §1 & §2!")
 
     # Phân tích Kỳ vọng giải pháp (Cột 2, 3, 4)
     col2 = [r[2].strip() for r in rows if len(r) > 2]
