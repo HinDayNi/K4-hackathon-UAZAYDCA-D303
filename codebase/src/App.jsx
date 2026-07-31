@@ -9,6 +9,7 @@ import AdminUploadView from "./components/AdminUploadView.jsx";
 import ComprehensionModal from "./components/ComprehensionModal.jsx";
 import { lessons as fallbackLessons } from "./data/lessons.js";
 import { fetchDecks } from "./services/apiClient.js";
+import { getDeckTitle } from "./services/deckTitles.js";
 
 const DEFAULT_USERS = {
   student: { name: "Thanh Hiền", email: "hien.ntt@vinuni.edu.vn", role: "student" },
@@ -28,9 +29,9 @@ export default function App() {
       if (backendDecks && backendDecks.length > 0) {
         const mapped = backendDecks.map((deck) => ({
           id: deck.id,
-          title: deck.filename,
+          title: getDeckTitle(deck.id, deck.filename),
           fileType: deck.file_type || (deck.filename.toLowerCase().endsWith(".pdf") ? "pdf" : "pptx"),
-          fileUrl: `http://127.0.0.1:8000/api/v1/decks/${deck.id}/file`,
+          fileUrl: `/api/v1/decks/${deck.id}/file`,
           slideCount: deck.slide_count,
           status: deck.processing_status,
         }));
@@ -67,9 +68,9 @@ export default function App() {
       if (backendDecks && backendDecks.length > 0) {
         const mapped = backendDecks.map((deck) => ({
           id: deck.id,
-          title: deck.filename,
+          title: getDeckTitle(deck.id, deck.filename),
           fileType: deck.file_type || (deck.filename.toLowerCase().endsWith(".pdf") ? "pdf" : "pptx"),
-          fileUrl: `http://127.0.0.1:8000/api/v1/decks/${deck.id}/file`,
+          fileUrl: `/api/v1/decks/${deck.id}/file`,
           slideCount: deck.slide_count,
           status: deck.processing_status,
         }));
