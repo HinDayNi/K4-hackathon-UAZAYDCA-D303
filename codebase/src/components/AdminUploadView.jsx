@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { uploadDeck, fetchDecks, deleteDeck } from "../services/apiClient.js";
+import { saveDeckTitle, getDeckTitle, removeDeckTitle } from "../services/deckTitles.js";
 
 export default function AdminUploadView({ onUploadSuccess }) {
   const [file, setFile] = useState(null);
@@ -16,7 +17,7 @@ export default function AdminUploadView({ onUploadSuccess }) {
       if (decks && decks.length > 0) {
         setUploadedFilesList(decks.map((d, i) => ({
           id: d.id || i,
-          name: d.filename,
+          name: getDeckTitle(d.id, d.filename),
           course: "COMP2010",
           pages: d.slide_count || 19,
           size: "6.3 MB",
@@ -31,11 +32,12 @@ export default function AdminUploadView({ onUploadSuccess }) {
 
   useEffect(() => { loadDecks(); }, [uploadDone]);
 
-  const handleDelete = async (deckId, filename) => {
-    if (!window.confirm(`Xóa tài liệu "${filename}" khỏi hệ thống? Hành động này không thể hoàn tác.`)) return;
+  const handleDelete = async (deckId, displayName) => {
+    if (!window.confirm(`Xóa tài liệu "${displayName}" khỏi hệ thống? Hành động này không thể hoàn tác.`)) return;
     setDeletingId(deckId);
     try {
       await deleteDeck(deckId);
+      removeDeckTitle(deckId);
       loadDecks();
     } catch (err) {
       alert("Xóa thất bại: " + err.message);
@@ -60,6 +62,9 @@ export default function AdminUploadView({ onUploadSuccess }) {
 
     try {
       const res = await uploadDeck(file);
+      if (res?.deck_id && lessonTitle.trim()) {
+        saveDeckTitle(res.deck_id, lessonTitle.trim());
+      }
       setIsUploading(false);
       setUploadDone(true);
       if (onUploadSuccess) {
