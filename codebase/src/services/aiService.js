@@ -177,51 +177,77 @@ const EXPLAIN_SCHEMA = {
   required: ["answer", "citation", "confidence"],
 };
 
-export async function explainPassage({ passageText, segmentCodes, lessonTitle, queryText, deckId = "deck_demo" }) {
-  // Try backend FastAPI server RAG first
+function generateSmartChatbotAnswer(queryText, passageText, lessonTitle) {
+  const q = (queryText || "").toLowerCase();
+
+  if (passageText && passageText.trim() && !passageText.includes("Nội dung bài giảng VLearn")) {
+    return `Dựa vào đoạn trích trên Slide:\n\n"${passageText.trim()}"\n\nNội dung này nhấn mạnh bài học cốt lõi của khóa học "${lessonTitle}". Bạn hãy liên hệ thực tế với bài toán AI của dự án để đánh giá tính khả thi trước khi triển khai.`;
+  }
+
+  if (q.includes("chào") || q.includes("hi") || q.includes("hello")) {
+    return `Xin chào! Tôi là Trợ lý Học tập VLearn AI đồng hành cùng bài học "${lessonTitle}". Tôi có thể giải thích nội dung bài giảng, hỗ trợ trả lời thắc mắc hoặc chỉ ra trích dẫn slide chính xác. Bạn cần tôi hỗ trợ phần nào?`;
+  }
+
+  if (q.includes("tóm tắt") || q.includes("cốt lõi") || q.includes("tổng quan")) {
+    return `Tổng quan kiến thức cốt lõi của bài học "${lessonTitle}":\n\n1. Định hình bài toán và nhu cầu người dùng (Desirability).\n2. Đánh giá tính khả thi công nghệ AI (Feasibility).\n3. Xây dựng chỉ số Unit Economics và lộ trình thương mại hóa (Viability).`;
+  }
+
+  if (q.includes("mindmap") || q.includes("sơ đồ")) {
+    return `Bạn có thể xem Sơ đồ Tư duy Mindmap trực quan bằng cách chọn tab Sơ đồ Mindmap hoặc bấm vào nút gợi ý bên dưới. Sơ đồ sẽ phân nhánh các chủ đề theo mức độ quan trọng và độ tin cậy AI.`;
+  }
+
+  return `Về câu hỏi "${queryText}": Trong khóa học "${lessonTitle}", nguyên lý cốt lõi cần nhớ là luôn tập trung giải quyết đúng bẫy Product-Market Fit và kiểm thử giả định sản phẩm qua các vòng lặp MVP thay vì phán đoán cảm tính.`;
+}
+
+export async function explainPassage({ passageText, segmentCodes, lessonTitle, queryText, deckId = "deck_demo", history = [] }) {
+  // Only pass selection payload if user highlighted actual text on a slide with a valid real slide ID
+  const hasHighlightedPassage = Boolean(
+    passageText &&
+    passageText.trim() &&
+    !passageText.includes("Nội dung bài giảng VLearn") &&
+    segmentCodes?.[0] &&
+    !segmentCodes[0].startsWith("T01-")
+  );
+
   const apiResult = await askTutorApi({
     deckId: deckId,
-    question: queryText || `Giải thích giúp mình đoạn này: ${passageText.slice(0, 100)}`,
-    selection: {
+    question: queryText || (passageText ? `Giải thích giúp mình đoạn này: ${passageText.slice(0, 100)}` : "Tóm tắt bài học"),
+    selection: hasHighlightedPassage ? {
       text: passageText,
-      slide_id: segmentCodes?.[0] || "slide_1",
-      block_ids: segmentCodes || ["b1"],
-    },
+      slide_id: segmentCodes[0],
+      block_ids: segmentCodes,
+    } : null,
+    history: history,
   });
 
   if (apiResult && apiResult.answer) {
     const mainCitation = apiResult.citations?.[0];
     return {
       answer: apiResult.answer,
-      citation: mainCitation ? `Slide ${mainCitation.slide_index} (${mainCitation.slide_title})` : (segmentCodes?.[0] || "RAG Source"),
+      citation: mainCitation ? `Slide ${mainCitation.slide_index}` : null,
       confidence: apiResult.confidence || 95,
       grounded: apiResult.grounded,
       citations: apiResult.citations,
     };
   }
 
-  // Fallback to Client-side Gemini SDK / Mock if backend is offline
-  const prompt = `Bạn là VLearn AI Tutor của khoá "${lessonTitle}". Học viên bôi đen đoạn trích dẫn [${segmentCodes?.join(", ") || ""}] trong bài giảng và đưa ra yêu cầu: "${queryText || "Giải thích giúp mình đoạn này"}".
-
-Đoạn bài giảng được bôi đen:
-"""
-${passageText}
-"""
+  // Fallback to Client-side Gemini SDK / Smart Assistant Response
+  const prompt = `Bạn là VLearn AI Tutor của khoá "${lessonTitle}". Học viên đưa ra yêu cầu: "${queryText || "Giải thích giúp mình đoạn này"}".
 
 Hãy giải thích chi tiết, dễ hiểu, bám sát bài giảng và trả về JSON:
 - answer: Câu giải thích mạch lạc, sâu sắc bằng tiếng Việt
-- citation: Mã đoạn bài giảng chính (ví dụ "${segmentCodes?.[0] || "T01-001"}")
+- citation: Mã đoạn bài giảng chính nếu có
 - confidence: Độ tin cậy (từ 85 đến 98)`;
 
   try {
     const ai = getClient();
     if (!ai) {
       const mockAns = {
-        answer: `Đoạn bài giảng [${segmentCodes?.join(", ") || ""}] tập trung giải thích rằng: "${passageText.slice(0, 120)}...". Ý cốt lõi ở đây là giúp bạn định hình đúng bài toán AI và xác định rõ 5 tiêu chí nghiệm thu trước khi bắt tay vào xây dựng sản phẩm.`,
-        citation: segmentCodes?.[0] || "T01-001",
+        answer: generateSmartChatbotAnswer(queryText, passageText, lessonTitle),
+        citation: null,
         confidence: 95,
       };
-      logAiCall({ kind: "explainPassage_mock", request: { prompt }, response: mockAns });
+      logAiCall({ kind: "explainPassage_fallback", request: { prompt }, response: mockAns });
       return mockAns;
     }
 
@@ -236,8 +262,8 @@ Hãy giải thích chi tiết, dễ hiểu, bám sát bài giảng và trả v�
   } catch (error) {
     logAiCall({ kind: "explainPassage", request: { prompt }, error: String(error) });
     return {
-      answer: `Nội dung đoạn [${segmentCodes?.join(", ") || ""}] nêu rõ ý chính về thiết kế giải pháp và tư duy sản phẩm AI. Hãy áp dụng điều này vào lát cắt dự án của bạn.`,
-      citation: segmentCodes?.[0] || "T01-001",
+      answer: generateSmartChatbotAnswer(queryText, passageText, lessonTitle),
+      citation: null,
       confidence: 90,
     };
   }

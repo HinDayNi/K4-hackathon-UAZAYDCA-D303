@@ -110,10 +110,12 @@ function QuadHandles({ roles }) {
 
 function HubNode({ data }) {
   return (
-    <div className="rf-hub-node">
+    <div className="rf-hub-node" style={{ width: "250px", cursor: "grab" }}>
       <QuadHandles roles={["src"]} />
       <span className="hub-face" aria-hidden="true">🧑‍🎓</span>
-      <div className="hub-title">{data.title}</div>
+      <div className="hub-title" style={{ display: "block", width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        {data.title}
+      </div>
       <div className="hub-subtag">{data.subtitle}</div>
     </div>
   );
@@ -128,28 +130,60 @@ function BranchNode({ data }) {
   return (
     <div
       className={`rf-branch-node ${data.isActive ? "is-active" : ""}`}
-      style={{ background: data.color, cursor: "pointer" }}
+      style={{
+        background: data.color,
+        cursor: "grab",
+        width: "350px",
+        padding: "0.7rem 0.9rem",
+        borderRadius: "10px",
+        boxSizing: "border-box",
+      }}
       onClick={data.onSelect}
       title={data.desc ? `${data.title}\n${data.desc}` : "Bấm để trượt slide"}
     >
       <QuadHandles roles={["src", "tgt"]} />
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem", marginBottom: "0.25rem" }}>
-        <div className="branch-node-title">{data.title}</div>
+
+      {/* Dòng 1: Tiêu đề độc lập 1 block duy nhất */}
+      <div
+        className="branch-node-title"
+        style={{
+          display: "block",
+          width: "100%",
+          fontSize: "0.98rem",
+          fontWeight: 800,
+          color: "#FFFFFF",
+          marginBottom: "0.35rem",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+      >
+        {data.title}
+      </div>
+
+      {/* Dòng 2: Các thẻ thông tin phụ (Slide range, Số khái niệm, Badge quan trọng) */}
+      <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap", marginBottom: "0.35rem", fontSize: "0.75rem" }}>
         {slideTag && (
-          <span style={{ background: "rgba(0,0,0,0.3)", color: "#FFFFFF", padding: "0.15rem 0.55rem", borderRadius: "999px", fontSize: "0.72rem", fontWeight: 800, whiteSpace: "nowrap" }}>
+          <span style={{ background: "rgba(0,0,0,0.3)", color: "#FFFFFF", padding: "0.1rem 0.5rem", borderRadius: "999px", fontWeight: 800, whiteSpace: "nowrap" }}>
             {slideTag}
           </span>
         )}
-      </div>
-      <div className="branch-node-desc">{data.desc}</div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "0.35rem", fontSize: "0.75rem", opacity: 0.95 }}>
-        <span className="branch-node-count">{data.count} khái niệm</span>
+        <span style={{ background: "rgba(255,255,255,0.2)", color: "#FFFFFF", padding: "0.1rem 0.5rem", borderRadius: "999px", fontWeight: 700 }}>
+          {data.count} khái niệm
+        </span>
         {imp && (
-          <span style={{ background: impColor, color: "#FFF", padding: "0.05rem 0.45rem", borderRadius: "4px", fontWeight: 800, fontSize: "0.68rem" }}>
+          <span style={{ background: impColor, color: "#FFF", padding: "0.1rem 0.5rem", borderRadius: "4px", fontWeight: 800, fontSize: "0.68rem" }}>
             ⭐ {impLabel} ({imp.score}đ)
           </span>
         )}
       </div>
+
+      {/* Dòng 3: Tóm tắt nội dung */}
+      {data.desc && (
+        <div className="branch-node-desc" style={{ color: "rgba(255,255,255,0.92)", lineHeight: "1.35", fontSize: "0.82rem" }}>
+          {data.desc}
+        </div>
+      )}
     </div>
   );
 }
@@ -163,74 +197,127 @@ function ChipNode({ data }) {
   return (
     <div
       className={`rf-chip-node ${data.status === "gap" ? "is-gap" : ""}`}
-      style={{ borderColor: data.color }}
+      style={{
+        borderColor: data.color,
+        width: "320px",
+        cursor: "grab",
+        padding: "0.6rem 0.85rem",
+        borderRadius: "8px",
+        boxSizing: "border-box",
+      }}
       onClick={data.onSelect}
       title={imp?.reason ? `${data.label}\n• Tóm tắt: ${data.text || ''}\n• Đánh giá AI: ${imp.reason}` : `Bấm để trượt đến ${slideTag}`}
     >
       <QuadHandles roles={["tgt"]} />
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.35rem", marginBottom: "0.25rem" }}>
+
+      {/* Dòng 1: Tiêu đề độc lập 1 block duy nhất */}
+      <span
+        className="chip-label"
+        style={{
+          display: "block",
+          width: "100%",
+          fontWeight: 800,
+          fontSize: "0.92rem",
+          color: "#0F172A",
+          marginBottom: "0.35rem",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+      >
+        {data.label}
+      </span>
+
+      {/* Dòng 2: Các thẻ thông tin phụ (Badge quan trọng + Slide tag) */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.35rem" }}>
         {imp ? (
           <span style={{ background: impColor, color: "#FFF", padding: "0.08rem 0.45rem", borderRadius: "4px", fontSize: "0.68rem", fontWeight: 800 }}>
             {impLabel} {imp.score ? `${imp.score}đ` : ''}
           </span>
         ) : (
-          data.status === "gap" ? <span className="chip-gap-icon">⚠️</span> : null
+          data.status === "gap" ? <span className="chip-gap-icon">⚠️</span> : <span />
         )}
-        {data.code && <span className="chip-code" style={{ fontSize: "0.72rem" }}>{slideTag}</span>}
+        {data.code && <span className="chip-code" style={{ fontSize: "0.72rem", fontWeight: 700 }}>{slideTag}</span>}
       </div>
-      <span className="chip-label" style={{ fontWeight: 700 }}>{data.label}</span>
     </div>
   );
 }
 
 const nodeTypes = { hub: HubNode, branch: BranchNode, chip: ChipNode };
 
-// --- Radial layout math ---------------------------------------------------
+// --- Dynamic Horizontal Tree Layout Math (Left-to-Right) -------------------
 
-const BRANCH_RADIUS = 300;
-const CHILD_RADIUS = 520;
-const CHILD_SPREAD_DEG = 24;
+const COL_ROOT_X = 40;
+const COL_SECTION_X = 390;
+const COL_TOPIC_X = 800;
+const SECTION_GAP = 54;
+const BRANCH_COLORS = ["#e2635c", "#eaa04b", "#1f7d76", "#3b82f6", "#8b5cf6", "#ec4899"];
 
-const toRad = (deg) => (deg * Math.PI) / 180;
-
-function sectorFor(deg) {
-  const a = ((deg % 360) + 360) % 360;
-  if (a >= 315 || a < 45) return "right";
-  if (a >= 45 && a < 135) return "bottom";
-  if (a >= 135 && a < 225) return "left";
-  return "top";
-}
-
-const OPPOSITE_SECTOR = { top: "bottom", bottom: "top", left: "right", right: "left" };
-
-function buildGraph({ activeDay, onSelectBranch, onSelectChild }) {
-  const nodes = [
-    {
-      id: "hub",
-      type: "hub",
-      position: { x: -150, y: -62 },
-      draggable: false,
-      selectable: false,
-      data: { title: mindmapData.title, subtitle: mindmapData.subtitle },
-    },
-  ];
+function buildHorizontalTreeGraph({ activeDay, onSelectBranch, onSelectChild }) {
+  const sections = mindmapData.nodes;
+  const nodes = [];
   const edges = [];
-  const branchCount = mindmapData.nodes.length;
 
-  mindmapData.nodes.forEach((branch, i) => {
-    const angle = -90 + i * (360 / branchCount);
-    const sector = sectorFor(angle);
-    const targetSector = OPPOSITE_SECTOR[sector];
-    const bx = Math.cos(toRad(angle)) * BRANCH_RADIUS;
-    const by = Math.sin(toRad(angle)) * BRANCH_RADIUS;
+  let currentY = 50;
+  const sectionYs = [];
+
+  sections.forEach((branch, i) => {
+    const topics = branch.children || [];
+    const numTopics = topics.length;
+
+    const descLines = Math.ceil((branch.desc || "").length / 45);
+    const secCardHeight = Math.max(90, 52 + descLines * 18);
+
+    let secY = 0;
+    if (numTopics > 0) {
+      const startY = currentY;
+      topics.forEach((child, j) => {
+        const chipHeight = 68;
+        const topicY = currentY;
+        currentY += chipHeight + 18;
+        const childId = `${branch.id}-c${j}`;
+
+        nodes.push({
+          id: childId,
+          type: "chip",
+          position: { x: COL_TOPIC_X, y: topicY },
+          draggable: true,
+          selectable: true,
+          data: {
+            ...child,
+            color: branch.color,
+            onSelect: () => onSelectChild(child),
+          },
+        });
+
+        edges.push({
+          id: `e-${branch.id}-${childId}`,
+          source: branch.id,
+          target: childId,
+          sourceHandle: "right-src",
+          targetHandle: "left-tgt",
+          type: "smoothstep",
+          style: { stroke: branch.color, strokeWidth: 1.5, strokeDasharray: "5 4" },
+        });
+      });
+
+      const topicBlockHeight = currentY - 18 - startY;
+      secY = startY + (topicBlockHeight / 2) - (secCardHeight / 2);
+      currentY += SECTION_GAP;
+    } else {
+      secY = currentY;
+      currentY += secCardHeight + SECTION_GAP;
+    }
+
+    sectionYs.push(secY);
 
     const firstChildCode = branch.children?.[0]?.code || `T01-${String(i + 1).padStart(3, '0')}`;
     nodes.push({
       id: branch.id,
       type: "branch",
-      position: { x: bx - 95, y: by - 34 },
-      draggable: false,
-      selectable: false,
+      position: { x: COL_SECTION_X, y: secY },
+      draggable: true,
+      selectable: true,
       data: {
         title: branch.title,
         desc: branch.desc,
@@ -250,73 +337,106 @@ function buildGraph({ activeDay, onSelectBranch, onSelectChild }) {
       id: `e-hub-${branch.id}`,
       source: "hub",
       target: branch.id,
-      sourceHandle: `${sector}-src`,
-      targetHandle: `${targetSector}-tgt`,
+      sourceHandle: "right-src",
+      targetHandle: "left-tgt",
+      type: "smoothstep",
       style: { stroke: branch.color, strokeWidth: 2.5 },
       markerEnd: { type: MarkerType.ArrowClosed, color: branch.color, width: 16, height: 16 },
     });
+  });
 
-    const childCount = branch.children.length;
-    branch.children.forEach((child, j) => {
-      const spread = (j - (childCount - 1) / 2) * CHILD_SPREAD_DEG;
-      const childAngle = angle + spread;
-      const childSector = sectorFor(childAngle);
-      const childTargetSector = OPPOSITE_SECTOR[childSector];
-      const cx = Math.cos(toRad(childAngle)) * CHILD_RADIUS;
-      const cy = Math.sin(toRad(childAngle)) * CHILD_RADIUS;
-      const childId = `${branch.id}-c${j}`;
+  const hubY = sectionYs.length > 0
+    ? (sectionYs[0] + sectionYs[sectionYs.length - 1]) / 2
+    : 50;
 
-      nodes.push({
-        id: childId,
-        type: "chip",
-        position: { x: cx - 85, y: cy - 18 },
-        draggable: false,
-        selectable: false,
-        data: {
-          ...child,
-          color: branch.color,
-          onSelect: () => onSelectChild(child),
-        },
-      });
-
-      edges.push({
-        id: `e-${branch.id}-${childId}`,
-        source: branch.id,
-        target: childId,
-        sourceHandle: `${sector}-src`,
-        targetHandle: `${childTargetSector}-tgt`,
-        style: { stroke: branch.color, strokeWidth: 1.5, strokeDasharray: "5 4" },
-      });
-    });
+  nodes.unshift({
+    id: "hub",
+    type: "hub",
+    position: { x: COL_ROOT_X, y: hubY },
+    draggable: true,
+    selectable: true,
+    data: { title: mindmapData.title, subtitle: mindmapData.subtitle },
   });
 
   return { nodes, edges };
 }
 
-const BRANCH_COLORS = ["#e2635c", "#eaa04b", "#1f7d76", "#3b82f6", "#8b5cf6", "#ec4899"];
-
-function buildGraphFromBackendTree(tree, activeBranchId, onSelectBranch, onSelectChild) {
-  const nodes = [
-    {
-      id: "hub",
-      type: "hub",
-      position: { x: -150, y: -62 },
-      draggable: false,
-      selectable: false,
-      data: { title: tree.title || mindmapData.title, subtitle: tree.summary || mindmapData.subtitle },
-    },
-  ];
-  const edges = [];
+function buildHorizontalTreeGraphFromBackendTree(tree, activeBranchId, onSelectBranch, onSelectChild) {
   const sections = tree.children || [];
-  const branchCount = sections.length;
+  const nodes = [];
+  const edges = [];
+
+  let currentY = 50;
+  const sectionYs = [];
 
   sections.forEach((section, i) => {
     const color = BRANCH_COLORS[i % BRANCH_COLORS.length];
-    const angle = -90 + i * (360 / Math.max(1, branchCount));
-    const sector = sectorFor(angle);
-    const targetSector = OPPOSITE_SECTOR[sector];
-    const bx = Math.cos(toRad(angle)) * BRANCH_RADIUS;
-    const by = Math.sin(toRad(angle)) * BRANCH_RADIUS;
+    const topics = section.children || [];
+    const numTopics = topics.length;
+
+    const descLines = Math.ceil((section.summary || "").length / 45);
+    const secCardHeight = Math.max(90, 52 + descLines * 18);
+
+    let secY = 0;
+    if (numTopics > 0) {
+      const startY = currentY;
+      topics.forEach((topic, j) => {
+        const chipHeight = 68;
+        const topicY = currentY;
+        currentY += chipHeight + 18;
+
+        const tStart = topic.coverage?.start_slide_index || topic.sources?.[0]?.slide_index || 1;
+        const tEnd = topic.coverage?.end_slide_index || tStart;
+        const topicCoverage = `Slide ${String(tStart).padStart(2, '0')}${tEnd > tStart ? ` - ${String(tEnd).padStart(2, '0')}` : ''}`;
+        const slideCode = `T01-${String(tStart).padStart(3, '0')}`;
+
+        nodes.push({
+          id: topic.id,
+          type: "chip",
+          position: { x: COL_TOPIC_X, y: topicY },
+          draggable: true,
+          selectable: true,
+          data: {
+            label: topic.title,
+            code: slideCode,
+            coverageText: topicCoverage,
+            status: topic.importance?.level === "important" ? "gap" : "mastered",
+            text: topic.summary,
+            importance: topic.importance,
+            sources: topic.sources,
+            color: color,
+            onSelect: () => onSelectChild({
+              title: topic.title,
+              type: "topic",
+              summary: topic.summary,
+              importance: topic.importance,
+              coverageText: topicCoverage,
+              code: slideCode,
+              sources: topic.sources,
+            }),
+          },
+        });
+
+        edges.push({
+          id: `e-${section.id}-${topic.id}`,
+          source: section.id,
+          target: topic.id,
+          sourceHandle: "right-src",
+          targetHandle: "left-tgt",
+          type: "smoothstep",
+          style: { stroke: color, strokeWidth: 1.5, strokeDasharray: "5 4" },
+        });
+      });
+
+      const topicBlockHeight = currentY - 18 - startY;
+      secY = startY + (topicBlockHeight / 2) - (secCardHeight / 2);
+      currentY += SECTION_GAP;
+    } else {
+      secY = currentY;
+      currentY += secCardHeight + SECTION_GAP;
+    }
+
+    sectionYs.push(secY);
 
     const startSlide = section.coverage?.start_slide_index || section.sources?.[0]?.slide_index || 1;
     const endSlide = section.coverage?.end_slide_index || startSlide;
@@ -326,14 +446,14 @@ function buildGraphFromBackendTree(tree, activeBranchId, onSelectBranch, onSelec
     nodes.push({
       id: section.id,
       type: "branch",
-      position: { x: bx - 95, y: by - 34 },
-      draggable: false,
-      selectable: false,
+      position: { x: COL_SECTION_X, y: secY },
+      draggable: true,
+      selectable: true,
       data: {
         title: section.title,
         desc: section.summary,
         color: color,
-        count: section.children?.length || 0,
+        count: topics.length,
         code: sectionSlideCode,
         coverageText: sectionCoverage,
         importance: section.importance,
@@ -358,63 +478,25 @@ function buildGraphFromBackendTree(tree, activeBranchId, onSelectBranch, onSelec
       id: `e-hub-${section.id}`,
       source: "hub",
       target: section.id,
-      sourceHandle: `${sector}-src`,
-      targetHandle: `${targetSector}-tgt`,
+      sourceHandle: "right-src",
+      targetHandle: "left-tgt",
+      type: "smoothstep",
       style: { stroke: color, strokeWidth: 2.5 },
       markerEnd: { type: MarkerType.ArrowClosed, color: color, width: 16, height: 16 },
     });
+  });
 
-    const topics = section.children || [];
-    const childCount = topics.length;
-    topics.forEach((topic, j) => {
-      const spread = (j - (childCount - 1) / 2) * CHILD_SPREAD_DEG;
-      const childAngle = angle + spread;
-      const childSector = sectorFor(childAngle);
-      const childTargetSector = OPPOSITE_SECTOR[childSector];
-      const cx = Math.cos(toRad(childAngle)) * CHILD_RADIUS;
-      const cy = Math.sin(toRad(childAngle)) * CHILD_RADIUS;
+  const hubY = sectionYs.length > 0
+    ? (sectionYs[0] + sectionYs[sectionYs.length - 1]) / 2
+    : 50;
 
-      const tStart = topic.coverage?.start_slide_index || topic.sources?.[0]?.slide_index || 1;
-      const tEnd = topic.coverage?.end_slide_index || tStart;
-      const topicCoverage = `Slide ${String(tStart).padStart(2, '0')}${tEnd > tStart ? ` - ${String(tEnd).padStart(2, '0')}` : ''}`;
-      const slideCode = `T01-${String(tStart).padStart(3, '0')}`;
-
-      nodes.push({
-        id: topic.id,
-        type: "chip",
-        position: { x: cx - 85, y: cy - 18 },
-        draggable: false,
-        selectable: false,
-        data: {
-          label: topic.title,
-          code: slideCode,
-          coverageText: topicCoverage,
-          status: topic.importance?.level === "important" ? "gap" : "mastered",
-          text: topic.summary,
-          importance: topic.importance,
-          sources: topic.sources,
-          color: color,
-          onSelect: () => onSelectChild({
-            title: topic.title,
-            type: "topic",
-            summary: topic.summary,
-            importance: topic.importance,
-            coverageText: topicCoverage,
-            code: slideCode,
-            sources: topic.sources,
-          }),
-        },
-      });
-
-      edges.push({
-        id: `e-${section.id}-${topic.id}`,
-        source: section.id,
-        target: topic.id,
-        sourceHandle: `${sector}-src`,
-        targetHandle: `${childTargetSector}-tgt`,
-        style: { stroke: color, strokeWidth: 1.5, strokeDasharray: "5 4" },
-      });
-    });
+  nodes.unshift({
+    id: "hub",
+    type: "hub",
+    position: { x: COL_ROOT_X, y: hubY },
+    draggable: true,
+    selectable: true,
+    data: { title: tree.title || mindmapData.title, subtitle: tree.summary || mindmapData.subtitle },
   });
 
   return { nodes, edges };
@@ -451,9 +533,9 @@ export default function MindmapSideView({ onSelectSlide, deckId = "deck_demo" })
 
   const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
     if (backendTree) {
-      return buildGraphFromBackendTree(backendTree, activeDay, handleSelectBranch, handleSelectChild);
+      return buildHorizontalTreeGraphFromBackendTree(backendTree, activeDay, handleSelectBranch, handleSelectChild);
     }
-    return buildGraph({ activeDay, onSelectBranch: handleSelectBranch, onSelectChild: handleSelectChild });
+    return buildHorizontalTreeGraph({ activeDay, onSelectBranch: handleSelectBranch, onSelectChild: handleSelectChild });
   }, [backendTree, activeDay, handleSelectBranch, handleSelectChild]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -490,17 +572,17 @@ export default function MindmapSideView({ onSelectSlide, deckId = "deck_demo" })
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeTypes}
-            nodesDraggable={false}
+            nodesDraggable={true}
             nodesConnectable={false}
-            elementsSelectable={false}
+            elementsSelectable={true}
             onNodeClick={(event, node) => {
               if (node.data && typeof node.data.onSelect === "function") {
                 node.data.onSelect();
               }
             }}
             fitView
-            fitViewOptions={{ padding: 0.35 }}
-            minZoom={0.3}
+            fitViewOptions={{ padding: 0.25 }}
+            minZoom={0.2}
             maxZoom={1.6}
             proOptions={{ hideAttribution: true }}
           >

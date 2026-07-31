@@ -147,10 +147,13 @@ export async function askTutorApi({ deckId, question, selection, currentSlideId,
     });
 
     if (res.ok) {
-      return await res.json(); // ChatResponse
+      const data = await res.json();
+      if (data && data.status === "answered") {
+        return data;
+      }
     }
   } catch (err) {
-    console.warn("Backend chat endpoint failed/unavailable, fallback to Gemini client-side.");
+    console.warn("Backend chat endpoint failed/unavailable:", err);
   }
   return null;
 }

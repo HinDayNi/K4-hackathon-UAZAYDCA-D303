@@ -48,15 +48,23 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpen
     setIsThinking(true);
 
     try {
-      const firstSegmentCode = lesson?.segments?.[0]?.code ?? "T01-001";
-      const sampleText = lesson?.segments?.[0]?.text ?? "Nội dung bài giảng VLearn VinUniversity";
+      const history = [];
+      for (let i = 0; i < messages.length - 1; i++) {
+        if (messages[i]?.sender === "user" && messages[i + 1]?.sender === "ai") {
+          history.push({
+            question: messages[i].text,
+            answer: messages[i + 1].text,
+          });
+        }
+      }
 
       const res = await explainPassage({
-        passageText: sampleText,
-        segmentCodes: [firstSegmentCode],
+        passageText: null,
+        segmentCodes: null,
         lessonTitle: lesson?.title ?? "Bài giảng VLearn VinUniversity",
         queryText: queryText,
         deckId: lesson?.id,
+        history: history,
       });
 
       setMessages((prev) => [
@@ -64,8 +72,9 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpen
         {
           sender: "ai",
           text: res.answer,
-          citation: res.citation || firstSegmentCode,
-          confidence: res.confidence || 93,
+          citation: res.citation,
+          confidence: res.confidence || 95,
+          citations: res.citations,
         },
       ]);
       setIsThinking(false);
@@ -98,8 +107,8 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpen
       <div className="ai-tutor-drawer__header">
         <div className="ai-tutor-drawer__title">
           <div>
-            <h3>Trợ lý Học tập VLearn</h3>
-            <span className="status-online">● Đang kết nối bài giảng</span>
+            <h3>Trợ lý Học tập VLearn AI</h3>
+            <span className="status-online">● Đang kết nối DeepSeek RAG Server</span>
           </div>
         </div>
         <button type="button" className="close-btn" onClick={onClose}>
@@ -110,17 +119,33 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpen
       <div className="ai-tutor-drawer__body">
         {messages.map((msg, i) => (
           <div key={i} className={`chat-bubble chat-bubble--${msg.sender}`}>
-            <p>{msg.text}</p>
-            {msg.citation && (
-              <div className="chat-bubble__citation">
-                <span
-                  className="badge-cite"
-                  style={{ cursor: onJumpToSlide ? "pointer" : "default" }}
-                  onClick={() => onJumpToSlide && onJumpToSlide(msg.citation)}
-                  title="Bấm để nhảy đến trang slide này"
-                >
-                  Trích dẫn: [{msg.citation}] 🔗
-                </span>
+            <p style={{ whiteSpace: "pre-line" }}>{msg.text}</p>
+            {(msg.citation || (msg.citations && msg.citations.length > 0)) && (
+              <div className="chat-bubble__citation" style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap", marginTop: "0.4rem" }}>
+                {msg.citations && msg.citations.length > 0 ? (
+                  msg.citations.map((c, idx) => (
+                    <span
+                      key={idx}
+                      className="badge-cite"
+                      style={{ cursor: onJumpToSlide ? "pointer" : "default" }}
+                      onClick={() => onJumpToSlide && onJumpToSlide(`T01-${String(c.slide_index).padStart(3, '0')}`)}
+                      title={`Bấm để nhảy đến Slide ${c.slide_index}`}
+                    >
+                      🔗 Slide {c.slide_index} ({c.slide_title ? c.slide_title.slice(0, 20) + '...' : 'Nguồn RAG'})
+                    </span>
+                  ))
+                ) : (
+                  msg.citation && (
+                    <span
+                      className="badge-cite"
+                      style={{ cursor: onJumpToSlide ? "pointer" : "default" }}
+                      onClick={() => onJumpToSlide && onJumpToSlide(msg.citation)}
+                      title="Bấm để nhảy đến trang slide này"
+                    >
+                      🔗 Trích dẫn: [{msg.citation}]
+                    </span>
+                  )
+                )}
                 {msg.confidence && (
                   <span className="badge-conf">Độ tin cậy: {msg.confidence}%</span>
                 )}
@@ -130,7 +155,7 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpen
         ))}
         {isThinking && (
           <div className="chat-bubble chat-bubble--ai thinking">
-            <span className="dot-flashing">Hệ thống đang phân tích slide bài giảng…</span>
+            <span className="dot-flashing">AI đang truy vấn RAG & suy luận bài giảng…</span>
           </div>
         )}
       </div>
