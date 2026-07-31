@@ -41,13 +41,13 @@ export default function CourseDetailView({ lessons, onOpenLesson }) {
             onClick={() => onOpenLesson(lesson.id)}
           >
             <div className="day-circle-badge">
-              <span className="badge-tag">{t("dayBadgeLabel")}</span>
+              <span className="badge-tag">{t ? t("dayBadgeLabel") : "BÀI"}</span>
               <span className="badge-num">{String(idx + 1).padStart(2, "0")}</span>
             </div>
 
             <div className="day-accordion-info">
-              <h3>{lesson.id}</h3>
-              <p>{t("dayNotDone")} · {t("slideCount")}</p>
+              <h3>{lesson.title ? (lesson.title.startsWith("Day") ? lesson.title : `Bài ${String(idx + 1).padStart(2, "0")}: ${lesson.title}`) : lesson.id}</h3>
+              <p>{lesson.slideCount ? `${lesson.slideCount} trang slide bài giảng` : "Slide bài giảng"} • AI tự phân tích sơ đồ Mindmap & RAG</p>
             </div>
 
             <div className="day-chevron">⌄</div>

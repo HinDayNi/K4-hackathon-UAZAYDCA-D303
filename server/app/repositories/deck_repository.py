@@ -42,6 +42,22 @@ def list_decks() -> list[dict[str, Any]]:
     return [dict(row) for row in rows]
 
 
+def delete_deck(deck_id: str) -> None:
+    with get_connection() as db:
+        db.execute("DELETE FROM slide_search WHERE deck_id = ?", (deck_id,))
+        db.execute(
+            "DELETE FROM slide_blocks WHERE slide_id IN (SELECT id FROM slides WHERE deck_id = ?)",
+            (deck_id,),
+        )
+        db.execute("DELETE FROM slides WHERE deck_id = ?", (deck_id,))
+        db.execute("DELETE FROM ingestion_jobs WHERE deck_id = ?", (deck_id,))
+        try:
+            db.execute("DELETE FROM mindmap_artifacts WHERE deck_id = ?", (deck_id,))
+        except Exception:
+            pass
+        db.execute("DELETE FROM decks WHERE id = ?", (deck_id,))
+
+
 def update_deck(deck_id: str, *, status: str, slide_count: int | None = None, error: str | None = None) -> None:
     with get_connection() as db:
         db.execute(
