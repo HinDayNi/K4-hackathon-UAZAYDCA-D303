@@ -220,10 +220,16 @@ export default function PdfSlideViewer({
   useEffect(() => {
     if (targetPageNumber) {
       setActivePageNum(targetPageNumber);
-      const targetEl = document.getElementById(`slide-page-${targetPageNumber}`);
-      if (targetEl) {
-        targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
+      const scrollToPage = () => {
+        const targetEl = document.getElementById(`slide-page-${targetPageNumber}`);
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      };
+
+      scrollToPage();
+      const timer = setTimeout(scrollToPage, 120);
+      return () => clearTimeout(timer);
     }
   }, [targetPageNumber]);
 

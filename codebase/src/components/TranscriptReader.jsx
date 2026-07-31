@@ -23,6 +23,41 @@ export default function TranscriptReader({
   const [numPdfPages, setNumPdfPages] = useState(55);
   const [backendSlides, setBackendSlides] = useState(null);
 
+  const parseSlideNumber = useCallback((code) => {
+    if (typeof code === "number") return code;
+    if (!code) return 1;
+    const str = String(code).trim();
+
+    // If code has a dash e.g. "T01-005" -> take "005" -> 5
+    if (str.includes("-")) {
+      const parts = str.split("-");
+      const lastPart = parts[parts.length - 1];
+      const num = parseInt(lastPart, 10);
+      if (!isNaN(num) && num > 0) return num;
+    }
+
+    // Match all number groups and take the last group e.g. "Slide 12", "T01-015"
+    const matches = str.match(/\d+/g);
+    if (matches && matches.length > 0) {
+      const lastNum = parseInt(matches[matches.length - 1], 10);
+      if (!isNaN(lastNum) && lastNum > 0) return lastNum;
+    }
+
+    // Fallback to segment code match
+    const idx = (currentLesson?.segments ?? []).findIndex((s) => s.code === code);
+    if (idx >= 0) return idx + 1;
+
+    return 1;
+  }, [currentLesson?.segments]);
+
+  const handleJumpToSlide = useCallback((code) => {
+    const pageNum = parseSlideNumber(code);
+    if (pageNum && pageNum >= 1) {
+      const validPage = Math.min(pageNum, numPdfPages > 0 ? numPdfPages : pageNum);
+      setCurrentPageIndex(validPage);
+    }
+  }, [parseSlideNumber, numPdfPages]);
+
   useEffect(() => {
     if (currentLesson?.id) {
       setBackendSlides(null);
@@ -257,22 +292,7 @@ export default function TranscriptReader({
                 {rightPanelMode === "mindmap" && (
                   <MindmapSideView
                     deckId={currentLesson?.id}
-                    onSelectSlide={(code) => {
-                      if (typeof code === "number") {
-                        setCurrentPageIndex(code);
-                        return;
-                      }
-                      const match = String(code).match(/\d+/);
-                      if (match) {
-                        const pageNum = parseInt(match[0], 10);
-                        if (pageNum >= 1 && pageNum <= numPdfPages) {
-                          setCurrentPageIndex(pageNum);
-                          return;
-                        }
-                      }
-                      const idx = (currentLesson?.segments ?? []).findIndex((s) => s.code === code);
-                      if (idx >= 0) setCurrentPageIndex(idx + 1);
-                    }}
+                    onSelectSlide={handleJumpToSlide}
                   />
                 )}
 
@@ -282,15 +302,7 @@ export default function TranscriptReader({
                     selectedPassage={selectedPassageForDrawer}
                     onClose={() => setRightPanelMode("none")}
                     onOpenMindmap={() => setRightPanelMode("mindmap")}
-                    onJumpToSlide={(code) => {
-                      const match = String(code).match(/\d+/);
-                      if (match) {
-                        const pageNum = parseInt(match[0], 10);
-                        if (pageNum >= 1 && pageNum <= numPdfPages) {
-                          setCurrentPageIndex(pageNum);
-                        }
-                      }
-                    }}
+                    onJumpToSlide={handleJumpToSlide}
                   />
                 )}
               </div>

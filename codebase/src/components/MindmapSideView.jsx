@@ -195,6 +195,7 @@ function buildGraph({ activeDay, onSelectBranch, onSelectChild }) {
     const bx = Math.cos(toRad(angle)) * BRANCH_RADIUS;
     const by = Math.sin(toRad(angle)) * BRANCH_RADIUS;
 
+    const firstChildCode = branch.children?.[0]?.code || `T01-${String(i + 1).padStart(3, '0')}`;
     nodes.push({
       id: branch.id,
       type: "branch",
@@ -206,8 +207,13 @@ function buildGraph({ activeDay, onSelectBranch, onSelectChild }) {
         desc: branch.desc,
         color: branch.color,
         count: branch.children.length,
+        code: firstChildCode,
         isActive: activeDay === branch.id,
-        onSelect: () => onSelectBranch(branch.id),
+        onSelect: () => {
+          onSelectBranch(branch.id);
+          const firstChild = branch.children?.[0];
+          if (firstChild) onSelectChild(firstChild);
+        },
       },
     });
 
@@ -285,6 +291,9 @@ function buildGraphFromBackendTree(tree, activeBranchId, onSelectBranch, onSelec
     const bx = Math.cos(toRad(angle)) * BRANCH_RADIUS;
     const by = Math.sin(toRad(angle)) * BRANCH_RADIUS;
 
+    const sectionSlideIndex = section.sources?.[0]?.slide_index || section.coverage?.start_slide_index || section.children?.[0]?.sources?.[0]?.slide_index || section.children?.[0]?.coverage?.start_slide_index || 1;
+    const sectionSlideCode = `T01-${String(sectionSlideIndex).padStart(3, '0')}`;
+
     nodes.push({
       id: section.id,
       type: "branch",
@@ -296,8 +305,12 @@ function buildGraphFromBackendTree(tree, activeBranchId, onSelectBranch, onSelec
         desc: section.summary,
         color: color,
         count: section.children?.length || 0,
+        code: sectionSlideCode,
         isActive: activeBranchId === section.id,
-        onSelect: () => onSelectBranch(section.id),
+        onSelect: () => {
+          onSelectBranch(section.id);
+          onSelectChild({ label: section.title, code: sectionSlideCode, text: section.summary });
+        },
       },
     });
 
@@ -422,6 +435,11 @@ export default function MindmapSideView({ onSelectSlide, deckId = "deck_demo" })
             nodesDraggable={false}
             nodesConnectable={false}
             elementsSelectable={false}
+            onNodeClick={(event, node) => {
+              if (node.data && typeof node.data.onSelect === "function") {
+                node.data.onSelect();
+              }
+            }}
             fitView
             fitViewOptions={{ padding: 0.35 }}
             minZoom={0.3}
@@ -441,22 +459,6 @@ export default function MindmapSideView({ onSelectSlide, deckId = "deck_demo" })
         <span className="mindmap-decor decor-plane" aria-hidden="true">✈️</span>
       </div>
 
-      {/* Interactive Node Details Banner */}
-      {selectedNode && (
-        <div className="mindmap-node-banner">
-          <div className="banner-info">
-            <strong>{selectedNode.label}</strong> [Slide {selectedNode.code ? parseInt(selectedNode.code.split('-')[1] || '1', 10) : 1}]
-            {selectedNode.text && <p className="gap-text">{selectedNode.text}</p>}
-          </div>
-          <button
-            type="button"
-            className="btn-jump-slide"
-            onClick={() => onSelectSlide && onSelectSlide(selectedNode.code)}
-          >
-            Trượt đến Slide này →
-          </button>
-        </div>
-      )}
     </div>
   );
 }
