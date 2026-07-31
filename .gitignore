@@ -10,3 +10,4 @@ coverage/
 codebase/server/storage/*.db
 !codebase/server/storage/.gitkeep
 plans/
+todo/
