@@ -165,7 +165,7 @@ export default function TranscriptReader({
           {/* Continuous Vertical Scroll PDF Slide Rendering Canvas */}
           <div className="document-paper-container">
             <PdfSlideViewer
-              pdfUrl={currentLesson?.fileType === "pdf" ? (currentLesson.fileUrl || `http://127.0.0.1:8000/api/v1/decks/${currentLesson.id}/file`) : null}
+              pdfUrl={currentLesson?.fileType === "pdf" || currentLesson?.title?.toLowerCase().endsWith(".pdf") ? (currentLesson?.fileUrl || `/api/v1/decks/${currentLesson?.id}/file`) : null}
               targetPageNumber={currentPageIndex}
               onNumPages={(num) => setNumPdfPages(num)}
               containerRef={containerRef}

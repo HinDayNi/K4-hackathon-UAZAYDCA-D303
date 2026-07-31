@@ -30,7 +30,7 @@ export default function App() {
           id: deck.id,
           title: deck.filename,
           fileType: deck.file_type || (deck.filename.toLowerCase().endsWith(".pdf") ? "pdf" : "pptx"),
-          fileUrl: `http://127.0.0.1:8000/api/v1/decks/${deck.id}/file`,
+          fileUrl: `/api/v1/decks/${deck.id}/file`,
           slideCount: deck.slide_count,
           status: deck.processing_status,
         }));
@@ -69,7 +69,7 @@ export default function App() {
           id: deck.id,
           title: deck.filename,
           fileType: deck.file_type || (deck.filename.toLowerCase().endsWith(".pdf") ? "pdf" : "pptx"),
-          fileUrl: `http://127.0.0.1:8000/api/v1/decks/${deck.id}/file`,
+          fileUrl: `/api/v1/decks/${deck.id}/file`,
           slideCount: deck.slide_count,
           status: deck.processing_status,
         }));

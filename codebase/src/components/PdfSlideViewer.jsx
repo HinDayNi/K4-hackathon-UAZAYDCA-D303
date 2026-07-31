@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
+import pdfWorker from "pdfjs-dist/build/pdf.worker.min.js?url";
 
-// Configure PDF.js Worker using official CDN for reliable execution
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 let cachedPdfDoc = null;
-let cachedPdfPromise = null;
 
 // Individual Vertical Scrollable Slide Page Component
 function PdfSinglePage({ pdfDoc, pageNum, numPages, isTargetPage, segments }) {
@@ -101,27 +100,38 @@ export default function PdfSlideViewer({
   segments = [],
   backendSlides = null,
 }) {
-  const [pdfDoc, setPdfDoc] = useState(cachedPdfDoc);
-  const [loading, setLoading] = useState(!cachedPdfDoc && !backendSlides);
+  const [pdfDoc, setPdfDoc] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [activePageNum, setActivePageNum] = useState(targetPageNumber);
 
   // Load PDF Document when pdfUrl changes
   useEffect(() => {
-    if (!pdfUrl) return;
+    if (!pdfUrl) {
+      setPdfDoc(null);
+      setLoading(false);
+      return;
+    }
 
     let isCancelled = false;
     setLoading(true);
 
-    pdfjsLib.getDocument(pdfUrl).promise
+    fetch(pdfUrl)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.arrayBuffer();
+      })
+      .then((arrayBuffer) => {
+        if (isCancelled) return null;
+        return pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      })
       .then((doc) => {
-        if (!isCancelled) {
-          setPdfDoc(doc);
-          setLoading(false);
-          if (onNumPages) onNumPages(doc.numPages);
-        }
+        if (!doc || isCancelled) return;
+        setPdfDoc(doc);
+        setLoading(false);
+        if (onNumPages) onNumPages(doc.numPages);
       })
       .catch((err) => {
-        console.warn("Native PDF not available (PPTX mode or unavailable file):", err);
+        console.warn("Native PDF canvas load failed (PPTX mode or unavailable file):", err);
         if (!isCancelled) {
           setPdfDoc(null);
           setLoading(false);
