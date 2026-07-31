@@ -105,6 +105,47 @@
       z-index: 1;
     }
 
+    /* Print Styles for 6-page PDF Export */
+    @media print {
+      @page {
+        size: 1920px 1080px;
+        margin: 0;
+      }
+      html, body {
+        width: 1920px !important;
+        height: auto !important;
+        overflow: visible !important;
+        background: #F8FAFC !important;
+      }
+      .deck-viewport {
+        position: static !important;
+        inset: auto !important;
+        overflow: visible !important;
+        background: #F8FAFC !important;
+        display: block !important;
+      }
+      .deck-stage {
+        position: static !important;
+        width: 1920px !important;
+        height: auto !important;
+        transform: none !important;
+        background: #F8FAFC !important;
+      }
+      .slide {
+        position: relative !important;
+        inset: auto !important;
+        width: 1920px !important;
+        height: 1080px !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+    }
+
     /* ===========================================
        ULTRA-BOLD TYPOGRAPHY & CHROME
        =========================================== */
