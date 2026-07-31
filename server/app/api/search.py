@@ -177,3 +177,5 @@ CÂU HỎI CỦA SINH VIÊN: {user_query}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi RAG Search Llama: {str(e)}")
+
+    
