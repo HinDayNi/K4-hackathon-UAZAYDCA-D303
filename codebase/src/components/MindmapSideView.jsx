@@ -12,6 +12,7 @@ import {
   useEdgesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { fetchMindmap } from "../services/apiClient.js";
 
 const mindmapData = {
   title: "COMP2010: AI Product Thinking",
@@ -94,8 +95,6 @@ const HANDLE_SIDES = [
 
 const hiddenHandleStyle = { opacity: 0, width: 6, height: 6, border: "none", background: "transparent" };
 
-// Every node gets a handle on all 4 sides so edges can attach on whichever
-// side actually faces the other node, since branches sit all around the hub.
 function QuadHandles({ roles }) {
   return HANDLE_SIDES.flatMap(({ key, position }) => {
     const out = [];
@@ -121,35 +120,65 @@ function HubNode({ data }) {
 }
 
 function BranchNode({ data }) {
+  const slideTag = data.coverageText || (data.code ? `Slide ${String(parseInt(data.code.split('-')[1] || '1', 10)).padStart(2, '0')}` : null);
+  const imp = data.importance;
+  const impColor = imp?.level === "important" ? "#DC2626" : imp?.level === "should_know" ? "#0284C7" : "#64748B";
+  const impLabel = imp?.label || (imp?.level === "important" ? "Quan trọng" : "Nên biết");
+
   return (
     <div
       className={`rf-branch-node ${data.isActive ? "is-active" : ""}`}
-      style={{ background: data.color }}
+      style={{ background: data.color, cursor: "pointer" }}
       onClick={data.onSelect}
+      title={data.desc ? `${data.title}\n${data.desc}` : "Bấm để trượt slide"}
     >
       <QuadHandles roles={["src", "tgt"]} />
-      <div className="branch-node-title">{data.title}</div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem", marginBottom: "0.25rem" }}>
+        <div className="branch-node-title">{data.title}</div>
+        {slideTag && (
+          <span style={{ background: "rgba(0,0,0,0.3)", color: "#FFFFFF", padding: "0.15rem 0.55rem", borderRadius: "999px", fontSize: "0.72rem", fontWeight: 800, whiteSpace: "nowrap" }}>
+            {slideTag}
+          </span>
+        )}
+      </div>
       <div className="branch-node-desc">{data.desc}</div>
-      <div className="branch-node-count">{data.count} khái niệm</div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "0.35rem", fontSize: "0.75rem", opacity: 0.95 }}>
+        <span className="branch-node-count">{data.count} khái niệm</span>
+        {imp && (
+          <span style={{ background: impColor, color: "#FFF", padding: "0.05rem 0.45rem", borderRadius: "4px", fontWeight: 800, fontSize: "0.68rem" }}>
+            ⭐ {impLabel} ({imp.score}đ)
+          </span>
+        )}
+      </div>
     </div>
   );
 }
 
 function ChipNode({ data }) {
-  const slideNum = data.code ? parseInt(data.code.split('-')[1] || '1', 10) : 1;
-  const slideTag = `Slide ${String(slideNum).padStart(2, '0')}`;
+  const slideTag = data.coverageText || `Slide ${String(data.code ? parseInt(data.code.split('-')[1] || '1', 10) : 1).padStart(2, '0')}`;
+  const imp = data.importance;
+  const impColor = imp?.level === "important" ? "#DC2626" : imp?.level === "should_know" ? "#0284C7" : "#64748B";
+  const impLabel = imp?.label || (imp?.level === "important" ? "Quan trọng" : imp?.level === "should_know" ? "Nên biết" : "Biết thêm");
 
   return (
     <div
       className={`rf-chip-node ${data.status === "gap" ? "is-gap" : ""}`}
       style={{ borderColor: data.color }}
       onClick={data.onSelect}
-      title={`Bấm để trượt đến ${slideTag}`}
+      title={imp?.reason ? `${data.label}\n• Tóm tắt: ${data.text || ''}\n• Đánh giá AI: ${imp.reason}` : `Bấm để trượt đến ${slideTag}`}
     >
       <QuadHandles roles={["tgt"]} />
-      {data.status === "gap" && <span className="chip-gap-icon">⚠️</span>}
-      <span className="chip-label">{data.label}</span>
-      {data.code && <span className="chip-code">{slideTag}</span>}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.35rem", marginBottom: "0.25rem" }}>
+        {imp ? (
+          <span style={{ background: impColor, color: "#FFF", padding: "0.08rem 0.45rem", borderRadius: "4px", fontSize: "0.68rem", fontWeight: 800 }}>
+            {impLabel} {imp.score ? `${imp.score}đ` : ''}
+          </span>
+        ) : (
+          data.status === "gap" ? <span className="chip-gap-icon">⚠️</span> : null
+        )}
+        {data.code && <span className="chip-code" style={{ fontSize: "0.72rem" }}>{slideTag}</span>}
+      </div>
+      <span className="chip-label" style={{ fontWeight: 700 }}>{data.label}</span>
     </div>
   );
 }
@@ -195,6 +224,7 @@ function buildGraph({ activeDay, onSelectBranch, onSelectChild }) {
     const bx = Math.cos(toRad(angle)) * BRANCH_RADIUS;
     const by = Math.sin(toRad(angle)) * BRANCH_RADIUS;
 
+    const firstChildCode = branch.children?.[0]?.code || `T01-${String(i + 1).padStart(3, '0')}`;
     nodes.push({
       id: branch.id,
       type: "branch",
@@ -206,8 +236,13 @@ function buildGraph({ activeDay, onSelectBranch, onSelectChild }) {
         desc: branch.desc,
         color: branch.color,
         count: branch.children.length,
+        code: firstChildCode,
         isActive: activeDay === branch.id,
-        onSelect: () => onSelectBranch(branch.id),
+        onSelect: () => {
+          onSelectBranch(branch.id);
+          const firstChild = branch.children?.[0];
+          if (firstChild) onSelectChild(firstChild);
+        },
       },
     });
 
@@ -258,11 +293,152 @@ function buildGraph({ activeDay, onSelectBranch, onSelectChild }) {
   return { nodes, edges };
 }
 
+const BRANCH_COLORS = ["#e2635c", "#eaa04b", "#1f7d76", "#3b82f6", "#8b5cf6", "#ec4899"];
+
+function buildGraphFromBackendTree(tree, activeBranchId, onSelectBranch, onSelectChild) {
+  const nodes = [
+    {
+      id: "hub",
+      type: "hub",
+      position: { x: -150, y: -62 },
+      draggable: false,
+      selectable: false,
+      data: { title: tree.title || mindmapData.title, subtitle: tree.summary || mindmapData.subtitle },
+    },
+  ];
+  const edges = [];
+  const sections = tree.children || [];
+  const branchCount = sections.length;
+
+  sections.forEach((section, i) => {
+    const color = BRANCH_COLORS[i % BRANCH_COLORS.length];
+    const angle = -90 + i * (360 / Math.max(1, branchCount));
+    const sector = sectorFor(angle);
+    const targetSector = OPPOSITE_SECTOR[sector];
+    const bx = Math.cos(toRad(angle)) * BRANCH_RADIUS;
+    const by = Math.sin(toRad(angle)) * BRANCH_RADIUS;
+
+    const startSlide = section.coverage?.start_slide_index || section.sources?.[0]?.slide_index || 1;
+    const endSlide = section.coverage?.end_slide_index || startSlide;
+    const sectionCoverage = `Slide ${String(startSlide).padStart(2, '0')}${endSlide > startSlide ? ` - ${String(endSlide).padStart(2, '0')}` : ''}`;
+    const sectionSlideCode = `T01-${String(startSlide).padStart(3, '0')}`;
+
+    nodes.push({
+      id: section.id,
+      type: "branch",
+      position: { x: bx - 95, y: by - 34 },
+      draggable: false,
+      selectable: false,
+      data: {
+        title: section.title,
+        desc: section.summary,
+        color: color,
+        count: section.children?.length || 0,
+        code: sectionSlideCode,
+        coverageText: sectionCoverage,
+        importance: section.importance,
+        sources: section.sources,
+        isActive: activeBranchId === section.id,
+        onSelect: () => {
+          onSelectBranch(section.id);
+          onSelectChild({
+            title: section.title,
+            type: "section",
+            summary: section.summary,
+            importance: section.importance,
+            coverageText: sectionCoverage,
+            code: sectionSlideCode,
+            sources: section.sources,
+          });
+        },
+      },
+    });
+
+    edges.push({
+      id: `e-hub-${section.id}`,
+      source: "hub",
+      target: section.id,
+      sourceHandle: `${sector}-src`,
+      targetHandle: `${targetSector}-tgt`,
+      style: { stroke: color, strokeWidth: 2.5 },
+      markerEnd: { type: MarkerType.ArrowClosed, color: color, width: 16, height: 16 },
+    });
+
+    const topics = section.children || [];
+    const childCount = topics.length;
+    topics.forEach((topic, j) => {
+      const spread = (j - (childCount - 1) / 2) * CHILD_SPREAD_DEG;
+      const childAngle = angle + spread;
+      const childSector = sectorFor(childAngle);
+      const childTargetSector = OPPOSITE_SECTOR[childSector];
+      const cx = Math.cos(toRad(childAngle)) * CHILD_RADIUS;
+      const cy = Math.sin(toRad(childAngle)) * CHILD_RADIUS;
+
+      const tStart = topic.coverage?.start_slide_index || topic.sources?.[0]?.slide_index || 1;
+      const tEnd = topic.coverage?.end_slide_index || tStart;
+      const topicCoverage = `Slide ${String(tStart).padStart(2, '0')}${tEnd > tStart ? ` - ${String(tEnd).padStart(2, '0')}` : ''}`;
+      const slideCode = `T01-${String(tStart).padStart(3, '0')}`;
+
+      nodes.push({
+        id: topic.id,
+        type: "chip",
+        position: { x: cx - 85, y: cy - 18 },
+        draggable: false,
+        selectable: false,
+        data: {
+          label: topic.title,
+          code: slideCode,
+          coverageText: topicCoverage,
+          status: topic.importance?.level === "important" ? "gap" : "mastered",
+          text: topic.summary,
+          importance: topic.importance,
+          sources: topic.sources,
+          color: color,
+          onSelect: () => onSelectChild({
+            title: topic.title,
+            type: "topic",
+            summary: topic.summary,
+            importance: topic.importance,
+            coverageText: topicCoverage,
+            code: slideCode,
+            sources: topic.sources,
+          }),
+        },
+      });
+
+      edges.push({
+        id: `e-${section.id}-${topic.id}`,
+        source: section.id,
+        target: topic.id,
+        sourceHandle: `${sector}-src`,
+        targetHandle: `${childTargetSector}-tgt`,
+        style: { stroke: color, strokeWidth: 1.5, strokeDasharray: "5 4" },
+      });
+    });
+  });
+
+  return { nodes, edges };
+}
+
 // --- Component -------------------------------------------------------------
 
-export default function MindmapSideView({ onSelectSlide }) {
+export default function MindmapSideView({ onSelectSlide, deckId = "deck_demo" }) {
   const [activeDay, setActiveDay] = useState("Day01");
   const [selectedNode, setSelectedNode] = useState(null);
+  const [backendResponse, setBackendResponse] = useState(null);
+  const [backendTree, setBackendTree] = useState(null);
+
+  useEffect(() => {
+    fetchMindmap(deckId).then((res) => {
+      if (res && res.tree) {
+        setBackendResponse(res);
+        setBackendTree(res.tree);
+        if (res.tree.children && res.tree.children[0]) {
+          setActiveDay(res.tree.children[0].id);
+        }
+      }
+    });
+  }, [deckId]);
 
   const handleSelectBranch = useCallback((id) => setActiveDay(id), []);
   const handleSelectChild = useCallback(
@@ -273,10 +449,12 @@ export default function MindmapSideView({ onSelectSlide }) {
     [onSelectSlide]
   );
 
-  const { nodes: initialNodes, edges: initialEdges } = useMemo(
-    () => buildGraph({ activeDay, onSelectBranch: handleSelectBranch, onSelectChild: handleSelectChild }),
-    [activeDay, handleSelectBranch, handleSelectChild]
-  );
+  const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
+    if (backendTree) {
+      return buildGraphFromBackendTree(backendTree, activeDay, handleSelectBranch, handleSelectChild);
+    }
+    return buildGraph({ activeDay, onSelectBranch: handleSelectBranch, onSelectChild: handleSelectChild });
+  }, [backendTree, activeDay, handleSelectBranch, handleSelectChild]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -286,13 +464,19 @@ export default function MindmapSideView({ onSelectSlide }) {
     setEdges(initialEdges);
   }, [initialNodes, initialEdges, setNodes, setEdges]);
 
+  const stats = backendResponse?.stats;
+
   return (
-    <div className="mindmap-tree-workspace">
+    <div className="mindmap-tree-workspace" style={{ position: 'relative' }}>
       {/* Mindmap Header Bar */}
       <div className="mindmap-tree-header">
         <div className="mindmap-tree-header__title">
-          <h3>🗺️ Sơ đồ Tư duy (Mind Map)</h3>
-          <p>{mindmapData.subtitle}</p>
+          <h3>🗺️ Sơ đồ Tư duy AI (Mind Map)</h3>
+          <p style={{ fontSize: '0.82rem', color: '#64748B' }}>
+            {stats
+              ? `📊 ${stats.section_count} phần · 📌 ${stats.node_count} khái niệm · ⚡ DeepSeek RAG`
+              : mindmapData.subtitle}
+          </p>
         </div>
         <span className="live-ai-badge">LIVE AI GRAPH</span>
       </div>
@@ -309,6 +493,11 @@ export default function MindmapSideView({ onSelectSlide }) {
             nodesDraggable={false}
             nodesConnectable={false}
             elementsSelectable={false}
+            onNodeClick={(event, node) => {
+              if (node.data && typeof node.data.onSelect === "function") {
+                node.data.onSelect();
+              }
+            }}
             fitView
             fitViewOptions={{ padding: 0.35 }}
             minZoom={0.3}
@@ -328,20 +517,78 @@ export default function MindmapSideView({ onSelectSlide }) {
         <span className="mindmap-decor decor-plane" aria-hidden="true">✈️</span>
       </div>
 
-      {/* Interactive Node Details Banner */}
+      {/* Interactive Node Rich Details Floating Card */}
       {selectedNode && (
-        <div className="mindmap-node-banner">
-          <div className="banner-info">
-            <strong>{selectedNode.label}</strong> [Slide {selectedNode.code ? parseInt(selectedNode.code.split('-')[1] || '1', 10) : 1}]
-            {selectedNode.text && <p className="gap-text">{selectedNode.text}</p>}
+        <div
+          className="glass-card"
+          style={{
+            position: 'absolute',
+            bottom: '12px',
+            left: '12px',
+            right: '12px',
+            background: 'rgba(15, 23, 42, 0.95)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderRadius: '14px',
+            padding: '1rem 1.25rem',
+            color: '#FFFFFF',
+            boxShadow: '0 12px 36px rgba(0,0,0,0.35)',
+            zIndex: 50,
+            transition: 'all 0.3s ease',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#38BDF8', fontFamily: 'var(--font-heading)' }}>
+                📌 {selectedNode.title || selectedNode.label}
+              </span>
+              {selectedNode.importance && (
+                <span
+                  style={{
+                    background: selectedNode.importance.level === "important" ? "var(--vlearn-red)" : selectedNode.importance.level === "should_know" ? "#0284C7" : "#64748B",
+                    color: "#FFFFFF",
+                    padding: "0.15rem 0.55rem",
+                    borderRadius: "999px",
+                    fontSize: "0.75rem",
+                    fontWeight: 800,
+                    fontFamily: "var(--font-heading)",
+                  }}
+                >
+                  ⭐ {selectedNode.importance.label} ({selectedNode.importance.score} điểm)
+                </span>
+              )}
+              {selectedNode.importance?.confidence && (
+                <span style={{ background: 'rgba(255,255,255,0.12)', color: '#A7F3D0', padding: '0.15rem 0.55rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700 }}>
+                  ⚡ Tin cậy: {selectedNode.importance.confidence}%
+                </span>
+              )}
+              {selectedNode.coverageText && (
+                <span style={{ background: 'rgba(255,255,255,0.1)', color: '#CBD5E1', padding: '0.15rem 0.55rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700 }}>
+                  📄 {selectedNode.coverageText}
+                </span>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedNode(null)}
+              style={{ background: 'transparent', border: 'none', color: '#94A3B8', fontSize: '1.2rem', cursor: 'pointer', padding: '0 0.2rem' }}
+              title="Đóng thẻ chi tiết"
+            >
+              ✕
+            </button>
           </div>
-          <button
-            type="button"
-            className="btn-jump-slide"
-            onClick={() => onSelectSlide && onSelectSlide(selectedNode.code)}
-          >
-            Trượt đến Slide này →
-          </button>
+
+          {selectedNode.summary && (
+            <p style={{ fontSize: '0.88rem', color: '#F1F5F9', lineHeight: '1.55', marginBottom: '0.35rem', fontFamily: 'var(--font-body)' }}>
+              <strong>Tóm tắt cốt lõi:</strong> {selectedNode.summary}
+            </p>
+          )}
+
+          {selectedNode.importance?.reason && (
+            <p style={{ fontSize: '0.82rem', color: '#94A3B8', fontStyle: 'italic', margin: 0 }}>
+              💡 <strong>Lý do AI đánh giá:</strong> {selectedNode.importance.reason}
+            </p>
+          )}
         </div>
       )}
     </div>

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class MindmapSource(BaseModel):
@@ -37,6 +37,13 @@ class MindmapImportanceSignals(BaseModel):
     applicability: int = Field(ge=0, le=100)
     evidence_refs: list[str] = Field(default_factory=list, max_length=3)
     prerequisite_for: list[str] = Field(default_factory=list)
+
+    @field_validator("evidence_refs", mode="before")
+    @classmethod
+    def truncate_evidence_refs(cls, value: object) -> object:
+        if isinstance(value, list):
+            return value[:3]
+        return value
 
 
 class MindmapCoverage(BaseModel):

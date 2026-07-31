@@ -2,6 +2,7 @@ import { useRef, useState, useCallback, useEffect } from "react";
 import AITutorDrawer from "./AITutorDrawer.jsx";
 import PdfSlideViewer from "./PdfSlideViewer.jsx";
 import MindmapSideView from "./MindmapSideView.jsx";
+import { fetchSlides } from "../services/apiClient.js";
 
 const INITIAL_TOOLBAR = { visible: false, x: 0, y: 0, text: "", codes: [] };
 
@@ -20,6 +21,55 @@ export default function TranscriptReader({
   const [selectedPassageForDrawer, setSelectedPassageForDrawer] = useState(null);
   const [currentPageIndex, setCurrentPageIndex] = useState(1);
   const [numPdfPages, setNumPdfPages] = useState(55);
+  const [backendSlides, setBackendSlides] = useState(null);
+
+  const parseSlideNumber = useCallback((code) => {
+    if (typeof code === "number") return code;
+    if (!code) return 1;
+    const str = String(code).trim();
+
+    // If code has a dash e.g. "T01-005" -> take "005" -> 5
+    if (str.includes("-")) {
+      const parts = str.split("-");
+      const lastPart = parts[parts.length - 1];
+      const num = parseInt(lastPart, 10);
+      if (!isNaN(num) && num > 0) return num;
+    }
+
+    // Match all number groups and take the last group e.g. "Slide 12", "T01-015"
+    const matches = str.match(/\d+/g);
+    if (matches && matches.length > 0) {
+      const lastNum = parseInt(matches[matches.length - 1], 10);
+      if (!isNaN(lastNum) && lastNum > 0) return lastNum;
+    }
+
+    // Fallback to segment code match
+    const idx = (currentLesson?.segments ?? []).findIndex((s) => s.code === code);
+    if (idx >= 0) return idx + 1;
+
+    return 1;
+  }, [currentLesson?.segments]);
+
+  const handleJumpToSlide = useCallback((code) => {
+    const pageNum = parseSlideNumber(code);
+    if (pageNum && pageNum >= 1) {
+      const validPage = Math.min(pageNum, numPdfPages > 0 ? numPdfPages : pageNum);
+      setCurrentPageIndex(validPage);
+    }
+  }, [parseSlideNumber, numPdfPages]);
+
+  useEffect(() => {
+    if (currentLesson?.id) {
+      setBackendSlides(null);
+      fetchSlides(currentLesson.id).then((slides) => {
+        if (slides && slides.length > 0) {
+          setBackendSlides(slides);
+          setNumPdfPages(slides.length);
+          setCurrentPageIndex(1);
+        }
+      });
+    }
+  }, [currentLesson?.id]);
 
   const handlePrevSlide = useCallback(() => {
     setCurrentPageIndex((prev) => Math.max(1, prev - 1));
@@ -94,7 +144,7 @@ export default function TranscriptReader({
         return;
       }
 
-      const currentCode = currentLesson?.segments[currentPageIndex - 1]?.code || `T01-${String(currentPageIndex).padStart(3, "0")}`;
+      const currentCode = currentLesson?.segments?.[currentPageIndex - 1]?.code || `T01-${String(currentPageIndex).padStart(3, "0")}`;
       const codes = [currentCode];
 
       const rect = range.getBoundingClientRect();
@@ -150,12 +200,13 @@ export default function TranscriptReader({
           {/* Continuous Vertical Scroll PDF Slide Rendering Canvas */}
           <div className="document-paper-container">
             <PdfSlideViewer
-              pdfUrl="/lecture.pdf"
+              pdfUrl={currentLesson?.fileType === "pdf" || currentLesson?.title?.toLowerCase().endsWith(".pdf") ? (currentLesson?.fileUrl || `/api/v1/decks/${currentLesson?.id}/file`) : null}
               targetPageNumber={currentPageIndex}
               onNumPages={(num) => setNumPdfPages(num)}
               containerRef={containerRef}
               onMouseUp={handleMouseUp}
               segments={currentLesson.segments}
+              backendSlides={backendSlides}
             />
 
             {/* Selection Floating Action Popover Toolbar */}
@@ -240,10 +291,8 @@ export default function TranscriptReader({
               <div className="right-panel-content">
                 {rightPanelMode === "mindmap" && (
                   <MindmapSideView
-                    onSelectSlide={(code) => {
-                      const idx = currentLesson.segments.findIndex((s) => s.code === code);
-                      if (idx >= 0) setCurrentPageIndex(idx + 1);
-                    }}
+                    deckId={currentLesson?.id}
+                    onSelectSlide={handleJumpToSlide}
                   />
                 )}
 
@@ -253,6 +302,7 @@ export default function TranscriptReader({
                     selectedPassage={selectedPassageForDrawer}
                     onClose={() => setRightPanelMode("none")}
                     onOpenMindmap={() => setRightPanelMode("mindmap")}
+                    onJumpToSlide={handleJumpToSlide}
                   />
                 )}
               </div>

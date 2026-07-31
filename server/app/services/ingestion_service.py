@@ -2,6 +2,7 @@ from pathlib import Path
 
 from app.repositories import deck_repository as repo
 from app.services.pptx_extractor import extract_pptx
+from app.services.pdf_extractor import extract_pdf
 from app.services.summary_service import summarize_block, summarize_slide
 from app.services.mindmap_service import MindmapService
 
@@ -11,7 +12,11 @@ def process_deck(deck_id: str, job_id: str, file_path: str) -> None:
     try:
         repo.update_job(job_id, status="extracting", progress=5)
         repo.update_deck(deck_id, status="extracting")
-        slides = extract_pptx(Path(file_path), deck_id)
+        file_path_obj = Path(file_path)
+        if file_path_obj.suffix.lower() == ".pdf":
+            slides = extract_pdf(file_path_obj, deck_id)
+        else:
+            slides = extract_pptx(file_path_obj, deck_id)
         repo.replace_slides(deck_id, slides)
         repo.update_deck(deck_id, status="summarizing_blocks", slide_count=len(slides))
         repo.update_job(job_id, status="summarizing_blocks", progress=20)

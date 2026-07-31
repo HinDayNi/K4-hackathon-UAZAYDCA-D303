@@ -1,14 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useLanguage } from "../contexts/LanguageContext.jsx";
 
 export default function Header({ selectedLessonTitle, currentUser, onToggleUserRole }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+  const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem("vlearn-theme") || "light");
   const navigate = useNavigate();
   const location = useLocation();
+  const { lang, toggleLang, t } = useLanguage();
 
   const currentPath = location.pathname;
   const isAdmin = currentUser?.role === "admin";
+  const isDark = theme === "dark";
+  const surface = isDark ? "#16213A" : "#FFFFFF";
+  const surfaceBorder = isDark ? "#1F2A3C" : "#E2E8F0";
+  const textColor = isDark ? "#E5E9F0" : "#0F172A";
+  const mutedColor = isDark ? "#98A2B3" : "#64748B";
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("vlearn-theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((prev) => (prev === "dark" ? "light" : "dark"));
 
   const handleNavClick = (path) => {
     navigate(path);
@@ -50,19 +66,19 @@ export default function Header({ selectedLessonTitle, currentUser, onToggleUserR
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
               </svg>
-              Trang chủ
+              {t("navHome")}
             </button>
 
             <button
               type="button"
-              className={`vlearn-nav__item ${currentPath.startsWith("/courses") || currentPath.startsWith("/course-detail") ? "is-active" : ""}`}
-              onClick={() => handleNavClick("/courses")}
+              className={`vlearn-nav__item ${currentPath.startsWith("/course-detail") ? "is-active" : ""}`}
+              onClick={() => handleNavClick("/course-detail")}
             >
               <svg className="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
               </svg>
-              Khóa học của tôi
+              {t("navCourses")}
             </button>
 
             {/* Admin Upload Tab ONLY visible to Admin accounts */}
@@ -77,7 +93,7 @@ export default function Header({ selectedLessonTitle, currentUser, onToggleUserR
                   <polyline points="17 8 12 3 7 8"></polyline>
                   <line x1="12" y1="3" x2="12" y2="15"></line>
                 </svg>
-                Tải bài giảng PDF (Admin)
+                {t("navAdmin")}
               </button>
             )}
 
@@ -90,11 +106,119 @@ export default function Header({ selectedLessonTitle, currentUser, onToggleUserR
         </div>
 
         <div className="vlearn-navbar__right" style={{ position: 'relative' }}>
+          {/* Language Toggle Pill (VI / EN) */}
+          <button
+            type="button"
+            onClick={toggleLang}
+            title={lang === "vi" ? "Switch to English" : "Chuyển sang Tiếng Việt"}
+            style={{
+              border: `1px solid ${surfaceBorder}`,
+              background: surface,
+              color: textColor,
+              fontWeight: 800,
+              fontSize: '0.78rem',
+              padding: '0.35rem 0.7rem',
+              borderRadius: '999px',
+              cursor: 'pointer',
+              lineHeight: 1,
+            }}
+          >
+            {lang.toUpperCase()}
+          </button>
+
+          {/* Dark / Light Theme Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={theme === "dark" ? t("themeToggleToLight") : t("themeToggleToDark")}
+            title={theme === "dark" ? t("themeToggleToLight") : t("themeToggleToDark")}
+            style={{
+              border: `1px solid ${surfaceBorder}`,
+              background: surface,
+              color: textColor,
+              width: '34px',
+              height: '34px',
+              borderRadius: '50%',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {theme === "dark" ? (
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+              </svg>
+            ) : (
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            )}
+          </button>
+
+          {/* Notification Bell */}
+          <button
+            type="button"
+            onClick={() => {
+              setShowNotifDropdown(!showNotifDropdown);
+              setShowRoleDropdown(false);
+            }}
+            aria-label={t("notifTitle")}
+            title={t("notifTitle")}
+            style={{
+              border: `1px solid ${surfaceBorder}`,
+              background: surface,
+              color: textColor,
+              width: '34px',
+              height: '34px',
+              borderRadius: '50%',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+            }}
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </button>
+
+          {/* Notification Dropdown */}
+          {showNotifDropdown && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '46px',
+                right: '120px',
+                background: surface,
+                border: `1px solid ${surfaceBorder}`,
+                borderRadius: '12px',
+                padding: '0.85rem',
+                boxShadow: '0 10px 25px rgba(15, 23, 42, 0.12)',
+                zIndex: 200,
+                width: '240px',
+              }}
+            >
+              <div style={{ fontSize: '0.75rem', fontWeight: '800', color: mutedColor, marginBottom: '0.5rem', textTransform: 'uppercase' }}>
+                {t("notifTitle")}
+              </div>
+              <div style={{ fontSize: '0.85rem', color: mutedColor, padding: '0.5rem 0' }}>
+                {t("notifEmpty")}
+              </div>
+            </div>
+          )}
+
           {/* User Profile & Role Switcher Pill */}
           <div
             className="user-profile-pill"
-            onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-            title="Bấm để chuyển đổi tài khoản Học viên / Admin"
+            onClick={() => {
+              setShowRoleDropdown(!showRoleDropdown);
+              setShowNotifDropdown(false);
+            }}
+            title={t("switchAccount")}
           >
             <div className={`user-avatar-badge ${isAdmin ? "admin-avatar" : ""}`}>
               {isAdmin ? "A" : "H"}
@@ -112,8 +236,8 @@ export default function Header({ selectedLessonTitle, currentUser, onToggleUserR
                 position: 'absolute',
                 top: '46px',
                 right: 0,
-                background: '#FFFFFF',
-                border: '1px solid #E2E8F0',
+                background: surface,
+                border: `1px solid ${surfaceBorder}`,
                 borderRadius: '12px',
                 padding: '0.75rem',
                 boxShadow: '0 10px 25px rgba(15, 23, 42, 0.12)',
@@ -121,8 +245,8 @@ export default function Header({ selectedLessonTitle, currentUser, onToggleUserR
                 width: '260px',
               }}
             >
-              <div style={{ fontSize: '0.75rem', fontWeight: '800', color: '#64748B', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
-                Đổi tài khoản đăng nhập
+              <div style={{ fontSize: '0.75rem', fontWeight: '800', color: mutedColor, marginBottom: '0.5rem', textTransform: 'uppercase' }}>
+                {t("switchAccount")}
               </div>
 
               <div
@@ -136,8 +260,8 @@ export default function Header({ selectedLessonTitle, currentUser, onToggleUserR
                   gap: '0.6rem',
                   padding: '0.5rem 0.65rem',
                   borderRadius: '8px',
-                  background: !isAdmin ? '#FEF2F2' : '#FFFFFF',
-                  color: !isAdmin ? '#C5221F' : '#0F172A',
+                  background: !isAdmin ? (isDark ? 'rgba(197, 34, 31, 0.15)' : '#FEF2F2') : surface,
+                  color: !isAdmin ? (isDark ? '#FCA5A5' : '#C5221F') : textColor,
                   cursor: 'pointer',
                   fontWeight: '700',
                   marginBottom: '0.4rem',
@@ -146,8 +270,8 @@ export default function Header({ selectedLessonTitle, currentUser, onToggleUserR
               >
                 <div style={{ width: 22, height: 22, background: '#0369A1', color: '#FFF', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 800 }}>H</div>
                 <div>
-                  <div>Thanh Hiền</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 500 }}>Tài khoản Học viên</div>
+                  <div>{t("studentAccountName")}</div>
+                  <div style={{ fontSize: '0.72rem', color: mutedColor, fontWeight: 500 }}>{t("studentAccountRole")}</div>
                 </div>
               </div>
 
@@ -162,8 +286,8 @@ export default function Header({ selectedLessonTitle, currentUser, onToggleUserR
                   gap: '0.6rem',
                   padding: '0.5rem 0.65rem',
                   borderRadius: '8px',
-                  background: isAdmin ? '#FEF2F2' : '#FFFFFF',
-                  color: isAdmin ? '#C5221F' : '#0F172A',
+                  background: isAdmin ? (isDark ? 'rgba(197, 34, 31, 0.15)' : '#FEF2F2') : surface,
+                  color: isAdmin ? (isDark ? '#FCA5A5' : '#C5221F') : textColor,
                   cursor: 'pointer',
                   fontWeight: '700',
                   fontSize: '0.88rem',
@@ -171,8 +295,8 @@ export default function Header({ selectedLessonTitle, currentUser, onToggleUserR
               >
                 <div style={{ width: 22, height: 22, background: '#C5221F', color: '#FFF', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 800 }}>A</div>
                 <div>
-                  <div>Admin VinUni</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 500 }}>Quản trị viên (Phân quyền PDF)</div>
+                  <div>{t("adminAccountName")}</div>
+                  <div style={{ fontSize: '0.72rem', color: mutedColor, fontWeight: 500 }}>{t("adminAccountRole")}</div>
                 </div>
               </div>
             </div>
@@ -192,19 +316,19 @@ export default function Header({ selectedLessonTitle, currentUser, onToggleUserR
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
               <polyline points="9 22 9 12 15 12 15 22"></polyline>
             </svg>
-            Trang chủ
+            {t("navHome")}
           </button>
 
           <button
             type="button"
-            className={`mobile-menu-item ${currentPath.startsWith("/courses") || currentPath.startsWith("/course-detail") ? "is-active" : ""}`}
-            onClick={() => handleNavClick("/courses")}
+            className={`mobile-menu-item ${currentPath.startsWith("/course-detail") ? "is-active" : ""}`}
+            onClick={() => handleNavClick("/course-detail")}
           >
             <svg className="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
             </svg>
-            Khóa học của tôi
+            {t("navCourses")}
           </button>
 
           {isAdmin && (
@@ -218,7 +342,7 @@ export default function Header({ selectedLessonTitle, currentUser, onToggleUserR
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
-              Tải bài giảng PDF (Admin)
+              {t("navAdmin")}
             </button>
           )}
         </div>

@@ -60,35 +60,49 @@ const masterVinUniSlides = [
 ];
 
 // Generate Day01 to Day06 sharing the EXACT SAME 55-Slide VinUniversity PDF Deck for uniform Demo
+// fileType/fileUrl point at the local static demo PDF (public/lecture.pdf) so the reader
+// can render slides even when the backend has no matching deck for these local IDs.
 export const lessons = [
   {
     id: "Day01",
     title: "Day 01 — AI Models to AI Products (VinUniversity PDF Slide Deck)",
+    fileType: "pdf",
+    fileUrl: "/lecture.pdf",
     segments: masterVinUniSlides,
   },
   {
     id: "Day02",
     title: "Day 02 — AI Models to AI Products (VinUniversity PDF Slide Deck)",
+    fileType: "pdf",
+    fileUrl: "/lecture.pdf",
     segments: masterVinUniSlides,
   },
   {
     id: "Day03",
     title: "Day 03 — AI Models to AI Products (VinUniversity PDF Slide Deck)",
+    fileType: "pdf",
+    fileUrl: "/lecture.pdf",
     segments: masterVinUniSlides,
   },
   {
     id: "Day04",
     title: "Day 04 — AI Models to AI Products (VinUniversity PDF Slide Deck)",
+    fileType: "pdf",
+    fileUrl: "/lecture.pdf",
     segments: masterVinUniSlides,
   },
   {
     id: "Day05",
     title: "Day 05 — AI Models to AI Products (VinUniversity PDF Slide Deck)",
+    fileType: "pdf",
+    fileUrl: "/lecture.pdf",
     segments: masterVinUniSlides,
   },
   {
     id: "Day06",
     title: "Day 06 — AI Models to AI Products (VinUniversity PDF Slide Deck)",
+    fileType: "pdf",
+    fileUrl: "/lecture.pdf",
     segments: masterVinUniSlides,
   },
 ];
