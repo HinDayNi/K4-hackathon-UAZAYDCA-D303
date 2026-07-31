@@ -149,14 +149,28 @@ export default function TranscriptReader({
         <main className="reader-canvas">
           {/* Continuous Vertical Scroll PDF Slide Rendering Canvas */}
           <div className="document-paper-container">
-            <PdfSlideViewer
+            {/* <PdfSlideViewer
               pdfUrl="/lecture.pdf"
               targetPageNumber={currentPageIndex}
               onNumPages={(num) => setNumPdfPages(num)}
               containerRef={containerRef}
               onMouseUp={handleMouseUp}
               segments={currentLesson.segments}
-            />
+            /> */}
+
+            <div className="document-paper-container">
+              <PdfSlideViewer
+                // 🔥 ĐỔI ĐƯỜNG DẪN TẠI ĐÂY (Trỏ tới file PDF bài giảng)
+                pdfUrl="../../../data/Lesson_01_Agile.pdf" 
+                targetPageNumber={currentPageIndex}
+                onNumPages={(num) => setNumPdfPages(num)}
+                containerRef={containerRef}
+                onMouseUp={handleMouseUp}
+                segments={currentLesson.segments}
+              />
+              
+              {/* Popover Toolbar giữ nguyên */}
+            </div>
 
             {/* Selection Floating Action Popover Toolbar */}
             {toolbar.visible && (

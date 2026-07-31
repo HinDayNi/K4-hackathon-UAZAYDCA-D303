@@ -176,44 +176,74 @@ const EXPLAIN_SCHEMA = {
   required: ["answer", "citation", "confidence"],
 };
 
-export async function explainPassage({ passageText, segmentCodes, lessonTitle, queryText }) {
-  const prompt = `Bạn là VLearn AI Tutor của khoá "${lessonTitle}". Học viên bôi đen đoạn trích dẫn [${segmentCodes.join(", ")}] trong bài giảng và đưa ra yêu cầu: "${queryText || "Giải thích giúp mình đoạn này"}".
+// export async function explainPassage({ passageText, segmentCodes, lessonTitle, queryText, lessonId }) {
+//   try {
+//     const response = await fetch("http://localhost:8000/api/search", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         lesson_id: lessonId || "demo-01",
+//         query_text: queryText || passageText,
+//         passage_text: passageText,
+//       }),
+//     });
 
-Đoạn bài giảng được bôi đen:
-"""
-${passageText}
-"""
+//     if (!response.ok) {
+//       throw new Error("Lỗi kết nối Server API");
+//     }
 
-Hãy giải thích chi tiết, dễ hiểu, bám sát bài giảng và trả về JSON:
-- answer: Câu giải thích mạch lạc, sâu sắc bằng tiếng Việt
-- citation: Mã đoạn bài giảng chính (ví dụ "${segmentCodes[0]}")
-- confidence: Độ tin cậy (từ 85 đến 98)`;
+//     const data = await response.json();
+//     return {
+//       answer: data.answer,
+//       citation: data.citations?.[0]?.code || "chk_1",
+//       confidence: data.confidence || 92,
+//     };
+//   } catch (err) {
+//     console.error("Fallback sang Client AI do lỗi Backend:", err);
+//     return {
+//       answer: `Hệ thống VLearn Search đã tiếp nhận câu hỏi: "${queryText}". (Kết quả được tối ưu token và trích dẫn trực tiếp từ Firebase).`,
+//       citation: segmentCodes?.[0] || "chk_1",
+//       confidence: 90,
+//     };
+//   }
+// }
 
+export async function explainPassage({ passageText, segmentCodes, lessonTitle, queryText, lessonId }) {
   try {
-    const ai = getClient();
-    if (!ai) {
-      const mockAns = {
-        answer: `Đoạn bài giảng [${segmentCodes.join(", ")}] tập trung giải thích rằng: "${passageText.slice(0, 120)}...". Ý cốt lõi ở đây là giúp bạn định hình đúng bài toán AI và xác định rõ 5 tiêu chí nghiệm thu trước khi bắt tay vào xây dựng sản phẩm.`,
-        citation: segmentCodes[0],
-        confidence: 95,
-      };
-      logAiCall({ kind: "explainPassage_mock", request: { prompt }, response: mockAns });
-      return mockAns;
+    const response = await fetch("http://localhost:8000/api/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        // 🔥 Đổi tên field chuẩn theo Backend
+        resource_id: lessonId || "lesson_01_agile",
+        query: queryText || passageText,
+        passage_text: passageText,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Lỗi Server API status: ${response.status}`);
     }
 
-    const response = await ai.models.generateContent({
-      model: MODEL,
-      contents: prompt,
-      config: { responseMimeType: "application/json", responseSchema: EXPLAIN_SCHEMA },
-    });
-    const parsed = JSON.parse(response.text);
-    logAiCall({ kind: "explainPassage", request: { prompt }, response: parsed });
-    return parsed;
-  } catch (error) {
-    logAiCall({ kind: "explainPassage", request: { prompt }, error: String(error) });
+    const data = await response.json();
+    
+    // 🔥 Đọc đúng trường cited_chunks do Llama 3.3 trả về
+    const topCitation = data.cited_chunks?.[0]?.chunk_id || segmentCodes?.[0] || "chk_001";
+
     return {
-      answer: `Nội dung đoạn [${segmentCodes.join(", ")}] nêu rõ ý chính về thiết kế giải pháp và tư duy sản phẩm AI. Hãy áp dụng điều này vào lát cắt dự án của bạn.`,
-      citation: segmentCodes[0],
+      answer: data.answer,
+      citation: topCitation,
+      confidence: 95,
+    };
+  } catch (err) {
+    console.error("Fallback sang Client AI do lỗi Backend:", err);
+    return {
+      answer: `[Demo Local Mode] Dựa trên bài giảng: "${queryText || passageText}"...`,
+      citation: segmentCodes?.[0] || "chk_001",
       confidence: 90,
     };
   }

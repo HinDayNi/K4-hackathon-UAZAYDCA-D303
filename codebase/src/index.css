@@ -1279,3 +1279,36 @@ button {
     padding: 1rem;
   }
 }
+
+/* huong */
+
+/* Đảm bảo textLayer đè trên canvas */
+.pdf-page-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.pdf-text-layer {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Biến chữ trong suốt và hỗ trợ bôi đen */
+.pdf-text-layer span, .textLayer span {
+  color: transparent !important;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+/* Dải màu bôi đen xanh Chrome mượt mà */
+.pdf-text-layer ::selection, .textLayer ::selection {
+  background: rgba(0, 102, 204, 0.35) !important;
+  color: transparent !important;
+}

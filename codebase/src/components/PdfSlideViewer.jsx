@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
+import "pdfjs-dist/web/pdf_viewer.css";
 
-// Configure PDF.js Worker using official CDN for reliable execution
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// Sử dụng Worker nội bộ từ Vite/Webpackloader (?url) để không phụ thuộc CDN
+import pdfWorkerSrc from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
 
 let cachedPdfDoc = null;
 let cachedPdfPromise = null;
+let currentCachedUrl = null;
 
-// Individual Vertical Scrollable Slide Page Component
 function PdfSinglePage({ pdfDoc, pageNum, numPages, isTargetPage, segments }) {
   const canvasRef = useRef(null);
   const textLayerRef = useRef(null);
@@ -33,12 +36,7 @@ function PdfSinglePage({ pdfDoc, pageNum, numPages, isTargetPage, segments }) {
       canvas.height = viewport.height;
       canvas.width = viewport.width;
 
-      const renderContext = {
-        canvasContext: context,
-        viewport: viewport,
-      };
-
-      renderTask = page.render(renderContext);
+      renderTask = page.render({ canvasContext: context, viewport });
 
       renderTask.promise.then(() => {
         if (isCancelled) return;
@@ -51,21 +49,33 @@ function PdfSinglePage({ pdfDoc, pageNum, numPages, isTargetPage, segments }) {
         page.getTextContent().then((textContent) => {
           if (isCancelled) return;
 
-          pdfjsLib.renderTextLayer({
-            textContent: textContent,
-            container: textLayerDiv,
-            viewport: viewport,
-            textDivs: [],
-          });
+          // 🔥 SỬA CÚ PHÁP RENDER TEXT LAYER (Hỗ trợ cả bản PDF.js cũ lẫn mới)
+          try {
+            if (pdfjsLib.TextLayer) {
+              const textLayer = new pdfjsLib.TextLayer({
+                textContentSource: textContent,
+                container: textLayerDiv,
+                viewport: viewport,
+              });
+              textLayer.render();
+            } else {
+              pdfjsLib.renderTextLayer({
+                textContent: textContent,
+                container: textLayerDiv,
+                viewport: viewport,
+                textDivs: [],
+              });
+            }
+          } catch (err) {
+            console.error("Text layer render fallback:", err);
+          }
         });
       });
     });
 
     return () => {
       isCancelled = true;
-      if (renderTask) {
-        renderTask.cancel();
-      }
+      if (renderTask) renderTask.cancel();
     };
   }, [pdfDoc, pageNum]);
 
@@ -84,28 +94,58 @@ function PdfSinglePage({ pdfDoc, pageNum, numPages, isTargetPage, segments }) {
       <div
         className="pdf-page-wrapper"
         data-segment-code={currentSegment?.code || `T01-${String(pageNum).padStart(3, "0")}`}
+        style={{ position: "relative", display: "inline-block" }}
       >
         <canvas ref={canvasRef} className="pdf-canvas" />
-        <div ref={textLayerRef} className="pdf-text-layer textLayer" />
+        <div
+          ref={textLayerRef}
+          className="pdf-text-layer textLayer"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            pointerEvents: "auto",
+            userSelect: "text",
+            WebkitUserSelect: "text",
+          }}
+        />
       </div>
     </div>
   );
 }
 
 export default function PdfSlideViewer({
-  pdfUrl = "/lecture.pdf",
+  pdfUrl = "/data/Lesson_01_Agile.pdf",
   targetPageNumber = 1,
   onNumPages,
   containerRef,
   onMouseUp,
   segments = [],
 }) {
-  const [pdfDoc, setPdfDoc] = useState(cachedPdfDoc);
-  const [loading, setLoading] = useState(!cachedPdfDoc);
+  const [pdfDoc, setPdfDoc] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [activePageNum, setActivePageNum] = useState(targetPageNumber);
 
-  // Load PDF document ONCE and cache it
+  // Load PDF document and update cache when URL changes
   useEffect(() => {
+    let isCancelled = false;
+
+    // Guard Clause: Kiểm tra nếu pdfUrl bị thiếu/undefined
+    if (!pdfUrl) {
+      console.warn("PdfSlideViewer: Prop pdfUrl đang bị rỗng hoặc undefined!");
+      setLoading(false);
+      return;
+    }
+
+    // Reset cache nếu load URL mới
+    if (currentCachedUrl !== pdfUrl) {
+      cachedPdfDoc = null;
+      cachedPdfPromise = null;
+      currentCachedUrl = pdfUrl;
+    }
+
     if (cachedPdfDoc) {
       setPdfDoc(cachedPdfDoc);
       setLoading(false);
@@ -113,9 +153,12 @@ export default function PdfSlideViewer({
       return;
     }
 
-    let isCancelled = false;
+    setLoading(true);
+
     if (!cachedPdfPromise) {
-      cachedPdfPromise = pdfjsLib.getDocument(pdfUrl).promise;
+      const urlToLoad = typeof pdfUrl === "string" ? pdfUrl : (pdfUrl?.url || "/data/Lesson_01_Agile.pdf");
+      // Truyền đúng dạng object { url: ... } theo tiêu chuẩn pdfjs-dist mới
+      cachedPdfPromise = pdfjsLib.getDocument({ url: urlToLoad }).promise;
     }
 
     cachedPdfPromise
@@ -129,13 +172,15 @@ export default function PdfSlideViewer({
       })
       .catch((err) => {
         console.error("Error loading PDF:", err);
+        cachedPdfPromise = null;
+        cachedPdfDoc = null;
         if (!isCancelled) setLoading(false);
       });
 
     return () => {
       isCancelled = true;
     };
-  }, [pdfUrl]);
+  }, [pdfUrl, onNumPages]);
 
   // Smoothly scroll down to target slide page when targetPageNumber changes
   useEffect(() => {
@@ -148,7 +193,7 @@ export default function PdfSlideViewer({
     }
   }, [targetPageNumber]);
 
-  const numPages = pdfDoc ? pdfDoc.numPages : 55;
+  const numPages = pdfDoc ? pdfDoc.numPages : 0;
   const pagesList = Array.from({ length: numPages }, (_, i) => i + 1);
 
   return (
