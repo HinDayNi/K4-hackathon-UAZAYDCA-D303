@@ -29,13 +29,13 @@ export default function CourseDetailView({ lessons, onOpenLesson }) {
             onClick={() => onOpenLesson(lesson.id)}
           >
             <div className="day-circle-badge">
-              <span className="badge-tag">DAY</span>
+              <span className="badge-tag">BÀI</span>
               <span className="badge-num">{String(idx + 1).padStart(2, "0")}</span>
             </div>
 
             <div className="day-accordion-info">
-              <h3>Day{String(idx + 1).padStart(2, "0")} — {lesson.title}</h3>
-              <p>VinUniversity Slide Deck bài giảng dài • AI tự phân tích sơ đồ Mindmap có trích dẫn số trang slide</p>
+              <h3>{lesson.title.startsWith("Day") ? lesson.title : `Bài ${String(idx + 1).padStart(2, "0")}: ${lesson.title}`}</h3>
+              <p>{lesson.slideCount ? `${lesson.slideCount} trang slide bài giảng` : "Slide bài giảng"} • AI tự phân tích sơ đồ Mindmap & RAG</p>
             </div>
 
             <div className="day-chevron">›</div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { explainPassage } from "../services/aiService.js";
 
-export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpenMindmap }) {
+export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpenMindmap, onJumpToSlide }) {
   const [messages, setMessages] = useState([
     {
       sender: "ai",
@@ -25,6 +25,7 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpen
         segmentCodes: codes,
         lessonTitle: lesson?.title ?? "Bài giảng VLearn VinUniversity",
         queryText: `Giải thích giúp mình đoạn này trên slide: "${text}"`,
+        deckId: lesson?.id,
       }).then((res) => {
         setMessages((prev) => [
           ...prev,
@@ -47,14 +48,15 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpen
     setIsThinking(true);
 
     try {
-      const firstSegmentCode = lesson?.segments[0]?.code ?? "T01-001";
-      const sampleText = lesson?.segments[0]?.text ?? "Nội dung bài giảng VLearn VinUniversity";
+      const firstSegmentCode = lesson?.segments?.[0]?.code ?? "T01-001";
+      const sampleText = lesson?.segments?.[0]?.text ?? "Nội dung bài giảng VLearn VinUniversity";
 
       const res = await explainPassage({
         passageText: sampleText,
         segmentCodes: [firstSegmentCode],
         lessonTitle: lesson?.title ?? "Bài giảng VLearn VinUniversity",
         queryText: queryText,
+        deckId: lesson?.id,
       });
 
       setMessages((prev) => [
@@ -111,7 +113,14 @@ export default function AITutorDrawer({ lesson, selectedPassage, onClose, onOpen
             <p>{msg.text}</p>
             {msg.citation && (
               <div className="chat-bubble__citation">
-                <span className="badge-cite">Trích dẫn: [{msg.citation}]</span>
+                <span
+                  className="badge-cite"
+                  style={{ cursor: onJumpToSlide ? "pointer" : "default" }}
+                  onClick={() => onJumpToSlide && onJumpToSlide(msg.citation)}
+                  title="Bấm để nhảy đến trang slide này"
+                >
+                  Trích dẫn: [{msg.citation}] 🔗
+                </span>
                 {msg.confidence && (
                   <span className="badge-conf">Độ tin cậy: {msg.confidence}%</span>
                 )}
