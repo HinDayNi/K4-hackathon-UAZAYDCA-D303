@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Header from "./components/Header.jsx";
 import DashboardView from "./components/DashboardView.jsx";
-import MyCoursesView from "./components/MyCoursesView.jsx";
 import CourseDetailView from "./components/CourseDetailView.jsx";
 import TranscriptReader from "./components/TranscriptReader.jsx";
 import AdminUploadView from "./components/AdminUploadView.jsx";
@@ -33,10 +32,6 @@ export default function App() {
     }
   };
 
-  const handleOpenCourse = () => {
-    navigate("/course-detail");
-  };
-
   const handleOpenLesson = (lessonId) => {
     setSelectedLessonId(lessonId);
     navigate("/reader");
@@ -56,12 +51,7 @@ export default function App() {
         <Routes>
           <Route
             path="/"
-            element={<DashboardView onOpenCourse={() => navigate("/courses")} />}
-          />
-
-          <Route
-            path="/courses"
-            element={<MyCoursesView onSelectCourse={handleOpenCourse} />}
+            element={<DashboardView onOpenCourse={() => navigate("/course-detail")} />}
           />
 
           <Route

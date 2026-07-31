@@ -1,21 +1,33 @@
+import { useLanguage } from "../contexts/LanguageContext.jsx";
+
 export default function CourseDetailView({ lessons, onOpenLesson }) {
+  const { t } = useLanguage();
+
   return (
     <div className="vlearn-page">
       {/* Sub-Header Section */}
       <div className="vlearn-sec-header" style={{ alignItems: 'flex-start' }}>
         <div>
-          <span className="vlearn-kicker">VLEARN · VINUNI AI THỰC CHIẾN</span>
-          <h1 className="vlearn-page-title" style={{ fontSize: '2rem' }}>COMP2010 - Khoá 3 + 4 Phase 1</h1>
-          <p className="vlearn-page-sub">1074 học viên cùng lớp</p>
+          <span className="vlearn-kicker">{t("courseKicker")}</span>
+          <h1 className="vlearn-page-title" style={{ fontSize: '2rem' }}>{t("courseTitle")}</h1>
+          <p className="vlearn-page-sub">{t("courseSub")}</p>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          <div className="reading-progress-pill">
+            <span className="check-icon">✔</span> {t("readProgress", 0, lessons.length)}
+            <div className="progress-bar-track">
+              <div className="progress-bar-fill" style={{ width: '0%' }}></div>
+            </div>
+            <span className="progress-percent">0%</span>
+          </div>
+
           <button
             type="button"
             className="btn-start-reading"
             onClick={() => onOpenLesson(lessons[0]?.id)}
           >
-            Bắt đầu đọc
+            {t("startReading")}
           </button>
         </div>
       </div>
@@ -34,11 +46,11 @@ export default function CourseDetailView({ lessons, onOpenLesson }) {
             </div>
 
             <div className="day-accordion-info">
-              <h3>Day{String(idx + 1).padStart(2, "0")} — {lesson.title}</h3>
-              <p>VinUniversity Slide Deck bài giảng dài • AI tự phân tích sơ đồ Mindmap có trích dẫn số trang slide</p>
+              <h3>{lesson.id}</h3>
+              <p>{t("dayNotDone")} · {t("slideCount")}</p>
             </div>
 
-            <div className="day-chevron">›</div>
+            <div className="day-chevron">⌄</div>
           </div>
         ))}
       </div>
